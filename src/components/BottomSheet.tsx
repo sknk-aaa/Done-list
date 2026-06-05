@@ -1,5 +1,6 @@
 import { type ReactNode, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
   runOnJS,
@@ -23,21 +24,35 @@ export function BottomSheet({ visible, onClose, children }: Props) {
   const [mounted, setMounted] = useState(visible);
   const progress = useSharedValue(0);
   const sheetH = useSharedValue(screenH);
+  const dragY = useSharedValue(0);
 
   useEffect(() => {
     if (visible) {
       setMounted(true);
+      dragY.value = 0;
       progress.value = withTiming(1, { duration: 320, easing: EASE });
     } else {
       progress.value = withTiming(0, { duration: 240, easing: EASE }, (finished) => {
         if (finished) runOnJS(setMounted)(false);
       });
     }
-  }, [visible, progress]);
+  }, [visible, progress, dragY]);
+
+  const dragGesture = Gesture.Pan()
+    .onUpdate((e) => {
+      dragY.value = Math.max(0, e.translationY);
+    })
+    .onEnd((e) => {
+      if (e.translationY > 110 || e.velocityY > 900) {
+        runOnJS(onClose)();
+      } else {
+        dragY.value = withTiming(0, { duration: 180 });
+      }
+    });
 
   const scrimStyle = useAnimatedStyle(() => ({ opacity: progress.value }));
   const sheetStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: (1 - progress.value) * sheetH.value }],
+    transform: [{ translateY: (1 - progress.value) * sheetH.value + dragY.value }],
   }));
 
   if (!mounted) return null;
@@ -51,7 +66,11 @@ export function BottomSheet({ visible, onClose, children }: Props) {
           sheetH.value = e.nativeEvent.layout.height;
         }}
       >
-        <View style={styles.grab} />
+        <GestureDetector gesture={dragGesture}>
+          <View style={styles.grabZone}>
+            <View style={styles.grab} />
+          </View>
+        </GestureDetector>
         {children}
       </Animated.View>
     </View>
@@ -70,13 +89,12 @@ const styles = StyleSheet.create({
     maxHeight: '92%',
     overflow: 'hidden',
   },
+  grabZone: { paddingTop: 8, paddingBottom: 6, alignItems: 'center' },
   grab: {
-    alignSelf: 'center',
     width: 38,
     height: 5,
     borderRadius: 3,
     backgroundColor: '#E2E5E8',
-    marginTop: 8,
   },
 });
 
