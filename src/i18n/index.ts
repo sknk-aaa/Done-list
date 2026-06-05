@@ -17,4 +17,9 @@ i18n.use(initReactI18next).init({
   interpolation: { escapeValue: false },
 });
 
+// Dev-only: expose to the web preview harness for locale checks.
+if (__DEV__ && typeof window !== 'undefined') {
+  (window as unknown as { __i18n?: typeof i18n }).__i18n = i18n;
+}
+
 export default i18n;
