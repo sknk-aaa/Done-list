@@ -2,7 +2,7 @@
 
 ## 技術スタック（SPEC §2・固定）
 
-Expo SDK 56 / expo-router / TypeScript / expo-sqlite + Drizzle ORM / Zustand / i18next（en プライマリ・ja）/
+Expo SDK 54 / expo-router / TypeScript / expo-sqlite + Drizzle ORM / Zustand / i18next（en プライマリ・ja）/
 react-native-gesture-handler・reanimated / @gorhom/bottom-sheet（未使用：自作 BottomSheet を採用）/ react-native-svg /
 @react-native-community/datetimepicker / async-storage / expo-notifications / expo-store-review。
 
