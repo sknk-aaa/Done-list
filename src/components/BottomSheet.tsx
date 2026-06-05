@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect, useState } from 'react';
-import { Modal, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Animated, {
   Easing,
   runOnJS,
@@ -43,27 +43,25 @@ export function BottomSheet({ visible, onClose, children }: Props) {
   if (!mounted) return null;
 
   return (
-    <Modal visible transparent animationType="none" onRequestClose={onClose} statusBarTranslucent>
-      <View style={styles.fill}>
-        <AnimatedPressable style={[styles.scrim, scrimStyle]} onPress={onClose} />
-        <Animated.View
-          style={[styles.sheet, shadow.sheet, sheetStyle]}
-          onLayout={(e) => {
-            sheetH.value = e.nativeEvent.layout.height;
-          }}
-        >
-          <View style={styles.grab} />
-          {children}
-        </Animated.View>
-      </View>
-    </Modal>
+    <View style={styles.fill}>
+      <AnimatedPressable style={[styles.scrim, scrimStyle]} onPress={onClose} />
+      <Animated.View
+        style={[styles.sheet, shadow.sheet, sheetStyle]}
+        onLayout={(e) => {
+          sheetH.value = e.nativeEvent.layout.height;
+        }}
+      >
+        <View style={styles.grab} />
+        {children}
+      </Animated.View>
+    </View>
   );
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const styles = StyleSheet.create({
-  fill: { flex: 1, justifyContent: 'flex-end' },
+  fill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'flex-end' },
   scrim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(20,24,28,0.38)' },
   sheet: {
     backgroundColor: color.bg,

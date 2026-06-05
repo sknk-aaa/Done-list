@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
@@ -49,8 +49,7 @@ export function TagEditScreen() {
   if (!mounted) return null;
 
   return (
-    <Modal visible transparent animationType="none" onRequestClose={() => setOpen(false)} statusBarTranslucent>
-      <Animated.View style={[styles.screen, { paddingTop: insets.top }, slideStyle]}>
+    <Animated.View style={[styles.screen, { paddingTop: insets.top }, slideStyle]}>
         <View style={styles.bar}>
           <Pressable style={styles.back} onPress={() => setOpen(false)} hitSlop={8}>
             <ChevronLeft size={22} color={color.teal} />
@@ -103,13 +102,12 @@ export function TagEditScreen() {
           </View>
           <View style={{ height: insets.bottom + 24 }} />
         </ScrollView>
-      </Animated.View>
-    </Modal>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: color.bgSoft },
+  screen: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: color.bgSoft },
   bar: {
     flexDirection: 'row',
     alignItems: 'center',
