@@ -43,6 +43,17 @@ export const addDaysISO = (iso: string, n: number): string => {
 /** Today as ISO. Pinned to DEV_TODAY while SEED is on (for design diffing). */
 export const getTodayISO = (): string => (SEED ? DEV_TODAY : dateToISO(new Date()));
 
+/** 'HH:MM' from a Date. */
+export const formatTime = (d: Date): string => `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+
+/** Date (today's date, given time) from 'HH:MM'; defaults to 09:00. */
+export const timeToDate = (time: string | null): Date => {
+  const d = new Date();
+  const [h, m] = (time ?? '09:00').split(':').map(Number);
+  d.setHours(h, m, 0, 0);
+  return d;
+};
+
 /** Difference in whole days between two ISO dates (b - a). */
 export const diffDays = (a: string, b: string): number =>
   Math.round((isoToDate(b).getTime() - isoToDate(a).getTime()) / 86400000);

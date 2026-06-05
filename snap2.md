@@ -1,0 +1,252 @@
+- generic [ref=e16]:
+  - generic [ref=e17]:
+    - generic [ref=e19]:
+      - generic [ref=e20]:
+        - generic [ref=e21]:
+          - generic [ref=e23] [cursor=pointer]:
+            - generic [ref=e24]: Jun 19 (Fri)
+            - img [ref=e25]
+          - generic [ref=e27]:
+            - img [ref=e29] [cursor=pointer]
+            - img [ref=e32] [cursor=pointer]
+        - generic [ref=e34]:
+          - generic [ref=e35]: Today
+          - generic [ref=e36]: ·
+          - generic [ref=e37]: 4/7 done
+      - generic [ref=e39]:
+        - generic [ref=e41] [cursor=pointer]:
+          - img [ref=e44]
+          - generic [ref=e46]:
+            - generic [ref=e47]: ブログ更新
+            - generic [ref=e48]:
+              - generic [ref=e51]: 仕事
+              - img [ref=e52]
+          - generic [ref=e55]: 08:00
+        - generic [ref=e58] [cursor=pointer]:
+          - img [ref=e61]
+          - generic [ref=e63]:
+            - generic [ref=e64]: ジムで筋トレ
+            - generic [ref=e68]: 健康
+          - generic [ref=e70]: 07:00
+        - generic [ref=e73] [cursor=pointer]:
+          - generic [ref=e76]:
+            - generic [ref=e77]: 買い出し（スーパー）
+            - generic [ref=e78]:
+              - generic [ref=e81]: 買い物
+              - img [ref=e82]
+          - generic [ref=e85]: 18:30
+        - generic [ref=e88] [cursor=pointer]:
+          - img [ref=e91]
+          - generic [ref=e93]:
+            - generic [ref=e94]: 資料作成（提案書）
+            - generic [ref=e95]:
+              - generic [ref=e98]: 仕事
+              - img [ref=e99]
+          - generic [ref=e102]: 14:00
+        - generic [ref=e105] [cursor=pointer]:
+          - generic [ref=e108]:
+            - generic [ref=e109]: 読書（20分）
+            - generic [ref=e113]: 自己投資
+          - generic [ref=e115]: 22:00
+        - generic [ref=e118] [cursor=pointer]:
+          - img [ref=e121]
+          - generic [ref=e123]:
+            - generic [ref=e124]: 夕食の準備
+            - generic [ref=e128]: 家事
+          - generic [ref=e130]: 19:00
+        - generic [ref=e133] [cursor=pointer]:
+          - generic [ref=e136]:
+            - generic [ref=e137]: 英語学習アプリ
+            - generic [ref=e138]:
+              - generic [ref=e141]: 学習
+              - img [ref=e142]
+          - generic [ref=e145]: 07:30
+      - img [ref=e147] [cursor=pointer]
+    - generic [ref=e149]:
+      - generic [ref=e151]:
+        - generic [ref=e153] [cursor=pointer]:
+          - generic [ref=e154]: Jun 2026
+          - img [ref=e155]
+        - generic [ref=e157]:
+          - img [ref=e159] [cursor=pointer]
+          - img [ref=e162] [cursor=pointer]
+      - generic [ref=e163]:
+        - generic [ref=e164]: Sun
+        - generic [ref=e165]: Mon
+        - generic [ref=e166]: Tue
+        - generic [ref=e167]: Wed
+        - generic [ref=e168]: Thu
+        - generic [ref=e169]: Fri
+        - generic [ref=e170]: Sat
+      - generic [ref=e171]:
+        - generic [ref=e172]:
+          - generic [ref=e174] [cursor=pointer]: "31"
+          - generic [ref=e175] [cursor=pointer]:
+            - generic [ref=e176]: "1"
+            - generic [ref=e177]: ブログ更新
+            - generic [ref=e178]: ジム
+            - generic [ref=e179]: 買い出し
+          - generic [ref=e180] [cursor=pointer]:
+            - generic [ref=e181]: "2"
+            - generic [ref=e182]: 資料作成
+            - generic [ref=e183]: 英語
+            - generic [ref=e184]: 読書
+          - generic [ref=e185] [cursor=pointer]:
+            - generic [ref=e186]: "3"
+            - generic [ref=e187]: ジム
+            - generic [ref=e188]: ブログ更新
+            - generic [ref=e189]: 掃除
+          - generic [ref=e190] [cursor=pointer]:
+            - generic [ref=e191]: "4"
+            - generic [ref=e192]: 家計簿
+            - generic [ref=e193]: 買い出し
+            - generic [ref=e194]: 資料作成
+          - generic [ref=e195] [cursor=pointer]:
+            - generic [ref=e196]: "5"
+            - generic [ref=e197]: 掃除
+            - generic [ref=e198]: 通院
+            - generic [ref=e199]: 読書
+            - generic [ref=e200]: 英語
+          - generic [ref=e201] [cursor=pointer]:
+            - generic [ref=e202]: "6"
+            - generic [ref=e203]: 散歩
+            - generic [ref=e204]: ブログ更新
+            - generic [ref=e205]: 買い出し
+        - generic [ref=e206]:
+          - generic [ref=e207] [cursor=pointer]:
+            - generic [ref=e208]: "7"
+            - generic [ref=e209]: 読書
+            - generic [ref=e210]: ジム
+            - generic [ref=e211]: 家計簿
+          - generic [ref=e212] [cursor=pointer]:
+            - generic [ref=e213]: "8"
+            - generic [ref=e214]: ブログ更新
+            - generic [ref=e215]: 資料作成
+            - generic [ref=e216]: 買い出し
+          - generic [ref=e217] [cursor=pointer]:
+            - generic [ref=e218]: "9"
+            - generic [ref=e219]: 英語
+            - generic [ref=e220]: 掃除
+            - generic [ref=e221]: 散歩
+          - generic [ref=e222] [cursor=pointer]:
+            - generic [ref=e223]: "10"
+            - generic [ref=e224]: ジム
+            - generic [ref=e225]: ブログ更新
+            - generic [ref=e226]: 読書
+          - generic [ref=e227] [cursor=pointer]:
+            - generic [ref=e228]: "11"
+            - generic [ref=e229]: 資料作成
+            - generic [ref=e230]: 家計簿
+            - generic [ref=e231]: 買い出し
+            - generic [ref=e232]: 掃除
+          - generic [ref=e233] [cursor=pointer]:
+            - generic [ref=e234]: "12"
+            - generic [ref=e235]: 通院
+            - generic [ref=e236]: 英語
+            - generic [ref=e237]: 散歩
+          - generic [ref=e238] [cursor=pointer]:
+            - generic [ref=e239]: "13"
+            - generic [ref=e240]: ブログ更新
+            - generic [ref=e241]: 買い出し
+        - generic [ref=e242]:
+          - generic [ref=e243] [cursor=pointer]:
+            - generic [ref=e244]: "14"
+            - generic [ref=e245]: ジム
+            - generic [ref=e246]: 読書
+            - generic [ref=e247]: 家計簿
+          - generic [ref=e248] [cursor=pointer]:
+            - generic [ref=e249]: "15"
+            - generic [ref=e250]: ブログ更新
+            - generic [ref=e251]: 資料作成
+            - generic [ref=e252]: 英語
+          - generic [ref=e253] [cursor=pointer]:
+            - generic [ref=e254]: "16"
+            - generic [ref=e255]: 散歩
+            - generic [ref=e256]: 掃除
+            - generic [ref=e257]: 買い出し
+          - generic [ref=e258] [cursor=pointer]:
+            - generic [ref=e259]: "17"
+            - generic [ref=e260]: ジム
+            - generic [ref=e261]: ブログ更新
+            - generic [ref=e262]: 読書
+          - generic [ref=e263] [cursor=pointer]:
+            - generic [ref=e264]: "18"
+            - generic [ref=e265]: 資料作成
+            - generic [ref=e266]: 家計簿
+            - generic [ref=e267]: 買い出し
+          - generic [ref=e268] [cursor=pointer]:
+            - generic [ref=e270]: "19"
+            - generic [ref=e271]: ブログ更新
+            - generic [ref=e272]: ジムで筋トレ
+            - generic [ref=e273]: 買い出し（スーパー）
+            - generic [ref=e274]: 資料作成（提案書）
+            - generic [ref=e275]: "+3"
+          - generic [ref=e276] [cursor=pointer]:
+            - generic [ref=e277]: "20"
+            - generic [ref=e278]: 掃除
+            - generic [ref=e279]: 通院
+            - generic [ref=e280]: 買い出し
+        - generic [ref=e281]:
+          - generic [ref=e282] [cursor=pointer]:
+            - generic [ref=e283]: "21"
+            - generic [ref=e284]: 読書
+            - generic [ref=e285]: 散歩
+            - generic [ref=e286]: 買い出し
+          - generic [ref=e287] [cursor=pointer]:
+            - generic [ref=e288]: "22"
+            - generic [ref=e289]: ブログ更新
+            - generic [ref=e290]: 資料作成
+            - generic [ref=e291]: 家計簿
+            - generic [ref=e292]: 英語
+          - generic [ref=e293] [cursor=pointer]:
+            - generic [ref=e294]: "23"
+            - generic [ref=e295]: ジム
+            - generic [ref=e296]: 掃除
+            - generic [ref=e297]: 読書
+            - generic [ref=e298]: 買い出し
+          - generic [ref=e299] [cursor=pointer]:
+            - generic [ref=e300]: "24"
+            - generic [ref=e301]: ブログ更新
+            - generic [ref=e302]: 散歩
+            - generic [ref=e303]: 買い出し
+          - generic [ref=e304] [cursor=pointer]:
+            - generic [ref=e305]: "25"
+            - generic [ref=e306]: 資料作成
+            - generic [ref=e307]: 家計簿
+            - generic [ref=e308]: 英語
+          - generic [ref=e309] [cursor=pointer]:
+            - generic [ref=e310]: "26"
+            - generic [ref=e311]: 通院
+            - generic [ref=e312]: 掃除
+            - generic [ref=e313]: 読書
+            - generic [ref=e314]: 散歩
+          - generic [ref=e315] [cursor=pointer]:
+            - generic [ref=e316]: "27"
+            - generic [ref=e317]: ブログ更新
+            - generic [ref=e318]: 買い出し
+        - generic [ref=e319]:
+          - generic [ref=e320] [cursor=pointer]:
+            - generic [ref=e321]: "28"
+            - generic [ref=e322]: ジム
+            - generic [ref=e323]: 読書
+            - generic [ref=e324]: 家計簿
+            - generic [ref=e325]: 買い出し
+          - generic [ref=e326] [cursor=pointer]:
+            - generic [ref=e327]: "29"
+            - generic [ref=e328]: ブログ更新
+            - generic [ref=e329]: 資料作成
+            - generic [ref=e330]: 英語
+            - generic [ref=e331]: 散歩
+          - generic [ref=e332] [cursor=pointer]:
+            - generic [ref=e333]: "30"
+            - generic [ref=e334]: 散歩
+            - generic [ref=e335]: 掃除
+            - generic [ref=e336]: 買い出し
+            - generic [ref=e337]: 読書
+          - generic [ref=e339] [cursor=pointer]: "1"
+          - generic [ref=e341] [cursor=pointer]: "2"
+          - generic [ref=e343] [cursor=pointer]: "3"
+          - generic [ref=e345] [cursor=pointer]: "4"
+  - generic [ref=e346]:
+    - img [ref=e349] [cursor=pointer]
+    - img [ref=e353] [cursor=pointer]

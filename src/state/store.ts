@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 import { patchSettings } from '@/db/queries';
 import type { Settings } from '@/db/schema';
+import type { ItemWithTag } from '@/db/types';
 import { addDaysISO, getTodayISO, parseISO } from '@/lib/date';
 
 export type FilterStatus = 'all' | 'done' | 'todo';
@@ -9,7 +10,7 @@ export type Filter = { status: FilterStatus; tagIds: number[] };
 export type SwipeAction = 'date' | 'tab';
 export type SheetMode = 'add' | 'edit' | null;
 
-type SheetState = { mode: SheetMode; editingId: number | null; presetDate: string | null };
+type SheetState = { mode: SheetMode; editingItem: ItemWithTag | null; presetDate: string | null };
 
 type AppState = {
   // settings cache
@@ -36,6 +37,9 @@ type AppState = {
   drawerOpen: boolean;
   datePopOpen: boolean;
   datePopContext: 'daily' | 'month';
+  tagEditOpen: boolean;
+  onboardingOpen: boolean;
+  toast: string | null;
 
   // actions
   hydrateSettings: (s: Settings) => void;
@@ -57,12 +61,16 @@ type AppState = {
   resetFilter: () => void;
 
   openAddSheet: (presetDate?: string) => void;
-  openEditSheet: (id: number) => void;
+  openEditSheet: (item: ItemWithTag) => void;
   closeSheet: () => void;
   setFilterOpen: (v: boolean) => void;
   setDrawerOpen: (v: boolean) => void;
   openDatePop: (context: 'daily' | 'month') => void;
   closeDatePop: () => void;
+  setTagEditOpen: (v: boolean) => void;
+  setOnboardingOpen: (v: boolean) => void;
+  showToast: (msg: string) => void;
+  clearToast: () => void;
 };
 
 const today = getTodayISO();
@@ -84,11 +92,14 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   filter: { status: 'all', tagIds: [] },
 
-  sheet: { mode: null, editingId: null, presetDate: null },
+  sheet: { mode: null, editingItem: null, presetDate: null },
   filterOpen: false,
   drawerOpen: false,
   datePopOpen: false,
   datePopContext: 'daily',
+  tagEditOpen: false,
+  onboardingOpen: false,
+  toast: null,
 
   hydrateSettings: (s) =>
     set({
@@ -149,13 +160,17 @@ export const useAppStore = create<AppState>((set, get) => ({
   resetFilter: () => set({ filter: { status: 'all', tagIds: [] } }),
 
   openAddSheet: (presetDate) =>
-    set({ sheet: { mode: 'add', editingId: null, presetDate: presetDate ?? get().selectedDate } }),
-  openEditSheet: (id) => set({ sheet: { mode: 'edit', editingId: id, presetDate: null } }),
-  closeSheet: () => set({ sheet: { mode: null, editingId: null, presetDate: null } }),
+    set({ sheet: { mode: 'add', editingItem: null, presetDate: presetDate ?? get().selectedDate } }),
+  openEditSheet: (item) => set({ sheet: { mode: 'edit', editingItem: item, presetDate: null } }),
+  closeSheet: () => set({ sheet: { mode: null, editingItem: null, presetDate: null } }),
   setFilterOpen: (v) => set({ filterOpen: v }),
   setDrawerOpen: (v) => set({ drawerOpen: v }),
   openDatePop: (context) => set({ datePopOpen: true, datePopContext: context }),
   closeDatePop: () => set({ datePopOpen: false }),
+  setTagEditOpen: (v) => set({ tagEditOpen: v }),
+  setOnboardingOpen: (v) => set({ onboardingOpen: v }),
+  showToast: (msg) => set({ toast: msg }),
+  clearToast: () => set({ toast: null }),
 }));
 
 /** True when a filter narrows results (used for funnel dot + month "+N" hiding). */

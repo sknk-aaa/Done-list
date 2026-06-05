@@ -1,5 +1,8 @@
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { runOnJS } from 'react-native-reanimated';
 
 import { AppHeader, HeaderCaret } from '@/components/AppHeader';
 import { Fab } from '@/components/Fab';
@@ -25,6 +28,28 @@ export function DailyScreen() {
   const openDatePop = useAppStore((s) => s.openDatePop);
   const goToday = useAppStore((s) => s.goToday);
   const resetFilter = useAppStore((s) => s.resetFilter);
+  const swipeAction = useAppStore((s) => s.swipeAction);
+  const shiftDay = useAppStore((s) => s.shiftDay);
+  const setView = useAppStore((s) => s.setView);
+
+  const onSwipe = useCallback(
+    (dir: number) => {
+      // dir: +1 = swiped right, -1 = swiped left
+      if (swipeAction === 'date') shiftDay(dir > 0 ? -1 : 1);
+      else if (dir < 0) setView('month');
+    },
+    [swipeAction, shiftDay, setView],
+  );
+
+  const pan = Gesture.Pan()
+    .activeOffsetX([-15, 15])
+    .failOffsetY([-14, 14])
+    .onEnd((e) => {
+      'worklet';
+      if (Math.abs(e.translationX) > 55 && Math.abs(e.translationX) > 1.2 * Math.abs(e.translationY)) {
+        runOnJS(onSwipe)(e.translationX > 0 ? 1 : -1);
+      }
+    });
 
   const all = useDailyItems(selectedDate);
   const visible = all.filter((it) => matchesFilter(it, filter));
@@ -60,7 +85,8 @@ export function DailyScreen() {
   if (filter.tagIds.length > 0) filterParts.push(t('filter.tagCount', { count: filter.tagIds.length }));
 
   return (
-    <View style={styles.screen}>
+    <GestureDetector gesture={pan}>
+      <View style={styles.screen}>
       <AppHeader
         left={left}
         sub={sub}
@@ -91,7 +117,7 @@ export function DailyScreen() {
             item={item}
             showTime={showTime}
             onToggle={() => setComplete(item, !item.isCompleted)}
-            onPress={() => openEditSheet(item.id)}
+            onPress={() => openEditSheet(item)}
           />
         )}
         ListEmptyComponent={
@@ -102,7 +128,8 @@ export function DailyScreen() {
       />
 
       <Fab onPress={() => openAddSheet()} />
-    </View>
+      </View>
+    </GestureDetector>
   );
 }
 

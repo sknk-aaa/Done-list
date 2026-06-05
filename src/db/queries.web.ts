@@ -155,6 +155,14 @@ export async function reorderItems(orderedIds: number[]): Promise<void> {
   bump();
 }
 
+export async function eligibleNotifyItems(): Promise<Item[]> {
+  return [];
+}
+
+export async function distinctLoggedDays(): Promise<number> {
+  return new Set(mem.items.map((i) => i.date)).size;
+}
+
 export async function initApp(): Promise<Settings> {
   const s = await ensureSettings();
   await ensureDefaultTags();

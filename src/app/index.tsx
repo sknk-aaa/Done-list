@@ -1,17 +1,37 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect } from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
+import { AddEditSheet } from '@/components/AddEditSheet';
 import { BottomTabBar } from '@/components/BottomTabBar';
+import { DatePopover } from '@/components/DatePopover';
+import { Drawer } from '@/components/Drawer';
+import { FilterSheet } from '@/components/FilterSheet';
+import { Onboarding, ONBOARDED_KEY } from '@/components/Onboarding';
+import { TagEditScreen } from '@/components/TagEditScreen';
+import { Toast } from '@/components/Toast';
 import { DailyScreen } from '@/screens/DailyScreen';
 import { MonthScreen } from '@/screens/MonthScreen';
 import { useAppStore } from '@/state/store';
 import { color } from '@/theme/tokens';
 
+// Dev-only: expose the store to the web preview harness for driving overlays.
+if (__DEV__ && typeof window !== 'undefined') {
+  (window as unknown as { __appStore?: typeof useAppStore }).__appStore = useAppStore;
+}
+
 export default function AppShell() {
   const { width } = useWindowDimensions();
   const view = useAppStore((s) => s.view);
   const setView = useAppStore((s) => s.setView);
+  const setOnboardingOpen = useAppStore((s) => s.setOnboardingOpen);
+
+  useEffect(() => {
+    AsyncStorage.getItem(ONBOARDED_KEY).then((v) => {
+      if (!v) setOnboardingOpen(true);
+    });
+  }, [setOnboardingOpen]);
 
   const tx = useSharedValue(0);
   useEffect(() => {
@@ -34,6 +54,14 @@ export default function AppShell() {
         </View>
       </Animated.View>
       <BottomTabBar view={view} onChange={setView} />
+
+      <AddEditSheet />
+      <FilterSheet />
+      <TagEditScreen />
+      <Drawer />
+      <DatePopover />
+      <Onboarding />
+      <Toast />
     </View>
   );
 }

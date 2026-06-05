@@ -1,5 +1,8 @@
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { runOnJS } from 'react-native-reanimated';
 
 import { AppHeader, HeaderCaret } from '@/components/AppHeader';
 import { MonthGrid, type GridCell } from '@/components/MonthGrid';
@@ -37,6 +40,18 @@ export function MonthScreen() {
   const openDatePop = useAppStore((s) => s.openDatePop);
   const setSelectedDate = useAppStore((s) => s.setSelectedDate);
   const setView = useAppStore((s) => s.setView);
+  const shiftMonth = useAppStore((s) => s.shiftMonth);
+
+  const onSwipeMonth = useCallback((dir: number) => shiftMonth(dir > 0 ? -1 : 1), [shiftMonth]);
+  const pan = Gesture.Pan()
+    .activeOffsetX([-15, 15])
+    .failOffsetY([-14, 14])
+    .onEnd((e) => {
+      'worklet';
+      if (Math.abs(e.translationX) > 55 && Math.abs(e.translationX) > 1.2 * Math.abs(e.translationY)) {
+        runOnJS(onSwipeMonth)(e.translationX > 0 ? 1 : -1);
+      }
+    });
 
   const first = firstWeekday(viewYear, viewMonth);
   const dim = daysInMonth(viewYear, viewMonth);
@@ -92,22 +107,24 @@ export function MonthScreen() {
   };
 
   return (
-    <View style={styles.screen}>
-      <AppHeader
-        left={left}
-        filterActive={isFilterActive(filter)}
-        onFilter={() => setFilterOpen(true)}
-        onMenu={() => setDrawerOpen(true)}
-      />
-      <View style={styles.dow}>
-        {weekdays.map((w, i) => (
-          <Text key={i} style={[styles.dowText, i === 0 && styles.dowSun]}>
-            {w}
-          </Text>
-        ))}
+    <GestureDetector gesture={pan}>
+      <View style={styles.screen}>
+        <AppHeader
+          left={left}
+          filterActive={isFilterActive(filter)}
+          onFilter={() => setFilterOpen(true)}
+          onMenu={() => setDrawerOpen(true)}
+        />
+        <View style={styles.dow}>
+          {weekdays.map((w, i) => (
+            <Text key={i} style={[styles.dowText, i === 0 && styles.dowSun]}>
+              {w}
+            </Text>
+          ))}
+        </View>
+        <MonthGrid weeks={weeks} filterActive={isFilterActive(filter)} onDayPress={onDayPress} />
       </View>
-      <MonthGrid weeks={weeks} filterActive={isFilterActive(filter)} onDayPress={onDayPress} />
-    </View>
+    </GestureDetector>
   );
 }
 

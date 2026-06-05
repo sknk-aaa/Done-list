@@ -1,8 +1,8 @@
-import { and, asc, eq, gte, lte, sql } from 'drizzle-orm';
+import { and, asc, eq, gte, isNotNull, lte, sql } from 'drizzle-orm';
 
 import { DAILY_SEED, DEFAULT_TAGS, MONTH_CELLS, TAGOF, derivedDone } from '@/data/mockSeed';
 import { SEED } from '@/lib/dev';
-import { toISO } from '@/lib/date';
+import { getTodayISO, toISO } from '@/lib/date';
 
 import { db } from './client';
 import { items, settings, tags, type Item, type NewItem, type Settings, type Tag } from './schema';
@@ -146,6 +146,28 @@ export function itemsInRangeQuery(startISO: string, endISO: string) {
     orderBy: [asc(items.date), asc(items.sortOrder)],
     with: { tag: true },
   });
+}
+
+// ── notifications / review helpers ──────────────────────────
+/** Items eligible for a scheduled reminder (future, with time, enabled, not done). */
+export function eligibleNotifyItems(): Promise<Item[]> {
+  return db
+    .select()
+    .from(items)
+    .where(
+      and(
+        eq(items.notifyEnabled, true),
+        eq(items.isCompleted, false),
+        isNotNull(items.time),
+        gte(items.date, getTodayISO()),
+      ),
+    );
+}
+
+/** Number of distinct days that have at least one logged item (review trigger). */
+export async function distinctLoggedDays(): Promise<number> {
+  const rows = await db.select({ d: items.date }).from(items).groupBy(items.date);
+  return rows.length;
 }
 
 // ── app init / dev seed ─────────────────────────────────────
