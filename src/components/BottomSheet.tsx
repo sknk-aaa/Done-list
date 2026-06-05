@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect, useState } from 'react';
-import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
@@ -12,6 +12,8 @@ import Animated, {
 import { color, radius, shadow } from '@/theme/tokens';
 
 const EASE = Easing.bezier(0.4, 0, 0.2, 1);
+const DISMISS_DISTANCE = 110;
+const DISMISS_VELOCITY = 900;
 
 type Props = {
   visible: boolean;
@@ -38,12 +40,16 @@ export function BottomSheet({ visible, onClose, children }: Props) {
     }
   }, [visible, progress, dragY]);
 
+  // Drag the whole sheet down to dismiss (activates only on a downward drag,
+  // so taps and text inputs keep working).
   const dragGesture = Gesture.Pan()
+    .activeOffsetY([12, 1000])
+    .failOffsetY([-8, 0])
     .onUpdate((e) => {
       dragY.value = Math.max(0, e.translationY);
     })
     .onEnd((e) => {
-      if (e.translationY > 110 || e.velocityY > 900) {
+      if (dragY.value > DISMISS_DISTANCE || (e.velocityY > DISMISS_VELOCITY && dragY.value > 0)) {
         runOnJS(onClose)();
       } else {
         dragY.value = withTiming(0, { duration: 180 });
@@ -60,19 +66,24 @@ export function BottomSheet({ visible, onClose, children }: Props) {
   return (
     <View style={styles.fill}>
       <AnimatedPressable style={[styles.scrim, scrimStyle]} onPress={onClose} />
-      <Animated.View
-        style={[styles.sheet, shadow.sheet, sheetStyle]}
-        onLayout={(e) => {
-          sheetH.value = e.nativeEvent.layout.height;
-        }}
+      <KeyboardAvoidingView
+        style={styles.kav}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <GestureDetector gesture={dragGesture}>
-          <View style={styles.grabZone}>
-            <View style={styles.grab} />
-          </View>
+          <Animated.View
+            style={[styles.sheet, shadow.sheet, sheetStyle]}
+            onLayout={(e) => {
+              sheetH.value = e.nativeEvent.layout.height;
+            }}
+          >
+            <View style={styles.grabZone}>
+              <View style={styles.grab} />
+            </View>
+            {children}
+          </Animated.View>
         </GestureDetector>
-        {children}
-      </Animated.View>
+      </KeyboardAvoidingView>
     </View>
   );
 }
@@ -80,8 +91,9 @@ export function BottomSheet({ visible, onClose, children }: Props) {
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const styles = StyleSheet.create({
-  fill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'flex-end' },
+  fill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   scrim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(20,24,28,0.38)' },
+  kav: { flex: 1, justifyContent: 'flex-end' },
   sheet: {
     backgroundColor: color.bg,
     borderTopLeftRadius: radius.sheetTop,
@@ -90,11 +102,5 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   grabZone: { paddingTop: 8, paddingBottom: 6, alignItems: 'center' },
-  grab: {
-    width: 38,
-    height: 5,
-    borderRadius: 3,
-    backgroundColor: '#E2E5E8',
-  },
+  grab: { width: 38, height: 5, borderRadius: 3, backgroundColor: '#E2E5E8' },
 });
-

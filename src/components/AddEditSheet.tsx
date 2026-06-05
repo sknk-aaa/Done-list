@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { useTags } from '@/data/useData';
 import { Calendar, ChevronDown, Clock } from '@/icons';
@@ -98,7 +98,7 @@ export function AddEditSheet() {
         title={sheet.mode === 'edit' ? t('sheet.editTitle') : t('sheet.addTitle')}
         right={{ label: t('common.save'), onPress: onSave, disabled: !canSave }}
       />
-      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.body}>
+      <View style={styles.body}>
         <TextInput
           style={styles.nameInput}
           placeholder={t('sheet.namePlaceholder')}
@@ -190,7 +190,7 @@ export function AddEditSheet() {
           </Pressable>
         )}
         <View style={styles.bottomPad} />
-      </ScrollView>
+      </View>
     </BottomSheet>
   );
 }
