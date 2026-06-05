@@ -1,5 +1,11 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
+# dev/verification scratch (Playwright web preview)
+.playwright-mcp/
+/daily*.png
+/month*.png
+/snap-*.md
+
 # dependencies
 node_modules/
 

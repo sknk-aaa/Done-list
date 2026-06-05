@@ -45,6 +45,20 @@ export const tagColor: Record<string, string> = {
   学習: color.gold,
 };
 
+/** Preset colors for tag creation (tag-edit swatch row). */
+export const presetColors: string[] = [
+  '#4A90E2', // blue
+  '#48C1A8', // teal
+  '#5FBF6B', // green
+  '#F0934A', // orange
+  '#E6BD4F', // gold
+  '#EF6E9A', // pink
+  '#EF5B52', // red
+  '#8A5CA8', // purple
+  '#5C7CFA', // indigo
+  '#A7ADB3', // gray
+];
+
 /**
  * Month-view chip color is keyed by the recurring task NAME (not the daily tag),
  * matching the approved month design.
