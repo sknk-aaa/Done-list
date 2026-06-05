@@ -4,7 +4,7 @@ import { Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensio
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
-import { Chat, Check, ChevronRight, Compass, PlayCircle, ProSpark, Question, Star } from '@/icons';
+import { Chat, Check, ChevronRight, Compass, ProSpark, Question, Star } from '@/icons';
 import { useAppStore, type SwipeAction } from '@/state/store';
 import { color, font, radius, shadow } from '@/theme/tokens';
 
@@ -97,18 +97,18 @@ export function Drawer() {
 
             <Text style={styles.sectionLabel}>{t('drawer.support')}</Text>
             <View style={styles.card}>
-              <SupportRow icon={<Compass />} label={t('drawer.howto')} onPress={soon} first />
-              <SupportRow icon={<Question />} label={t('drawer.faq')} onPress={soon} />
-              <SupportRow icon={<Chat />} label={t('drawer.report')} onPress={soon} />
-              <SupportRow icon={<Star />} label={t('drawer.review')} onPress={soon} />
               <SupportRow
-                icon={<PlayCircle />}
-                label={t('drawer.replayOnboarding')}
+                icon={<Compass />}
+                label={t('drawer.howto')}
                 onPress={() => {
                   close();
                   setOnboardingOpen(true);
                 }}
+                first
               />
+              <SupportRow icon={<Question />} label={t('drawer.faq')} onPress={soon} />
+              <SupportRow icon={<Chat />} label={t('drawer.report')} onPress={soon} />
+              <SupportRow icon={<Star />} label={t('drawer.review')} onPress={soon} />
             </View>
 
             <Text style={styles.footer}>
