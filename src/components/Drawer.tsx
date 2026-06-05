@@ -1,6 +1,6 @@
 import { type ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
@@ -54,9 +54,8 @@ export function Drawer() {
   if (!mounted) return null;
 
   return (
-    <Modal visible transparent animationType="none" onRequestClose={close} statusBarTranslucent>
-      <View style={styles.fill}>
-        <AnimatedPressable style={[styles.scrim, scrimStyle]} onPress={close} />
+    <View style={styles.fill}>
+      <AnimatedPressable style={[styles.scrim, scrimStyle]} onPress={close} />
         <Animated.View style={[styles.panel, { width: panelW, paddingTop: insets.top }, shadow.popover, panelStyle]}>
           <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
             <View style={styles.appHeader}>
@@ -117,8 +116,7 @@ export function Drawer() {
             <View style={{ height: insets.bottom + 20 }} />
           </ScrollView>
         </Animated.View>
-      </View>
-    </Modal>
+    </View>
   );
 }
 
@@ -135,7 +133,7 @@ function SupportRow({ icon, label, onPress, first }: { icon: ReactNode; label: s
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const styles = StyleSheet.create({
-  fill: { flex: 1, flexDirection: 'row', justifyContent: 'flex-end' },
+  fill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, flexDirection: 'row', justifyContent: 'flex-end' },
   scrim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(20,24,28,0.38)' },
   panel: { backgroundColor: '#F5F6F7' },
   content: { paddingHorizontal: 18, paddingBottom: 20 },

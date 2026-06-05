@@ -43,8 +43,8 @@ export function BottomSheet({ visible, onClose, children }: Props) {
   // Drag the whole sheet down to dismiss (activates only on a downward drag,
   // so taps and text inputs keep working).
   const dragGesture = Gesture.Pan()
-    .activeOffsetY([12, 1000])
-    .failOffsetY([-8, 0])
+    .activeOffsetY([4, 1000])
+    .failOffsetX([-20, 20])
     .onUpdate((e) => {
       dragY.value = Math.max(0, e.translationY);
     })

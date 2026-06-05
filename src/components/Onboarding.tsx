@@ -2,7 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from 'react';
 import {
   Dimensions,
-  Modal,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
   Pressable,
@@ -12,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { ONB } from '@/data/onboarding';
 import { Bell, Check } from '@/icons';
@@ -52,8 +52,7 @@ export function Onboarding() {
   const tx = (ja: string, en: string) => (lang === 'ja' ? ja : en);
 
   return (
-    <Modal visible transparent animationType="fade" statusBarTranslucent>
-      <View style={[styles.screen, { paddingTop: insets.top }]}>
+    <Animated.View entering={FadeIn.duration(200)} style={[styles.screen, { paddingTop: insets.top }]}>
         <Pressable style={styles.langPill} onPress={() => setLang((l) => (l === 'ja' ? 'en' : 'ja'))}>
           <Text style={styles.langText}>{lang === 'ja' ? 'English' : '日本語'}</Text>
         </Pressable>
@@ -96,8 +95,7 @@ export function Onboarding() {
             <Text style={styles.skipText}>{tx('スキップ', 'Skip')}</Text>
           </Pressable>
         </View>
-      </View>
-    </Modal>
+    </Animated.View>
   );
 }
 
@@ -178,7 +176,7 @@ function TimePreview({ lang }: { lang: 'ja' | 'en' }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: color.bg },
+  screen: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: color.bg },
   langPill: {
     position: 'absolute',
     right: 20,
