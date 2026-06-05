@@ -20,14 +20,14 @@ export function FilterSheet() {
   const resetFilter = useAppStore((s) => s.resetFilter);
   const tags = useTags();
 
-  // Model: empty tagIds = all tags shown (all checked). Unchecking narrows to the
-  // remaining set. Matches the approved design (all checked by default).
-  const allIds = tags.map((t) => t.id);
-  const isChecked = (id: number) => filter.tagIds.length === 0 || filter.tagIds.includes(id);
+  // Model: empty tagIds = no tag filter (all shown). Checking a tag narrows the
+  // view to only the checked tags. Nothing is checked by default.
+  const isChecked = (id: number) => filter.tagIds.includes(id);
   const toggleTag = (id: number) => {
-    const current = filter.tagIds.length === 0 ? allIds : filter.tagIds;
-    const next = current.includes(id) ? current.filter((x) => x !== id) : [...current, id];
-    setFilterTags(next.length === allIds.length ? [] : next);
+    const next = filter.tagIds.includes(id)
+      ? filter.tagIds.filter((x) => x !== id)
+      : [...filter.tagIds, id];
+    setFilterTags(next);
   };
 
   const statusSegments: { value: FilterStatus; label: string }[] = [

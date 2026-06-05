@@ -21,6 +21,7 @@ const en = {
     progress: '{{done}}/{{total}} done',
     empty: 'No tasks match the current filters',
     emptyDay: 'Nothing logged for this day yet',
+    emptyDayHint: 'Tap + at the bottom right to add one',
   },
   filter: {
     title: 'Filter',
@@ -66,8 +67,8 @@ const en = {
     showTime: 'Show time',
     swipeTitle: 'Swipe action',
     swipeLabel: 'When swiping left/right',
-    swipeDate: 'Change day',
-    swipeTab: 'Switch tab',
+    swipeDate: 'Move day/month',
+    swipeTab: 'Switch view',
     support: 'Support',
     howto: 'How to use',
     faq: 'FAQ',

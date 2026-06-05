@@ -108,6 +108,16 @@ export function AddEditSheet() {
           maxLength={80}
         />
 
+        <Text style={styles.label}>{t('sheet.memo')}</Text>
+        <TextInput
+          style={[styles.field, styles.memoInput]}
+          placeholder={t('sheet.memoPlaceholder')}
+          placeholderTextColor={color.muted}
+          value={memo}
+          onChangeText={setMemo}
+          multiline
+        />
+
         <View style={styles.labelRow}>
           <Text style={styles.labelInline}>{t('sheet.tag')}</Text>
           <Pressable onPress={() => setTagEditOpen(true)} hitSlop={6}>
@@ -129,6 +139,24 @@ export function AddEditSheet() {
             );
           })}
         </View>
+
+        <Text style={styles.label}>{t('sheet.date')}</Text>
+        <Pressable style={styles.field} onPress={() => setShowCal((v) => !v)}>
+          <Calendar size={20} color="#8A8F94" />
+          <Text style={[styles.fieldText, styles.dateText]}>{formatLong(date, lang, true)}</Text>
+          <ChevronDown size={18} color="#B0B5B9" />
+        </Pressable>
+        {showCal && (
+          <MiniCalendar
+            value={date}
+            todayISO={getTodayISO()}
+            lang={lang}
+            onPick={(iso) => {
+              setDate(iso);
+              setShowCal(false);
+            }}
+          />
+        )}
 
         {showTime && (
           <>
@@ -155,34 +183,6 @@ export function AddEditSheet() {
             )}
           </>
         )}
-
-        <Text style={styles.label}>{t('sheet.date')}</Text>
-        <Pressable style={styles.field} onPress={() => setShowCal((v) => !v)}>
-          <Calendar size={20} color="#8A8F94" />
-          <Text style={[styles.fieldText, styles.dateText]}>{formatLong(date, lang, true)}</Text>
-          <ChevronDown size={18} color="#B0B5B9" />
-        </Pressable>
-        {showCal && (
-          <MiniCalendar
-            value={date}
-            todayISO={getTodayISO()}
-            lang={lang}
-            onPick={(iso) => {
-              setDate(iso);
-              setShowCal(false);
-            }}
-          />
-        )}
-
-        <Text style={styles.label}>{t('sheet.memo')}</Text>
-        <TextInput
-          style={[styles.field, styles.memoInput]}
-          placeholder={t('sheet.memoPlaceholder')}
-          placeholderTextColor={color.muted}
-          value={memo}
-          onChangeText={setMemo}
-          multiline
-        />
 
         {sheet.mode === 'edit' && (
           <Pressable onPress={onDelete} style={styles.delBtn}>

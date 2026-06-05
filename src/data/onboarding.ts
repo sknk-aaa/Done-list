@@ -3,8 +3,8 @@ export type OnbSlide = { ja: [string, string]; en: [string, string] };
 
 export const ONB: OnbSlide[] = [
   {
-    ja: ['やったことを記録しよう', '今日できたことにチェック。小さな積み重ねが、毎日の自信になります。'],
-    en: ['Track what you did', 'Check off what you finished today. Small wins build lasting confidence.'],
+    ja: ['やること / やったことを記録しよう', '今日やることを書き、できたらチェック。小さな積み重ねが、毎日の自信になります。'],
+    en: ['Track your to-dos & done', 'Jot down what to do, then check it off. Small wins build lasting confidence.'],
   },
   {
     ja: ['デイリーと月ビュー', '1日の記録と、月全体の振り返り。タブやスワイプで、いつでも切り替えられます。'],

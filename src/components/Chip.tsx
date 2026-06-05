@@ -2,7 +2,11 @@ import { StyleSheet, Text } from 'react-native';
 
 export function Chip({ label, color, dimmed }: { label: string; color: string; dimmed?: boolean }) {
   return (
-    <Text style={[styles.chip, { backgroundColor: color }, dimmed && styles.dimmed]} numberOfLines={1}>
+    <Text
+      style={[styles.chip, { backgroundColor: color }, dimmed && styles.dimmed]}
+      numberOfLines={1}
+      ellipsizeMode="clip"
+    >
       {label}
     </Text>
   );
@@ -14,7 +18,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     lineHeight: 11,
     borderRadius: 4,
-    paddingVertical: 4.5,
+    paddingVertical: 3,
     paddingHorizontal: 2,
     color: '#fff',
     textAlign: 'center',

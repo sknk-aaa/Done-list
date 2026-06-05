@@ -4,6 +4,7 @@ import {
   Dimensions,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -15,6 +16,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { ONB } from '@/data/onboarding';
 import { Bell, Check } from '@/icons';
+import { ensureNotificationPermission } from '@/lib/notifications';
 import { useAppStore } from '@/state/store';
 import { color, font, radius, shadow } from '@/theme/tokens';
 
@@ -40,12 +42,19 @@ export function Onboarding() {
     setOpen(false);
   };
 
+  // "Get Started": land on home, then ask for notification permission.
+  const complete = () => {
+    finish();
+    if (Platform.OS !== 'web') void ensureNotificationPermission();
+  };
+
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     setIndex(Math.round(e.nativeEvent.contentOffset.x / width));
   };
 
+  const isLast = index >= ONB.length - 1;
   const next = () => {
-    if (index >= ONB.length - 1) finish();
+    if (isLast) complete();
     else scroller?.scrollTo({ x: width * (index + 1), animated: true });
   };
 
@@ -87,13 +96,13 @@ export function Onboarding() {
             ))}
           </View>
           <Pressable style={styles.primary} onPress={next}>
-            <Text style={styles.primaryText}>
-              {index >= ONB.length - 1 ? tx('始める', 'Get Started') : tx('次へ', 'Next')}
-            </Text>
+            <Text style={styles.primaryText}>{isLast ? tx('始める', 'Get Started') : tx('次へ', 'Next')}</Text>
           </Pressable>
-          <Pressable onPress={finish} style={styles.skip}>
-            <Text style={styles.skipText}>{tx('スキップ', 'Skip')}</Text>
-          </Pressable>
+          {!isLast && (
+            <Pressable onPress={finish} style={styles.skip}>
+              <Text style={styles.skipText}>{tx('スキップ', 'Skip')}</Text>
+            </Pressable>
+          )}
         </View>
     </Animated.View>
   );

@@ -23,6 +23,7 @@ const ja: typeof en = {
     progress: '{{done}}/{{total}}完了',
     empty: '条件に合うタスクがありません',
     emptyDay: 'この日の記録はまだありません',
+    emptyDayHint: '右下の＋から記録しましょう',
   },
   filter: {
     title: '絞り込み',
@@ -68,8 +69,8 @@ const ja: typeof en = {
     showTime: '時刻を表示',
     swipeTitle: 'スワイプ操作',
     swipeLabel: '画面を左右にスワイプしたとき',
-    swipeDate: '日付の移動',
-    swipeTab: 'タブ切替',
+    swipeDate: '日付・月の移動',
+    swipeTab: '画面を切替',
     support: 'サポート',
     howto: '使い方',
     faq: 'よくある質問',

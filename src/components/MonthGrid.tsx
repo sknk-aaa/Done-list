@@ -6,7 +6,7 @@ import { color } from '@/theme/tokens';
 import { Chip } from './Chip';
 
 const TAGLESS = '#C8CCD0';
-const MAX_CHIPS = 4;
+const MAX_CHIPS = 5;
 
 export type GridCell = {
   day: number;
@@ -66,14 +66,14 @@ const styles = StyleSheet.create({
     minWidth: 0,
     borderWidth: 0.5,
     borderColor: '#ECEEF0',
-    paddingTop: 6,
-    paddingBottom: 6,
+    paddingTop: 5,
+    paddingBottom: 4,
     paddingHorizontal: 1.5,
-    gap: 4,
+    gap: 2.5,
     overflow: 'hidden',
   },
   cellSelected: { borderWidth: 1.5, borderColor: color.teal, borderRadius: 10, backgroundColor: '#F2FBFA' },
-  dnum: { fontSize: 14, fontWeight: '600', color: '#33383D', lineHeight: 14, paddingLeft: 3, marginBottom: 3 },
+  dnum: { fontSize: 14, fontWeight: '600', color: '#33383D', lineHeight: 14, paddingLeft: 3, marginBottom: 2 },
   sun: { color: color.red },
   outNum: { color: '#C4C8CC' },
   todayPill: {
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(72,193,168,0.18)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 3,
+    marginBottom: 2,
     marginLeft: 1,
   },
   todayNum: { fontSize: 14, fontWeight: '700', color: color.teal, lineHeight: 14 },

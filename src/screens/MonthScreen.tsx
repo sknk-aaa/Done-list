@@ -6,6 +6,7 @@ import { runOnJS } from 'react-native-reanimated';
 
 import { AppHeader, HeaderCaret } from '@/components/AppHeader';
 import { MonthGrid, type GridCell } from '@/components/MonthGrid';
+import { ChevronLeft, ChevronRight } from '@/icons';
 import { useMonthItems } from '@/data/useData';
 import type { ItemWithTag } from '@/db/types';
 import {
@@ -41,15 +42,23 @@ export function MonthScreen() {
   const setSelectedDate = useAppStore((s) => s.setSelectedDate);
   const setView = useAppStore((s) => s.setView);
   const shiftMonth = useAppStore((s) => s.shiftMonth);
+  const swipeAction = useAppStore((s) => s.swipeAction);
 
-  const onSwipeMonth = useCallback((dir: number) => shiftMonth(dir > 0 ? -1 : 1), [shiftMonth]);
+  const onSwipe = useCallback(
+    (dir: number) => {
+      // dir: +1 = swiped right, -1 = swiped left
+      if (swipeAction === 'date') shiftMonth(dir > 0 ? -1 : 1);
+      else if (dir > 0) setView('daily');
+    },
+    [swipeAction, shiftMonth, setView],
+  );
   const pan = Gesture.Pan()
     .activeOffsetX([-15, 15])
     .failOffsetY([-14, 14])
     .onEnd((e) => {
       'worklet';
       if (Math.abs(e.translationX) > 55 && Math.abs(e.translationX) > 1.2 * Math.abs(e.translationY)) {
-        runOnJS(onSwipeMonth)(e.translationX > 0 ? 1 : -1);
+        runOnJS(onSwipe)(e.translationX > 0 ? 1 : -1);
       }
     });
 
@@ -95,10 +104,18 @@ export function MonthScreen() {
   const weekdays = lang === 'ja' ? WEEKDAYS_JA : WEEKDAYS_EN;
 
   const left = (
-    <Pressable style={styles.ym} onPress={() => openDatePop('month')} hitSlop={6}>
-      <Text style={styles.ymText}>{ymLabel}</Text>
-      <HeaderCaret />
-    </Pressable>
+    <View style={styles.ymBar}>
+      <Pressable onPress={() => shiftMonth(-1)} hitSlop={8} style={styles.arrow}>
+        <ChevronLeft size={22} color="#8A8F94" strokeWidth={2.4} />
+      </Pressable>
+      <Pressable style={styles.ym} onPress={() => openDatePop('month')} hitSlop={6}>
+        <Text style={styles.ymText}>{ymLabel}</Text>
+        <HeaderCaret />
+      </Pressable>
+      <Pressable onPress={() => shiftMonth(1)} hitSlop={8} style={styles.arrow}>
+        <ChevronRight size={22} color="#8A8F94" strokeWidth={2.4} />
+      </Pressable>
+    </View>
   );
 
   const onDayPress = (cell: GridCell) => {
@@ -130,7 +147,9 @@ export function MonthScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: color.bg },
-  ym: { flexDirection: 'row', alignItems: 'center' },
+  ymBar: { flexDirection: 'row', alignItems: 'center', gap: 2 },
+  arrow: { padding: 2 },
+  ym: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 4 },
   ymText: { fontSize: font.size.h2, fontWeight: '600', color: '#565B60' },
   dow: { flexDirection: 'row', paddingHorizontal: 12, paddingTop: 2, paddingBottom: 8 },
   dowText: { flex: 1, textAlign: 'center', fontSize: 15, color: '#8A8F94' },

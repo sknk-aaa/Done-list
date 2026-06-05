@@ -7,6 +7,7 @@ import { runOnJS } from 'react-native-reanimated';
 import { AppHeader, HeaderCaret } from '@/components/AppHeader';
 import { Fab } from '@/components/Fab';
 import { TaskRow } from '@/components/TaskRow';
+import { Plus } from '@/icons';
 import { useDailyItems } from '@/data/useData';
 import { formatLong, getTodayISO } from '@/lib/date';
 import { matchesFilter } from '@/lib/filter';
@@ -109,6 +110,7 @@ export function DailyScreen() {
       <FlatList
         data={visible}
         keyExtractor={(it) => String(it.id)}
+        style={styles.list}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
         ItemSeparatorComponent={() => <View style={styles.sep} />}
@@ -121,9 +123,19 @@ export function DailyScreen() {
           />
         )}
         ListEmptyComponent={
-          <View style={styles.empty}>
-            <Text style={styles.emptyText}>{active ? t('daily.empty') : t('daily.emptyDay')}</Text>
-          </View>
+          active ? (
+            <View style={styles.empty}>
+              <Text style={styles.emptyText}>{t('daily.empty')}</Text>
+            </View>
+          ) : (
+            <View style={styles.empty}>
+              <View style={styles.emptyIcon}>
+                <Plus size={30} color={color.teal} strokeWidth={2.4} />
+              </View>
+              <Text style={styles.emptyTitle}>{t('daily.emptyDay')}</Text>
+              <Text style={styles.emptyHint}>{t('daily.emptyDayHint')}</Text>
+            </View>
+          )
         }
       />
 
@@ -157,8 +169,20 @@ const styles = StyleSheet.create({
   filterBarText: { flex: 1, fontSize: 13, fontWeight: '600', color: '#0F8A7C' },
   filterClear: { fontSize: 13, fontWeight: '700', color: color.teal, marginLeft: 12 },
 
+  list: { flex: 1, backgroundColor: color.bgSoft },
   listContent: { paddingHorizontal: space.screenX, flexGrow: 1 },
   sep: { height: StyleSheet.hairlineWidth, backgroundColor: color.line },
-  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 120 },
+  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 100, paddingHorizontal: 40 },
+  emptyIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: color.tealTint,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 18,
+  },
+  emptyTitle: { fontSize: 16, fontWeight: '600', color: '#8A9097', marginBottom: 6 },
+  emptyHint: { fontSize: 14, color: '#B4B9BD', textAlign: 'center' },
   emptyText: { fontSize: 15, color: '#B4B9BD' },
 });
