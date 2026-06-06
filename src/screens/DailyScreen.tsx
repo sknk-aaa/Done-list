@@ -253,9 +253,10 @@ export function DailyScreen() {
           keyExtractor={(i) => String(i)}
           getItemLayout={(_, index) => ({ length: width, offset: width * index, index })}
           initialScrollIndex={indexForDate(selectedDate)}
-          windowSize={3}
+          windowSize={5}
           initialNumToRender={1}
-          maxToRenderPerBatch={2}
+          maxToRenderPerBatch={3}
+          removeClippedSubviews={false}
           onMomentumScrollEnd={onMomentumEnd}
           onScrollToIndexFailed={() => {}}
           renderItem={({ item }) => <DayPage date={dateForIndex(item)} width={width} height={areaH} />}
