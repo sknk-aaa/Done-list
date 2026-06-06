@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
@@ -28,15 +28,35 @@ import { matchesFilter } from '@/lib/filter';
 import { isFilterActive, useAppStore } from '@/state/store';
 import { color, font } from '@/theme/tokens';
 
+const EASE = Easing.out(Easing.cubic);
+const DURATION = 300;
+
 function chunk<T>(arr: T[], n: number): T[][] {
   const out: T[][] = [];
   for (let i = 0; i < arr.length; i += n) out.push(arr.slice(i, i + n));
   return out;
 }
 
+function addMonth(y: number, m0: number, delta: number) {
+  const t = y * 12 + m0 + delta;
+  return { y: Math.floor(t / 12), m0: ((t % 12) + 12) % 12 };
+}
+
+function monthMeta(y: number, m0: number) {
+  const first = firstWeekday(y, m0);
+  const dim = daysInMonth(y, m0);
+  const total = first + dim;
+  const tail = (7 - (total % 7)) % 7;
+  const cellCount = total + tail;
+  const startISO = dateToISO(new Date(y, m0, 1 - first));
+  const endISO = dateToISO(new Date(y, m0, dim + tail));
+  return { first, cellCount, startISO, endISO };
+}
+
 export function MonthScreen() {
   const { i18n } = useTranslation();
   const lang = i18n.language === 'ja' ? 'ja' : 'en';
+  const { width } = useWindowDimensions();
 
   const viewYear = useAppStore((s) => s.viewYear);
   const viewMonth = useAppStore((s) => s.viewMonth);
@@ -50,61 +70,13 @@ export function MonthScreen() {
   const shiftMonth = useAppStore((s) => s.shiftMonth);
   const swipeAction = useAppStore((s) => s.swipeAction);
 
-  // Direction-aware slide+fade when the month changes.
-  const dirRef = useRef(0);
-  const gridX = useSharedValue(0);
-  const gridOpacity = useSharedValue(1);
-  useEffect(() => {
-    const d = dirRef.current;
-    gridX.value = d > 0 ? 40 : d < 0 ? -40 : 0;
-    gridOpacity.value = 0;
-    gridX.value = withTiming(0, { duration: 520, easing: Easing.out(Easing.cubic) });
-    gridOpacity.value = withTiming(1, { duration: 520, easing: Easing.out(Easing.cubic) });
-  }, [viewYear, viewMonth, gridX, gridOpacity]);
-  const gridStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: gridX.value }],
-    opacity: gridOpacity.value,
-  }));
+  // Three panels (prev / current / next) for a finger-following carousel.
+  const metas = [-1, 0, 1].map((off) => {
+    const { y, m0 } = addMonth(viewYear, viewMonth, off);
+    return { off, y, m0, ...monthMeta(y, m0) };
+  });
 
-  const goMonth = useCallback(
-    (delta: number) => {
-      dirRef.current = delta;
-      shiftMonth(delta);
-    },
-    [shiftMonth],
-  );
-
-  const onSwipe = useCallback(
-    (dir: number) => {
-      // dir: +1 = swiped right (previous month), -1 = swiped left (next month)
-      if (swipeAction === 'date') goMonth(dir > 0 ? -1 : 1);
-      else if (dir > 0) setView('daily');
-    },
-    [swipeAction, goMonth, setView],
-  );
-  const pan = Gesture.Pan()
-    .activeOffsetX([-10, 10])
-    .failOffsetY([-22, 22])
-    .onEnd((e) => {
-      'worklet';
-      if (Math.abs(e.translationX) > 32 && Math.abs(e.translationX) > Math.abs(e.translationY)) {
-        runOnJS(onSwipe)(e.translationX > 0 ? 1 : -1);
-      }
-    });
-
-  const first = firstWeekday(viewYear, viewMonth);
-  const dim = daysInMonth(viewYear, viewMonth);
-  const total = first + dim;
-  const tail = (7 - (total % 7)) % 7;
-  const cellCount = total + tail;
-
-  const startDate = new Date(viewYear, viewMonth, 1 - first);
-  const lastDate = new Date(viewYear, viewMonth, dim + tail);
-  const startISO = dateToISO(startDate);
-  const endISO = dateToISO(lastDate);
-
-  const rangeItems = useMonthItems(startISO, endISO);
-
+  const rangeItems = useMonthItems(metas[0].startISO, metas[2].endISO);
   const byDay = new Map<string, ItemWithTag[]>();
   for (const it of rangeItems) {
     if (!matchesFilter(it, filter)) continue;
@@ -114,21 +86,74 @@ export function MonthScreen() {
   }
 
   const todayISO = getTodayISO();
-  const cells: GridCell[] = [];
-  for (let i = 0; i < cellCount; i++) {
-    const dt = new Date(viewYear, viewMonth, 1 - first + i);
-    const iso = dateToISO(dt);
-    const out = dt.getMonth() !== viewMonth;
-    cells.push({
-      day: dt.getDate(),
-      out,
-      iso,
-      items: byDay.get(iso) ?? [],
-      isToday: iso === todayISO,
-      isSelected: iso === selectedDate && !out,
+  const buildCells = (y: number, m0: number, first: number, cellCount: number): GridCell[] => {
+    const cells: GridCell[] = [];
+    for (let i = 0; i < cellCount; i++) {
+      const dt = new Date(y, m0, 1 - first + i);
+      const iso = dateToISO(dt);
+      const out = dt.getMonth() !== m0;
+      cells.push({
+        day: dt.getDate(),
+        out,
+        iso,
+        items: byDay.get(iso) ?? [],
+        isToday: iso === todayISO,
+        isSelected: iso === selectedDate && !out,
+      });
+    }
+    return cells;
+  };
+  const panels = metas.map((mm) => ({
+    key: `${mm.y}-${mm.m0}`,
+    weeks: chunk(buildCells(mm.y, mm.m0, mm.first, mm.cellCount), 7),
+  }));
+
+  const tx = useSharedValue(0);
+  const trackStyle = useAnimatedStyle(() => ({ transform: [{ translateX: -width + tx.value }] }));
+
+  const commit = useCallback(
+    (delta: number) => {
+      shiftMonth(delta);
+      tx.value = 0;
+    },
+    [shiftMonth, tx],
+  );
+
+  const go = useCallback(
+    (delta: number) => {
+      tx.value = withTiming(delta > 0 ? -width : width, { duration: DURATION, easing: EASE }, (fin) => {
+        if (fin) runOnJS(commit)(delta);
+      });
+    },
+    [commit, tx, width],
+  );
+
+  const pan = Gesture.Pan()
+    .activeOffsetX([-10, 10])
+    .failOffsetY([-22, 22])
+    .onUpdate((e) => {
+      'worklet';
+      if (swipeAction === 'date') tx.value = e.translationX;
+    })
+    .onEnd((e) => {
+      'worklet';
+      if (swipeAction !== 'date') {
+        if (e.translationX > 40) runOnJS(setView)('daily');
+        return;
+      }
+      const th = width * 0.22;
+      if (e.translationX < -th || e.velocityX < -600) {
+        tx.value = withTiming(-width, { duration: DURATION, easing: EASE }, (f) => {
+          if (f) runOnJS(commit)(1);
+        });
+      } else if (e.translationX > th || e.velocityX > 600) {
+        tx.value = withTiming(width, { duration: DURATION, easing: EASE }, (f) => {
+          if (f) runOnJS(commit)(-1);
+        });
+      } else {
+        tx.value = withTiming(0, { duration: DURATION, easing: EASE });
+      }
     });
-  }
-  const weeks = chunk(cells, 7);
 
   const ymLabel = lang === 'ja' ? `${viewYear} / ${viewMonth + 1}月` : `${MONTHS_EN[viewMonth]} ${viewYear}`;
   const weekdays = lang === 'ja' ? WEEKDAYS_JA : WEEKDAYS_EN;
@@ -136,7 +161,7 @@ export function MonthScreen() {
   const left = (
     <View style={styles.ymBar}>
       <Pressable
-        onPress={() => goMonth(-1)}
+        onPress={() => go(-1)}
         hitSlop={16}
         style={({ pressed }) => [styles.arrow, pressed && styles.arrowPressed]}
       >
@@ -147,7 +172,7 @@ export function MonthScreen() {
         <HeaderCaret />
       </Pressable>
       <Pressable
-        onPress={() => goMonth(1)}
+        onPress={() => go(1)}
         hitSlop={16}
         style={({ pressed }) => [styles.arrow, pressed && styles.arrowPressed]}
       >
@@ -177,9 +202,15 @@ export function MonthScreen() {
             </Text>
           ))}
         </View>
-        <Animated.View style={[styles.gridWrap, gridStyle]}>
-          <MonthGrid weeks={weeks} filterActive={isFilterActive(filter)} onDayPress={onDayPress} />
-        </Animated.View>
+        <View style={styles.clip}>
+          <Animated.View style={[styles.track, { width: width * 3 }, trackStyle]}>
+            {panels.map((p) => (
+              <View key={p.key} style={[styles.panel, { width }]}>
+                <MonthGrid weeks={p.weeks} filterActive={isFilterActive(filter)} onDayPress={onDayPress} />
+              </View>
+            ))}
+          </Animated.View>
+        </View>
       </View>
     </GestureDetector>
   );
@@ -190,7 +221,9 @@ const styles = StyleSheet.create({
   ymBar: { flexDirection: 'row', alignItems: 'center' },
   arrow: { paddingVertical: 6, paddingHorizontal: 6, borderRadius: 10 },
   arrowPressed: { backgroundColor: color.bgSoft },
-  gridWrap: { flex: 1 },
+  clip: { flex: 1, overflow: 'hidden' },
+  track: { flexDirection: 'row', flexGrow: 1 },
+  panel: { height: '100%' },
   ym: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18 },
   ymText: { fontSize: font.size.h2, fontWeight: '600', color: '#565B60' },
   dow: { flexDirection: 'row', paddingHorizontal: 12, paddingTop: 2, paddingBottom: 8 },
