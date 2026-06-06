@@ -1,10 +1,10 @@
 import { type ReactNode, useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Linking, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Image, Linking, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
-import { Chat, Check, ChevronRight, Compass, ProSpark, Question, Star } from '@/icons';
+import { Chat, ChevronRight, Compass, ProSpark, Question, Star } from '@/icons';
 import { purchasePro, purchasesAvailable, restorePro } from '@/lib/purchases';
 import { useAppStore, type SwipeAction } from '@/state/store';
 import { font, radius, shadow } from '@/theme/tokens';
@@ -13,6 +13,7 @@ import { useColors, type Colors } from '@/theme/theme';
 import { Segmented } from './Segmented';
 import { Switch } from './Switch';
 
+const APP_ICON = require('../../icon.png');
 const EASE = Easing.bezier(0.4, 0, 0.2, 1);
 const SITE = 'https://sknk-aaa.github.io/Done-list';
 const FAQ_URL = `${SITE}/faq.html`;
@@ -87,11 +88,15 @@ export function Drawer() {
         <Animated.View style={[styles.panel, { width: panelW, paddingTop: insets.top }, shadow.popover, panelStyle]}>
           <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
             <View style={styles.appHeader}>
-              <View style={styles.appIcon}>
-                <Check size={22} color="#fff" strokeWidth={3} />
+              <Image source={APP_ICON} style={styles.appIcon} />
+              <View style={styles.appHeaderText}>
+                <Text style={styles.appName}>{t('app.name')}</Text>
+                <View style={[styles.planPill, isPro && styles.planPillPro]}>
+                  <Text style={[styles.planPillText, isPro && styles.planPillTextPro]}>
+                    {isPro ? t('drawer.planPro') : t('drawer.planFree')}
+                  </Text>
+                </View>
               </View>
-              <Text style={styles.appName}>{t('app.name')}</Text>
-              <Text style={styles.plan}>{isPro ? t('drawer.planPro') : t('drawer.planFree')}</Text>
             </View>
 
             {!isPro && (
@@ -203,18 +208,22 @@ const makeStyles = (c: Colors) => StyleSheet.create({
   scrim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(20,24,28,0.38)' },
   panel: { backgroundColor: c.bgSoft },
   content: { paddingHorizontal: 18, paddingBottom: 20 },
-  appHeader: { paddingTop: 48, paddingBottom: 14, alignItems: 'flex-start' },
-  appIcon: {
-    width: 52,
-    height: 52,
-    borderRadius: 14,
-    backgroundColor: c.teal,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
+  appHeader: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingTop: 46, paddingBottom: 18 },
+  appIcon: { width: 56, height: 56, borderRadius: 15, ...shadow.card },
+  appHeaderText: { flex: 1 },
+  appName: { fontSize: 22, fontWeight: '800', color: c.ink, letterSpacing: 0.2 },
+  planPill: {
+    alignSelf: 'flex-start',
+    marginTop: 5,
+    paddingHorizontal: 9,
+    paddingVertical: 2,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: c.divider,
   },
-  appName: { fontSize: font.size.h1, fontWeight: '700', color: c.ink },
-  plan: { fontSize: font.size.caption, color: c.muted, marginTop: 2 },
+  planPillPro: { backgroundColor: c.tealTint, borderColor: 'transparent' },
+  planPillText: { fontSize: 11, fontWeight: '700', color: c.muted, letterSpacing: 0.3 },
+  planPillTextPro: { color: c.teal },
 
   card: { backgroundColor: c.bg, borderRadius: radius.card, ...shadow.card, marginBottom: 6 },
   divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: c.divider },
