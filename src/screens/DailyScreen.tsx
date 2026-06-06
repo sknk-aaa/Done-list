@@ -1,15 +1,6 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  type NativeScrollEvent,
-  type NativeSyntheticEvent,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  useWindowDimensions,
-} from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { runOnJS } from 'react-native-reanimated';
 import ReorderableList, {
@@ -30,7 +21,83 @@ import { isFilterActive, useAppStore } from '@/state/store';
 import { color, font, space } from '@/theme/tokens';
 
 const ts = (v: unknown): number => (v instanceof Date ? v.getTime() : typeof v === 'number' ? v : 0);
-const noop = () => {};
+const DAY_MS = 86400000;
+const RANGE = 600; // pages span anchor ± RANGE days
+
+const isoToUTC = (iso: string) => {
+  const [y, m, d] = iso.split('-').map(Number);
+  return Date.UTC(y, m - 1, d);
+};
+const diffDays = (aISO: string, bISO: string) => Math.round((isoToUTC(bISO) - isoToUTC(aISO)) / DAY_MS);
+
+/** One day's task list — self-contained so paging never swaps data under it. */
+function DayPage({ date, width }: { date: string; width: number }) {
+  const { t } = useTranslation();
+  const showTime = useAppStore((s) => s.showTime);
+  const filter = useAppStore((s) => s.filter);
+  const openEditSheet = useAppStore((s) => s.openEditSheet);
+
+  const all = useDailyItems(date);
+  const visible = useMemo(() => all.filter((it) => matchesFilter(it, filter)), [all, filter]);
+  const active = isFilterActive(filter);
+
+  // Optimistic order for instant drag feedback; synced during render.
+  const sig = visible.map((i) => `${i.id}:${i.sortOrder}:${i.isCompleted ? 1 : 0}:${ts(i.updatedAt)}`).join('|');
+  const [rows, setRows] = useState<ItemWithTag[]>(visible);
+  const sigRef = useRef(sig);
+  if (sigRef.current !== sig) {
+    sigRef.current = sig;
+    setRows(visible);
+  }
+
+  const dragPan = useMemo(() => Gesture.Pan().activeOffsetY([-10, 10]), []);
+  const onReorder = ({ from, to }: ReorderableListReorderEvent) => {
+    const next = arrayReorder(rows, from, to);
+    setRows(next);
+    void reorderTasks(next.map((i) => i.id));
+  };
+
+  return (
+    <View style={{ width }}>
+      <ReorderableList
+        data={rows}
+        keyExtractor={(it) => String(it.id)}
+        style={styles.list}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+        scrollEnabled={false}
+        dragEnabled={!active}
+        panGesture={dragPan}
+        onReorder={onReorder}
+        ItemSeparatorComponent={() => <View style={styles.sep} />}
+        renderItem={({ item }) => (
+          <TaskRow
+            item={item}
+            showTime={showTime}
+            draggable={!active}
+            onToggle={() => setComplete(item, !item.isCompleted)}
+            onPress={() => openEditSheet(item)}
+          />
+        )}
+        ListEmptyComponent={
+          <View style={styles.empty}>
+            {active ? (
+              <Text style={styles.emptyText}>{t('daily.empty')}</Text>
+            ) : (
+              <>
+                <View style={styles.emptyIcon}>
+                  <Pencil size={28} color={color.teal} strokeWidth={2} />
+                </View>
+                <Text style={styles.emptyTitle}>{t('daily.emptyDay')}</Text>
+                <Text style={styles.emptyHint}>{t('daily.emptyDayHint')}</Text>
+              </>
+            )}
+          </View>
+        }
+      />
+    </View>
+  );
+}
 
 export function DailyScreen() {
   const { t, i18n } = useTranslation();
@@ -38,68 +105,45 @@ export function DailyScreen() {
   const { width } = useWindowDimensions();
 
   const selectedDate = useAppStore((s) => s.selectedDate);
-  const showTime = useAppStore((s) => s.showTime);
   const filter = useAppStore((s) => s.filter);
   const openAddSheet = useAppStore((s) => s.openAddSheet);
-  const openEditSheet = useAppStore((s) => s.openEditSheet);
   const setFilterOpen = useAppStore((s) => s.setFilterOpen);
   const setDrawerOpen = useAppStore((s) => s.setDrawerOpen);
   const openDatePop = useAppStore((s) => s.openDatePop);
   const goToday = useAppStore((s) => s.goToday);
   const resetFilter = useAppStore((s) => s.resetFilter);
   const swipeAction = useAppStore((s) => s.swipeAction);
-  const shiftDay = useAppStore((s) => s.shiftDay);
+  const setSelectedDate = useAppStore((s) => s.setSelectedDate);
   const setView = useAppStore((s) => s.setView);
 
-  const prevDate = addDaysISO(selectedDate, -1);
-  const nextDate = addDaysISO(selectedDate, 1);
-  const prevAll = useDailyItems(prevDate);
-  const curAll = useDailyItems(selectedDate);
-  const nextAll = useDailyItems(nextDate);
+  const anchor = useRef(getTodayISO()).current;
+  const dateForIndex = useCallback((i: number) => addDaysISO(anchor, i - RANGE), [anchor]);
+  const indexForDate = useCallback((d: string) => diffDays(anchor, d) + RANGE, [anchor]);
 
-  const curVisible = useMemo(() => curAll.filter((it) => matchesFilter(it, filter)), [curAll, filter]);
-  const prevVisible = prevAll.filter((it) => matchesFilter(it, filter));
-  const nextVisible = nextAll.filter((it) => matchesFilter(it, filter));
-  const doneCount = curVisible.filter((it) => it.isCompleted).length;
+  const listRef = useRef<FlatList<number>>(null);
+  const indices = useMemo(() => Array.from({ length: RANGE * 2 + 1 }, (_, i) => i), []);
+  const curIndexRef = useRef(indexForDate(selectedDate));
 
-  const isToday = selectedDate === getTodayISO();
-  const active = isFilterActive(filter);
+  // External date changes (header tap / today / month) → scroll to that day.
+  useEffect(() => {
+    const idx = indexForDate(selectedDate);
+    if (idx !== curIndexRef.current) {
+      curIndexRef.current = idx;
+      listRef.current?.scrollToIndex({ index: idx, animated: true });
+    }
+  }, [selectedDate, indexForDate]);
 
-  // Optimistic copy of the centre day so a drag-drop shows instantly. Sync it
-  // DURING render (not in an effect) so a day change doesn't leave the previous
-  // day's tasks on screen for a frame.
-  const sig = curVisible.map((i) => `${i.id}:${i.sortOrder}:${i.isCompleted ? 1 : 0}:${ts(i.updatedAt)}`).join('|');
-  const [rows, setRows] = useState<ItemWithTag[]>(curVisible);
-  const sigRef = useRef(sig);
-  if (sigRef.current !== sig) {
-    sigRef.current = sig;
-    setRows(curVisible);
-  }
-
-  const handleReorder = ({ from, to }: ReorderableListReorderEvent) => {
-    const next = arrayReorder(rows, from, to);
-    setRows(next);
-    void reorderTasks(next.map((i) => i.id));
-  };
-
-  // Drag is vertical-only so horizontal paging / view-swipe pass through.
-  const dragPan = useMemo(() => Gesture.Pan().activeOffsetY([-10, 10]), []);
-
-  // ── day carousel (swipeAction === 'date') ──
-  const scrollRef = useRef<ScrollView>(null);
-  const [areaH, setAreaH] = useState(0);
-  const recenter = useCallback(() => scrollRef.current?.scrollTo({ x: width, animated: false }), [width]);
   const onMomentumEnd = useCallback(
-    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const page = Math.round(e.nativeEvent.contentOffset.x / width);
-      if (page === 1) return;
-      shiftDay(page - 1);
-      recenter();
+    (e: { nativeEvent: { contentOffset: { x: number } } }) => {
+      const idx = Math.round(e.nativeEvent.contentOffset.x / width);
+      curIndexRef.current = idx;
+      const d = dateForIndex(idx);
+      if (d !== selectedDate) setSelectedDate(d);
     },
-    [width, shiftDay, recenter],
+    [width, dateForIndex, selectedDate, setSelectedDate],
   );
 
-  // ── view-switch swipe (swipeAction === 'tab') ──
+  // tab mode: horizontal swipe switches to the month view.
   const viewPan = Gesture.Pan()
     .activeOffsetX([-10, 10])
     .failOffsetY([-22, 22])
@@ -109,6 +153,13 @@ export function DailyScreen() {
         runOnJS(setView)('month');
       }
     });
+
+  // header counts use the current day.
+  const curAll = useDailyItems(selectedDate);
+  const curVisible = useMemo(() => curAll.filter((it) => matchesFilter(it, filter)), [curAll, filter]);
+  const doneCount = curVisible.filter((it) => it.isCompleted).length;
+  const isToday = selectedDate === getTodayISO();
+  const active = isFilterActive(filter);
 
   const left = (
     <Pressable style={styles.dhead} onPress={() => openDatePop('daily')} hitSlop={6}>
@@ -137,47 +188,6 @@ export function DailyScreen() {
   if (filter.status === 'todo') filterParts.push(t('filter.todoOnly'));
   if (filter.tagIds.length > 0) filterParts.push(t('filter.tagCount', { count: filter.tagIds.length }));
 
-  const empty = (
-    <View style={styles.empty}>
-      {active ? (
-        <Text style={styles.emptyText}>{t('daily.empty')}</Text>
-      ) : (
-        <>
-          <View style={styles.emptyIcon}>
-            <Pencil size={28} color={color.teal} strokeWidth={2} />
-          </View>
-          <Text style={styles.emptyTitle}>{t('daily.emptyDay')}</Text>
-          <Text style={styles.emptyHint}>{t('daily.emptyDayHint')}</Text>
-        </>
-      )}
-    </View>
-  );
-
-  const renderList = (items: ItemWithTag[], draggable: boolean, onReorder: (e: ReorderableListReorderEvent) => void) => (
-    <ReorderableList
-      data={items}
-      keyExtractor={(it) => String(it.id)}
-      style={styles.list}
-      contentContainerStyle={styles.listContent}
-      showsVerticalScrollIndicator={false}
-      scrollEnabled={false}
-      dragEnabled={draggable}
-      panGesture={draggable ? dragPan : undefined}
-      onReorder={onReorder}
-      ItemSeparatorComponent={() => <View style={styles.sep} />}
-      renderItem={({ item }) => (
-        <TaskRow
-          item={item}
-          showTime={showTime}
-          draggable={draggable}
-          onToggle={() => setComplete(item, !item.isCompleted)}
-          onPress={() => openEditSheet(item)}
-        />
-      )}
-      ListEmptyComponent={empty}
-    />
-  );
-
   const header = (
     <>
       <AppHeader
@@ -200,37 +210,40 @@ export function DailyScreen() {
     </>
   );
 
-  // ── tab mode: single list, horizontal swipe switches to month ──
   if (swipeAction !== 'date') {
     return (
       <GestureDetector gesture={viewPan}>
         <View style={styles.screen}>
           {header}
-          <View style={styles.listWrap}>{renderList(rows, !active, handleReorder)}</View>
+          <View style={styles.listWrap}>
+            <DayPage date={selectedDate} width={width} />
+          </View>
           <Fab onPress={() => openAddSheet()} />
         </View>
       </GestureDetector>
     );
   }
 
-  // ── date mode: day carousel (prev / current / next) ──
   return (
     <View style={styles.screen}>
       {header}
-      <View style={styles.clip} onLayout={(e) => setAreaH(e.nativeEvent.layout.height)}>
-        <ScrollView
-          ref={scrollRef}
+      <View style={styles.listWrap}>
+        <FlatList
+          ref={listRef}
+          data={indices}
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
-          contentOffset={{ x: width, y: 0 }}
+          keyExtractor={(i) => String(i)}
+          getItemLayout={(_, index) => ({ length: width, offset: width * index, index })}
+          initialScrollIndex={indexForDate(selectedDate)}
+          windowSize={3}
+          initialNumToRender={1}
+          maxToRenderPerBatch={2}
           onMomentumScrollEnd={onMomentumEnd}
-          onLayout={recenter}
-        >
-          <View style={{ width, height: areaH }}>{renderList(prevVisible, false, noop)}</View>
-          <View style={{ width, height: areaH }}>{renderList(rows, !active, handleReorder)}</View>
-          <View style={{ width, height: areaH }}>{renderList(nextVisible, false, noop)}</View>
-        </ScrollView>
+          onScrollToIndexFailed={() => {}}
+          renderItem={({ item }) => <DayPage date={dateForIndex(item)} width={width} />}
+        />
       </View>
       <Fab onPress={() => openAddSheet()} />
     </View>
@@ -262,7 +275,6 @@ const styles = StyleSheet.create({
   filterBarText: { flex: 1, fontSize: 13, fontWeight: '600', color: '#0F8A7C' },
   filterClear: { fontSize: 13, fontWeight: '700', color: color.teal, marginLeft: 12 },
 
-  clip: { flex: 1 },
   listWrap: { flex: 1 },
   list: { flex: 1, backgroundColor: color.bgSoft },
   listContent: { paddingHorizontal: space.screenX, flexGrow: 1 },
