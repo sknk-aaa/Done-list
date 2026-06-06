@@ -14,7 +14,7 @@
     "android": {
       "package": "com.sknk.todone",
       "adaptiveIcon": {
-        "backgroundColor": "#05AEA9",
+        "backgroundColor": "#48C1A8",
         "foregroundImage": "./icon.png"
       },
       "predictiveBackGestureEnabled": false
@@ -28,7 +28,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#05AEA9",
+          "backgroundColor": "#48C1A8",
           "image": "./icon.png",
           "imageWidth": 200
         }
