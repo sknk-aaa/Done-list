@@ -31,15 +31,17 @@ const isoToUTC = (iso: string) => {
 const diffDays = (aISO: string, bISO: string) => Math.round((isoToUTC(bISO) - isoToUTC(aISO)) / DAY_MS);
 
 /** One day's task list — self-contained so paging never swaps data under it. */
-function DayPage({ date, width }: { date: string; width: number }) {
+function DayPage({ date, width, height }: { date: string; width: number; height: number }) {
   const { t } = useTranslation();
   const showTime = useAppStore((s) => s.showTime);
   const filter = useAppStore((s) => s.filter);
   const openEditSheet = useAppStore((s) => s.openEditSheet);
+  const goToday = useAppStore((s) => s.goToday);
 
   const all = useDailyItems(date);
   const visible = useMemo(() => all.filter((it) => matchesFilter(it, filter)), [all, filter]);
   const active = isFilterActive(filter);
+  const isToday = date === getTodayISO();
 
   // Optimistic order for instant drag feedback; synced during render.
   const sig = visible.map((i) => `${i.id}:${i.sortOrder}:${i.isCompleted ? 1 : 0}:${ts(i.updatedAt)}`).join('|');
@@ -58,14 +60,14 @@ function DayPage({ date, width }: { date: string; width: number }) {
   };
 
   return (
-    <View style={{ width }}>
+    <View style={{ width, height }}>
       <ReorderableList
         data={rows}
         keyExtractor={(it) => String(it.id)}
         style={styles.list}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
-        scrollEnabled={false}
+        scrollEnabled={rows.length > 8}
         dragEnabled={!active}
         panGesture={dragPan}
         onReorder={onReorder}
@@ -79,6 +81,14 @@ function DayPage({ date, width }: { date: string; width: number }) {
             onPress={() => openEditSheet(item)}
           />
         )}
+        ListFooterComponent={
+          !isToday && rows.length > 0 ? (
+            <Pressable style={styles.todayBtn} onPress={goToday}>
+              <Undo size={15} color={color.teal} strokeWidth={2.4} />
+              <Text style={styles.todayBtnText}>{t('daily.backToToday')}</Text>
+            </Pressable>
+          ) : null
+        }
         ListEmptyComponent={
           <View style={styles.empty}>
             {active ? (
@@ -123,6 +133,7 @@ export function DailyScreen() {
   const listRef = useRef<FlatList<number>>(null);
   const indices = useMemo(() => Array.from({ length: RANGE * 2 + 1 }, (_, i) => i), []);
   const curIndexRef = useRef(indexForDate(selectedDate));
+  const [areaH, setAreaH] = useState(0);
 
   // External date changes (header tap / today / month) → scroll to that day.
   useEffect(() => {
@@ -215,8 +226,8 @@ export function DailyScreen() {
       <GestureDetector gesture={viewPan}>
         <View style={styles.screen}>
           {header}
-          <View style={styles.listWrap}>
-            <DayPage date={selectedDate} width={width} />
+          <View style={styles.listWrap} onLayout={(e) => setAreaH(e.nativeEvent.layout.height)}>
+            <DayPage date={selectedDate} width={width} height={areaH} />
           </View>
           <Fab onPress={() => openAddSheet()} />
         </View>
@@ -227,7 +238,7 @@ export function DailyScreen() {
   return (
     <View style={styles.screen}>
       {header}
-      <View style={styles.listWrap}>
+      <View style={styles.listWrap} onLayout={(e) => setAreaH(e.nativeEvent.layout.height)}>
         <FlatList
           ref={listRef}
           data={indices}
@@ -242,7 +253,7 @@ export function DailyScreen() {
           maxToRenderPerBatch={2}
           onMomentumScrollEnd={onMomentumEnd}
           onScrollToIndexFailed={() => {}}
-          renderItem={({ item }) => <DayPage date={dateForIndex(item)} width={width} />}
+          renderItem={({ item }) => <DayPage date={dateForIndex(item)} width={width} height={areaH} />}
         />
       </View>
       <Fab onPress={() => openAddSheet()} />
@@ -279,6 +290,19 @@ const styles = StyleSheet.create({
   list: { flex: 1, backgroundColor: color.bgSoft },
   listContent: { paddingHorizontal: space.screenX, flexGrow: 1 },
   sep: { height: StyleSheet.hairlineWidth, backgroundColor: color.line },
+  todayBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'center',
+    gap: 6,
+    marginTop: 22,
+    marginBottom: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 999,
+    backgroundColor: color.tealTint,
+  },
+  todayBtnText: { fontSize: font.size.body, fontWeight: '700', color: color.teal },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 96, paddingHorizontal: 40 },
   emptyIcon: {
     width: 64,

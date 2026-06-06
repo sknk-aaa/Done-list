@@ -10,6 +10,8 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { runOnJS } from 'react-native-reanimated';
 
 import { AppHeader, HeaderCaret } from '@/components/AppHeader';
 import { MonthGrid, type GridCell } from '@/components/MonthGrid';
@@ -66,6 +68,7 @@ export function MonthScreen() {
   const setSelectedDate = useAppStore((s) => s.setSelectedDate);
   const setView = useAppStore((s) => s.setView);
   const shiftMonth = useAppStore((s) => s.shiftMonth);
+  const swipeAction = useAppStore((s) => s.swipeAction);
 
   const scrollRef = useRef<ScrollView>(null);
   const [areaH, setAreaH] = useState(0);
@@ -125,10 +128,22 @@ export function MonthScreen() {
 
   const go = useCallback(
     (delta: number) => {
-      scrollRef.current?.scrollTo({ x: width + delta * width, animated: true });
+      if (swipeAction === 'date') scrollRef.current?.scrollTo({ x: width + delta * width, animated: true });
+      else shiftMonth(delta);
     },
-    [width],
+    [swipeAction, width, shiftMonth],
   );
+
+  // tab mode: horizontal swipe (right) switches back to the daily view.
+  const viewPan = Gesture.Pan()
+    .activeOffsetX([-10, 10])
+    .failOffsetY([-22, 22])
+    .onEnd((e) => {
+      'worklet';
+      if (e.translationX > 32 && Math.abs(e.translationX) > Math.abs(e.translationY)) {
+        runOnJS(setView)('daily');
+      }
+    });
 
   const ymLabel = lang === 'ja' ? `${viewYear} / ${viewMonth + 1}月` : `${MONTHS_EN[viewMonth]} ${viewYear}`;
   const weekdays = lang === 'ja' ? WEEKDAYS_JA : WEEKDAYS_EN;
@@ -168,23 +183,31 @@ export function MonthScreen() {
           </Text>
         ))}
       </View>
-      <View style={styles.clip} onLayout={(e) => setAreaH(e.nativeEvent.layout.height)}>
-        <ScrollView
-          ref={scrollRef}
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          contentOffset={{ x: width, y: 0 }}
-          onMomentumScrollEnd={onMomentumEnd}
-          onLayout={recenter}
-        >
-          {panels.map((p) => (
-            <View key={p.key} style={{ width, height: areaH }}>
-              <MonthGrid weeks={p.weeks} filterActive={isFilterActive(filter)} onDayPress={onDayPress} />
-            </View>
-          ))}
-        </ScrollView>
-      </View>
+      {swipeAction === 'date' ? (
+        <View style={styles.clip} onLayout={(e) => setAreaH(e.nativeEvent.layout.height)}>
+          <ScrollView
+            ref={scrollRef}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            contentOffset={{ x: width, y: 0 }}
+            onMomentumScrollEnd={onMomentumEnd}
+            onLayout={recenter}
+          >
+            {panels.map((p) => (
+              <View key={p.key} style={{ width, height: areaH }}>
+                <MonthGrid weeks={p.weeks} filterActive={isFilterActive(filter)} onDayPress={onDayPress} />
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      ) : (
+        <GestureDetector gesture={viewPan}>
+          <View style={styles.clip}>
+            <MonthGrid weeks={panels[1].weeks} filterActive={isFilterActive(filter)} onDayPress={onDayPress} />
+          </View>
+        </GestureDetector>
+      )}
     </View>
   );
 }
