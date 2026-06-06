@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   },
   side: { flex: 1, alignItems: 'flex-start' },
   right: { alignItems: 'flex-end' },
-  title: { fontSize: font.size.h2, fontWeight: '700', color: color.ink },
+  title: { fontSize: font.size.title, fontWeight: '700', color: color.ink },
   action: { fontSize: font.size.title },
   accent: { color: color.teal, fontWeight: '600' },
   muted: { color: color.muted },

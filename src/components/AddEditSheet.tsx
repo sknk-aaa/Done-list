@@ -209,9 +209,9 @@ const styles = StyleSheet.create({
   nameInput: {
     backgroundColor: color.field,
     borderRadius: radius.field,
-    paddingVertical: 15,
-    paddingHorizontal: 16,
-    fontSize: font.size.h2,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    fontSize: font.size.input,
     fontWeight: '500',
     color: color.ink,
   },
