@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
@@ -14,6 +14,9 @@ import { color, radius, shadow } from '@/theme/tokens';
 const EASE = Easing.bezier(0.4, 0, 0.2, 1);
 const DISMISS_DISTANCE = 70;
 const DISMISS_VELOCITY = 500;
+
+// Wrap so we never pass the native Keyboard.dismiss straight to runOnJS.
+const dismissKeyboard = () => Keyboard.dismiss();
 
 type Props = {
   visible: boolean;
@@ -58,8 +61,10 @@ export function BottomSheet({ visible, onClose, children, keyboardAvoiding = tru
   // Drag the whole sheet down to dismiss (activates only on a downward drag,
   // so taps and text inputs keep working).
   const dragGesture = Gesture.Pan()
-    .activeOffsetY([6, 1000])
-    .failOffsetX([-20, 20])
+    .activeOffsetY([4, 1000])
+    .onStart(() => {
+      runOnJS(dismissKeyboard)();
+    })
     .onUpdate((e) => {
       dragY.value = Math.max(0, e.translationY);
     })
