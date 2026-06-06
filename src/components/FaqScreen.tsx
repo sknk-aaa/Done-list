@@ -80,12 +80,18 @@ export function FaqScreen() {
               return (
                 <View key={i} style={i > 0 && styles.divider}>
                   <Pressable style={styles.qRow} onPress={() => setExpanded(isOpen ? null : i)}>
+                    <Text style={styles.qBadge}>Q</Text>
                     <Text style={styles.q}>{it.q}</Text>
                     <View style={isOpen ? styles.caretOpen : undefined}>
                       <ChevronDown size={18} color={c.muted} />
                     </View>
                   </Pressable>
-                  {isOpen && <Text style={styles.a}>{it.a}</Text>}
+                  {isOpen && (
+                    <View style={styles.aRow}>
+                      <Text style={styles.aBadge}>A</Text>
+                      <Text style={styles.a}>{it.a}</Text>
+                    </View>
+                  )}
                 </View>
               );
             })}
@@ -116,8 +122,33 @@ const makeStyles = (c: Colors) =>
     body: { padding: 18 },
     card: { backgroundColor: c.bg, borderRadius: radius.card, ...shadow.card, paddingHorizontal: 16 },
     divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: c.divider },
-    qRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingVertical: 16 },
+    qRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 15 },
+    qBadge: {
+      width: 22,
+      height: 22,
+      borderRadius: 6,
+      backgroundColor: c.teal,
+      color: c.white,
+      fontSize: 13,
+      fontWeight: '800',
+      textAlign: 'center',
+      lineHeight: 22,
+      overflow: 'hidden',
+    },
     q: { flex: 1, fontSize: font.size.title, fontWeight: '600', color: c.ink },
     caretOpen: { transform: [{ rotate: '180deg' }] },
-    a: { fontSize: font.size.body, color: c.muted, lineHeight: 21, paddingBottom: 16, paddingRight: 4 },
+    aRow: { flexDirection: 'row', gap: 10, paddingBottom: 16, paddingTop: 2 },
+    aBadge: {
+      width: 22,
+      height: 22,
+      borderRadius: 6,
+      backgroundColor: c.field,
+      color: c.muted,
+      fontSize: 13,
+      fontWeight: '800',
+      textAlign: 'center',
+      lineHeight: 22,
+      overflow: 'hidden',
+    },
+    a: { flex: 1, fontSize: font.size.body, color: c.muted, lineHeight: 21, paddingTop: 1 },
   });
