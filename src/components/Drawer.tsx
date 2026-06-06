@@ -1,6 +1,6 @@
 import { type ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
@@ -12,9 +12,12 @@ import { Segmented } from './Segmented';
 import { Switch } from './Switch';
 
 const EASE = Easing.bezier(0.4, 0, 0.2, 1);
+const SITE = 'https://sknk-aaa.github.io/Done-list';
+const FAQ_URL = `${SITE}/faq.html`;
+const CONTACT_FORM = { en: 'https://tally.so/r/81rG5Y', ja: 'https://tally.so/r/obzogX' };
 
 export function Drawer() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const open = useAppStore((s) => s.drawerOpen);
   const setOpen = useAppStore((s) => s.setDrawerOpen);
   const showTime = useAppStore((s) => s.showTime);
@@ -105,8 +108,22 @@ export function Drawer() {
                 }}
                 first
               />
-              <SupportRow icon={<Question />} label={t('drawer.faq')} onPress={soon} />
-              <SupportRow icon={<Chat />} label={t('drawer.report')} onPress={soon} />
+              <SupportRow
+          icon={<Question />}
+          label={t('drawer.faq')}
+          onPress={() => {
+            close();
+            void Linking.openURL(FAQ_URL);
+          }}
+        />
+              <SupportRow
+          icon={<Chat />}
+          label={t('drawer.report')}
+          onPress={() => {
+            close();
+            void Linking.openURL(i18n.language === 'ja' ? CONTACT_FORM.ja : CONTACT_FORM.en);
+          }}
+        />
               <SupportRow icon={<Star />} label={t('drawer.review')} onPress={soon} />
             </View>
 

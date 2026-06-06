@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
@@ -14,10 +14,6 @@ import { color, radius, shadow } from '@/theme/tokens';
 const EASE = Easing.bezier(0.4, 0, 0.2, 1);
 const DISMISS_DISTANCE = 70;
 const DISMISS_VELOCITY = 500;
-
-// Wrap in a plain JS fn — passing the native Keyboard.dismiss straight to
-// runOnJS crashes on native.
-const dismissKeyboard = () => Keyboard.dismiss();
 
 type Props = {
   visible: boolean;
@@ -64,9 +60,6 @@ export function BottomSheet({ visible, onClose, children, keyboardAvoiding = tru
   const dragGesture = Gesture.Pan()
     .activeOffsetY([6, 1000])
     .failOffsetX([-20, 20])
-    .onStart(() => {
-      runOnJS(dismissKeyboard)();
-    })
     .onUpdate((e) => {
       dragY.value = Math.max(0, e.translationY);
     })
@@ -111,7 +104,7 @@ export function BottomSheet({ visible, onClose, children, keyboardAvoiding = tru
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const styles = StyleSheet.create({
-  fill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 50, elevation: 50 },
+  fill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   scrim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(20,24,28,0.38)' },
   kav: { flex: 1, justifyContent: 'flex-end' },
   sheet: {

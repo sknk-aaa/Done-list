@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
@@ -22,6 +23,7 @@ export function TagEditScreen() {
 
   const [mounted, setMounted] = useState(open);
   const tx = useSharedValue(1);
+  const dragX = useSharedValue(0);
   const [name, setName] = useState('');
   const [swatch, setSwatch] = useState(presetColors[0]);
 
@@ -30,15 +32,31 @@ export function TagEditScreen() {
       setMounted(true);
       setName('');
       setSwatch(presetColors[0]);
+      dragX.value = 0;
       tx.value = withTiming(0, { duration: 300, easing: EASE });
     } else {
       tx.value = withTiming(1, { duration: 240, easing: EASE }, (f) => {
         if (f) runOnJS(setMounted)(false);
       });
     }
-  }, [open, tx]);
+  }, [open, tx, dragX]);
 
-  const slideStyle = useAnimatedStyle(() => ({ transform: [{ translateX: tx.value * width }] }));
+  // Swipe right to close.
+  const pan = Gesture.Pan()
+    .activeOffsetX([12, 1000])
+    .failOffsetY([-14, 14])
+    .onUpdate((e) => {
+      dragX.value = Math.max(0, e.translationX);
+    })
+    .onEnd((e) => {
+      if (dragX.value > width * 0.3 || (e.velocityX > 600 && dragX.value > 0)) {
+        runOnJS(setOpen)(false);
+      } else {
+        dragX.value = withTiming(0, { duration: 180 });
+      }
+    });
+
+  const slideStyle = useAnimatedStyle(() => ({ transform: [{ translateX: tx.value * width + dragX.value }] }));
 
   const onAdd = async () => {
     if (!name.trim()) return;
@@ -46,10 +64,18 @@ export function TagEditScreen() {
     setName('');
   };
 
+  const confirmDelete = (id: number) => {
+    Alert.alert(t('tagEdit.deleteTitle'), t('tagEdit.deleteMessage'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      { text: t('common.delete'), style: 'destructive', onPress: () => void deleteTag(id) },
+    ]);
+  };
+
   if (!mounted) return null;
 
   return (
-    <Animated.View style={[styles.screen, { paddingTop: insets.top }, slideStyle]}>
+    <GestureDetector gesture={pan}>
+      <Animated.View style={[styles.screen, { paddingTop: insets.top }, slideStyle]}>
         <View style={styles.bar}>
           <Pressable style={styles.back} onPress={() => setOpen(false)} hitSlop={8}>
             <ChevronLeft size={22} color={color.teal} />
@@ -68,7 +94,7 @@ export function TagEditScreen() {
                   <View style={[styles.dot, { backgroundColor: tg.color }]} />
                   <Text style={styles.tagName}>{tg.name}</Text>
                 </View>
-                <Pressable onPress={() => deleteTag(tg.id)} hitSlop={8}>
+                <Pressable onPress={() => confirmDelete(tg.id)} hitSlop={8}>
                   <Text style={styles.delete}>{t('common.delete')}</Text>
                 </Pressable>
               </View>
@@ -102,7 +128,8 @@ export function TagEditScreen() {
           </View>
           <View style={{ height: insets.bottom + 24 }} />
         </ScrollView>
-    </Animated.View>
+      </Animated.View>
+    </GestureDetector>
   );
 }
 

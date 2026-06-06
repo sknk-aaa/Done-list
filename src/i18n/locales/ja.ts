@@ -59,6 +59,8 @@ const ja: typeof en = {
     newTitle: '新しいタグ',
     namePlaceholder: 'タグ名',
     addButton: 'タグを追加',
+    deleteTitle: 'タグを削除',
+    deleteMessage: 'このタグが付いたタスクはタグなしになります。削除しますか？',
   },
   drawer: {
     planFree: 'Free',

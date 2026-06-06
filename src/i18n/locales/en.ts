@@ -57,6 +57,8 @@ const en = {
     newTitle: 'New tag',
     namePlaceholder: 'Tag name',
     addButton: 'Add tag',
+    deleteTitle: 'Delete tag',
+    deleteMessage: 'Tasks with this tag will become untagged. Delete it?',
   },
   drawer: {
     planFree: 'Free',
