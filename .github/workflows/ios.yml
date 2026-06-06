@@ -35,6 +35,16 @@ jobs:
           bundler-cache: true
       - name: Prebuild iOS native project
         run: npx expo prebuild --platform ios --no-install
+      - name: Strip push entitlement (local notifications only, no APNs)
+        run: |
+          F=$(ls ios/*/*.entitlements 2>/dev/null | head -1)
+          if [ -n "$F" ]; then
+            echo "entitlements: $F"
+            /usr/libexec/PlistBuddy -c "Delete :aps-environment" "$F" 2>/dev/null || echo "(no aps-environment key)"
+            echo "--- after ---"; cat "$F"
+          else
+            echo "no entitlements file found"
+          fi
       - name: Install CocoaPods
         run: cd ios && pod install --repo-update
       - name: Prepare ASC API key
