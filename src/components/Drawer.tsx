@@ -209,7 +209,7 @@ const makeStyles = (c: Colors) => StyleSheet.create({
   panel: { backgroundColor: c.bgSoft },
   content: { paddingHorizontal: 18, paddingBottom: 20 },
   appHeader: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingTop: 46, paddingBottom: 18 },
-  appIcon: { width: 56, height: 56, borderRadius: 15, ...shadow.card },
+  appIcon: { width: 56, height: 56, borderRadius: 15 },
   appHeaderText: { flex: 1 },
   appName: { fontSize: 22, fontWeight: '800', color: c.ink, letterSpacing: 0.2 },
   planPill: {
