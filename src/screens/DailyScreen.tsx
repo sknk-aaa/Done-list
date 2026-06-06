@@ -65,6 +65,9 @@ export function DailyScreen() {
       }
     });
 
+  // Reorder drag is vertical-only so horizontal swipes fall through to `pan`.
+  const dragPan = useMemo(() => Gesture.Pan().activeOffsetY([-10, 10]), []);
+
   const all = useDailyItems(selectedDate);
   const visible = useMemo(() => all.filter((it) => matchesFilter(it, filter)), [all, filter]);
   const doneCount = visible.filter((it) => it.isCompleted).length;
@@ -151,6 +154,8 @@ export function DailyScreen() {
           style={styles.list}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
+          scrollEnabled={false}
+          panGesture={dragPan}
           onReorder={handleReorder}
           ItemSeparatorComponent={() => <View style={styles.sep} />}
           renderItem={({ item }) => (
@@ -215,7 +220,7 @@ const styles = StyleSheet.create({
   list: { flex: 1, backgroundColor: color.bgSoft },
   listContent: { paddingHorizontal: space.screenX, flexGrow: 1 },
   sep: { height: StyleSheet.hairlineWidth, backgroundColor: color.line },
-  empty: { flex: 1, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 64, paddingHorizontal: 40 },
+  empty: { flex: 1, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 96, paddingHorizontal: 40 },
   emptyIcon: {
     width: 64,
     height: 64,

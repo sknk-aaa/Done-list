@@ -56,10 +56,10 @@ export function MonthScreen() {
   const gridOpacity = useSharedValue(1);
   useEffect(() => {
     const d = dirRef.current;
-    gridX.value = d > 0 ? 24 : d < 0 ? -24 : 0;
+    gridX.value = d > 0 ? 40 : d < 0 ? -40 : 0;
     gridOpacity.value = 0;
-    gridX.value = withTiming(0, { duration: 280, easing: Easing.out(Easing.cubic) });
-    gridOpacity.value = withTiming(1, { duration: 280, easing: Easing.out(Easing.cubic) });
+    gridX.value = withTiming(0, { duration: 520, easing: Easing.out(Easing.cubic) });
+    gridOpacity.value = withTiming(1, { duration: 520, easing: Easing.out(Easing.cubic) });
   }, [viewYear, viewMonth, gridX, gridOpacity]);
   const gridStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: gridX.value }],
