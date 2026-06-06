@@ -1,14 +1,15 @@
-import { useCallback } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, {
-  Easing,
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import {
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 
 import { AppHeader, HeaderCaret } from '@/components/AppHeader';
 import { MonthGrid, type GridCell } from '@/components/MonthGrid';
@@ -27,9 +28,6 @@ import {
 import { matchesFilter } from '@/lib/filter';
 import { isFilterActive, useAppStore } from '@/state/store';
 import { color, font } from '@/theme/tokens';
-
-const EASE = Easing.out(Easing.cubic);
-const DURATION = 300;
 
 function chunk<T>(arr: T[], n: number): T[][] {
   const out: T[][] = [];
@@ -68,9 +66,11 @@ export function MonthScreen() {
   const setSelectedDate = useAppStore((s) => s.setSelectedDate);
   const setView = useAppStore((s) => s.setView);
   const shiftMonth = useAppStore((s) => s.shiftMonth);
-  const swipeAction = useAppStore((s) => s.swipeAction);
 
-  // Three panels (prev / current / next) for a finger-following carousel.
+  const scrollRef = useRef<ScrollView>(null);
+  const [areaH, setAreaH] = useState(0);
+
+  // Three panels (prev / current / next) for a paging carousel.
   const metas = [-1, 0, 1].map((off) => {
     const { y, m0 } = addMonth(viewYear, viewMonth, off);
     return { off, y, m0, ...monthMeta(y, m0) };
@@ -108,74 +108,41 @@ export function MonthScreen() {
     weeks: chunk(buildCells(mm.y, mm.m0, mm.first, mm.cellCount), 7),
   }));
 
-  const tx = useSharedValue(0);
-  const trackStyle = useAnimatedStyle(() => ({ transform: [{ translateX: -width + tx.value }] }));
+  const recenter = useCallback(() => {
+    scrollRef.current?.scrollTo({ x: width, animated: false });
+  }, [width]);
 
-  const commit = useCallback(
-    (delta: number) => {
-      shiftMonth(delta);
-      tx.value = 0;
+  // Commit + recenter happen in the same JS handler → no cross-thread flicker.
+  const onMomentumEnd = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const page = Math.round(e.nativeEvent.contentOffset.x / width);
+      if (page === 1) return;
+      shiftMonth(page - 1);
+      recenter();
     },
-    [shiftMonth, tx],
+    [width, shiftMonth, recenter],
   );
 
   const go = useCallback(
     (delta: number) => {
-      tx.value = withTiming(delta > 0 ? -width : width, { duration: DURATION, easing: EASE }, (fin) => {
-        if (fin) runOnJS(commit)(delta);
-      });
+      scrollRef.current?.scrollTo({ x: width + delta * width, animated: true });
     },
-    [commit, tx, width],
+    [width],
   );
-
-  const pan = Gesture.Pan()
-    .activeOffsetX([-10, 10])
-    .failOffsetY([-22, 22])
-    .onUpdate((e) => {
-      'worklet';
-      if (swipeAction === 'date') tx.value = e.translationX;
-    })
-    .onEnd((e) => {
-      'worklet';
-      if (swipeAction !== 'date') {
-        if (e.translationX > 40) runOnJS(setView)('daily');
-        return;
-      }
-      const th = width * 0.22;
-      if (e.translationX < -th || e.velocityX < -600) {
-        tx.value = withTiming(-width, { duration: DURATION, easing: EASE }, (f) => {
-          if (f) runOnJS(commit)(1);
-        });
-      } else if (e.translationX > th || e.velocityX > 600) {
-        tx.value = withTiming(width, { duration: DURATION, easing: EASE }, (f) => {
-          if (f) runOnJS(commit)(-1);
-        });
-      } else {
-        tx.value = withTiming(0, { duration: DURATION, easing: EASE });
-      }
-    });
 
   const ymLabel = lang === 'ja' ? `${viewYear} / ${viewMonth + 1}月` : `${MONTHS_EN[viewMonth]} ${viewYear}`;
   const weekdays = lang === 'ja' ? WEEKDAYS_JA : WEEKDAYS_EN;
 
   const left = (
     <View style={styles.ymBar}>
-      <Pressable
-        onPress={() => go(-1)}
-        hitSlop={16}
-        style={({ pressed }) => [styles.arrow, pressed && styles.arrowPressed]}
-      >
+      <Pressable onPress={() => go(-1)} hitSlop={16} style={({ pressed }) => [styles.arrow, pressed && styles.arrowPressed]}>
         <ChevronLeft size={22} color="#8A8F94" strokeWidth={2.4} />
       </Pressable>
       <Pressable style={styles.ym} onPress={() => openDatePop('month')} hitSlop={6}>
         <Text style={styles.ymText}>{ymLabel}</Text>
         <HeaderCaret />
       </Pressable>
-      <Pressable
-        onPress={() => go(1)}
-        hitSlop={16}
-        style={({ pressed }) => [styles.arrow, pressed && styles.arrowPressed]}
-      >
+      <Pressable onPress={() => go(1)} hitSlop={16} style={({ pressed }) => [styles.arrow, pressed && styles.arrowPressed]}>
         <ChevronRight size={22} color="#8A8F94" strokeWidth={2.4} />
       </Pressable>
     </View>
@@ -187,32 +154,38 @@ export function MonthScreen() {
   };
 
   return (
-    <GestureDetector gesture={pan}>
-      <View style={styles.screen}>
-        <AppHeader
-          left={left}
-          filterActive={isFilterActive(filter)}
-          onFilter={() => setFilterOpen(true)}
-          onMenu={() => setDrawerOpen(true)}
-        />
-        <View style={styles.dow}>
-          {weekdays.map((w, i) => (
-            <Text key={i} style={[styles.dowText, i === 0 && styles.dowSun]}>
-              {w}
-            </Text>
-          ))}
-        </View>
-        <View style={styles.clip}>
-          <Animated.View style={[styles.track, { width: width * 3 }, trackStyle]}>
-            {panels.map((p) => (
-              <View key={p.key} style={[styles.panel, { width }]}>
-                <MonthGrid weeks={p.weeks} filterActive={isFilterActive(filter)} onDayPress={onDayPress} />
-              </View>
-            ))}
-          </Animated.View>
-        </View>
+    <View style={styles.screen}>
+      <AppHeader
+        left={left}
+        filterActive={isFilterActive(filter)}
+        onFilter={() => setFilterOpen(true)}
+        onMenu={() => setDrawerOpen(true)}
+      />
+      <View style={styles.dow}>
+        {weekdays.map((w, i) => (
+          <Text key={i} style={[styles.dowText, i === 0 && styles.dowSun]}>
+            {w}
+          </Text>
+        ))}
       </View>
-    </GestureDetector>
+      <View style={styles.clip} onLayout={(e) => setAreaH(e.nativeEvent.layout.height)}>
+        <ScrollView
+          ref={scrollRef}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          contentOffset={{ x: width, y: 0 }}
+          onMomentumScrollEnd={onMomentumEnd}
+          onLayout={recenter}
+        >
+          {panels.map((p) => (
+            <View key={p.key} style={{ width, height: areaH }}>
+              <MonthGrid weeks={p.weeks} filterActive={isFilterActive(filter)} onDayPress={onDayPress} />
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+    </View>
   );
 }
 
@@ -221,9 +194,7 @@ const styles = StyleSheet.create({
   ymBar: { flexDirection: 'row', alignItems: 'center' },
   arrow: { paddingVertical: 6, paddingHorizontal: 6, borderRadius: 10 },
   arrowPressed: { backgroundColor: color.bgSoft },
-  clip: { flex: 1, overflow: 'hidden' },
-  track: { flexDirection: 'row', flexGrow: 1 },
-  panel: { height: '100%' },
+  clip: { flex: 1 },
   ym: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18 },
   ymText: { fontSize: font.size.h2, fontWeight: '600', color: '#565B60' },
   dow: { flexDirection: 'row', paddingHorizontal: 12, paddingTop: 2, paddingBottom: 8 },

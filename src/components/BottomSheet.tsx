@@ -12,8 +12,8 @@ import Animated, {
 import { color, radius, shadow } from '@/theme/tokens';
 
 const EASE = Easing.bezier(0.4, 0, 0.2, 1);
-const DISMISS_DISTANCE = 110;
-const DISMISS_VELOCITY = 900;
+const DISMISS_DISTANCE = 70;
+const DISMISS_VELOCITY = 500;
 
 type Props = {
   visible: boolean;

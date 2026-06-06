@@ -95,7 +95,7 @@ export function AddEditSheet() {
     <BottomSheet visible={visible} onClose={closeSheet}>
       <SheetHeader
         left={{ label: t('common.cancel'), onPress: closeSheet, muted: true }}
-        title={sheet.mode === 'edit' ? t('sheet.editTitle') : t('sheet.addTitle')}
+        title={sheet.mode === 'edit' ? '' : t('sheet.addTitle')}
         right={{ label: t('common.save'), onPress: onSave, disabled: !canSave }}
       />
       <View style={styles.body}>
