@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Keyboard, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable } from 'react-native-gesture-handler';
 
 import { useTags } from '@/data/useData';
 import { Calendar, ChevronDown, Clock } from '@/icons';
@@ -124,7 +125,7 @@ export function AddEditSheet() {
         title={shownMode === 'edit' ? '' : t('sheet.addTitle')}
         right={{ label: t('common.save'), onPress: onSave, disabled: !canSave }}
       />
-      <View style={styles.body}>
+      <Pressable style={styles.body} onPress={() => Keyboard.dismiss()}>
         <TextInput
           ref={nameRef}
           style={styles.nameInput}
@@ -217,7 +218,7 @@ export function AddEditSheet() {
           </Pressable>
         )}
         <View style={styles.bottomPad} />
-      </View>
+      </Pressable>
     </BottomSheet>
   );
 }
