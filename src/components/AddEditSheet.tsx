@@ -67,7 +67,7 @@ export function AddEditSheet() {
   const nameRef = useRef<TextInput>(null);
   useEffect(() => {
     if (sheet.mode !== 'add') return;
-    const id = setTimeout(() => nameRef.current?.focus(), 320);
+    const id = setTimeout(() => nameRef.current?.focus(), 50);
     return () => clearTimeout(id);
   }, [sheet.mode]);
 

@@ -84,7 +84,9 @@ function DayPage({ date, width, height }: { date: string; width: number; height:
         ListFooterComponent={
           !isToday && rows.length > 0 ? (
             <Pressable style={styles.todayBtn} onPress={goToday}>
-              <Undo size={15} color={color.teal} strokeWidth={2.4} />
+              <View style={date < getTodayISO() ? styles.flip : undefined}>
+                <Undo size={15} color={color.teal} strokeWidth={2.4} />
+              </View>
               <Text style={styles.todayBtnText}>{t('daily.backToToday')}</Text>
             </Pressable>
           ) : null
@@ -139,8 +141,9 @@ export function DailyScreen() {
   useEffect(() => {
     const idx = indexForDate(selectedDate);
     if (idx !== curIndexRef.current) {
+      const near = Math.abs(idx - curIndexRef.current) <= 1;
       curIndexRef.current = idx;
-      listRef.current?.scrollToIndex({ index: idx, animated: true });
+      listRef.current?.scrollToIndex({ index: idx, animated: near });
     }
   }, [selectedDate, indexForDate]);
 
@@ -185,7 +188,9 @@ export function DailyScreen() {
         <Text style={styles.todayLabel}>{t('daily.today')}</Text>
       ) : (
         <Pressable onPress={goToday} hitSlop={6} style={styles.backTodayRow}>
-          <Undo size={13} color={color.teal} strokeWidth={2.4} />
+          <View style={selectedDate < getTodayISO() ? styles.flip : undefined}>
+            <Undo size={13} color={color.teal} strokeWidth={2.4} />
+          </View>
           <Text style={styles.backToday}>{t('daily.backToToday')}</Text>
         </Pressable>
       )}
@@ -303,6 +308,7 @@ const styles = StyleSheet.create({
     backgroundColor: color.tealTint,
   },
   todayBtnText: { fontSize: font.size.body, fontWeight: '700', color: color.teal },
+  flip: { transform: [{ scaleX: -1 }] },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 96, paddingHorizontal: 40 },
   emptyIcon: {
     width: 64,
