@@ -27,7 +27,7 @@ export function TaskRow({ item, showTime, draggable, onToggle, onPress }: Props)
     <Pressable
       onPress={onPress}
       onLongPress={draggable ? drag : undefined}
-      delayLongPress={220}
+      delayLongPress={150}
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >
       <CheckRing done={item.isCompleted} color={tagColor} onToggle={onToggle} />
