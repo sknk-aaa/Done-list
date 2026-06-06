@@ -15,8 +15,6 @@ import { Switch } from './Switch';
 
 const APP_ICON = require('../../assets/images/icon-sm.png');
 const EASE = Easing.bezier(0.4, 0, 0.2, 1);
-const SITE = 'https://sknk-aaa.github.io/Done-list';
-const FAQ_URL = `${SITE}/faq.html`;
 const CONTACT_FORM = { en: 'https://tally.so/r/81rG5Y', ja: 'https://tally.so/r/obzogX' };
 
 export function Drawer() {
@@ -33,6 +31,7 @@ export function Drawer() {
   const swipeAction = useAppStore((s) => s.swipeAction);
   const setSwipeAction = useAppStore((s) => s.setSwipeAction);
   const setOnboardingOpen = useAppStore((s) => s.setOnboardingOpen);
+  const setFaqOpen = useAppStore((s) => s.setFaqOpen);
   const showToast = useAppStore((s) => s.showToast);
 
   const insets = useSafeAreaInsets();
@@ -159,7 +158,7 @@ export function Drawer() {
           label={t('drawer.faq')}
           onPress={() => {
             close();
-            void Linking.openURL(FAQ_URL);
+            setFaqOpen(true);
           }}
         />
               <SupportRow

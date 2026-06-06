@@ -7,6 +7,7 @@ import { AddEditSheet } from '@/components/AddEditSheet';
 import { BottomTabBar } from '@/components/BottomTabBar';
 import { DatePopover } from '@/components/DatePopover';
 import { Drawer } from '@/components/Drawer';
+import { FaqScreen } from '@/components/FaqScreen';
 import { FilterSheet } from '@/components/FilterSheet';
 import { Onboarding, ONBOARDED_KEY } from '@/components/Onboarding';
 import { TagEditScreen } from '@/components/TagEditScreen';
@@ -59,6 +60,7 @@ export default function AppShell() {
       <AddEditSheet />
       <FilterSheet />
       <TagEditScreen />
+      <FaqScreen />
       <Drawer />
       <DatePopover />
       <Onboarding />

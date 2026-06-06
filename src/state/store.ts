@@ -43,6 +43,7 @@ type AppState = {
   datePopOpen: boolean;
   datePopContext: 'daily' | 'month';
   tagEditOpen: boolean;
+  faqOpen: boolean;
   onboardingOpen: boolean;
   toast: Toast | null;
 
@@ -75,6 +76,7 @@ type AppState = {
   openDatePop: (context: 'daily' | 'month') => void;
   closeDatePop: () => void;
   setTagEditOpen: (v: boolean) => void;
+  setFaqOpen: (v: boolean) => void;
   setOnboardingOpen: (v: boolean) => void;
   showToast: (msg: string, action?: Toast['action']) => void;
   clearToast: () => void;
@@ -107,6 +109,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   datePopOpen: false,
   datePopContext: 'daily',
   tagEditOpen: false,
+  faqOpen: false,
   onboardingOpen: false,
   toast: null,
 
@@ -182,6 +185,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   openDatePop: (context) => set({ datePopOpen: true, datePopContext: context }),
   closeDatePop: () => set({ datePopOpen: false }),
   setTagEditOpen: (v) => set({ tagEditOpen: v }),
+  setFaqOpen: (v) => set({ faqOpen: v }),
   setOnboardingOpen: (v) => set({ onboardingOpen: v }),
   showToast: (msg, action) => set({ toast: { msg, action } }),
   clearToast: () => set({ toast: null }),
