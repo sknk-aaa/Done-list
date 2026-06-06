@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
@@ -99,9 +99,9 @@ export function DatePopover() {
   for (let d = 1; d <= dim; d++) cells.push(d);
 
   return (
-    <Modal visible transparent animationType="fade" onRequestClose={close} statusBarTranslucent>
+    <View style={styles.fill}>
       <Pressable style={styles.scrim} onPress={close} />
-      <Animated.View entering={FadeIn.duration(160)} style={[styles.card, { top: insets.top + 44 }, shadow.popover]}>
+      <Animated.View entering={FadeIn.duration(120)} style={[styles.card, { top: insets.top + 44 }, shadow.popover]}>
         <View style={styles.head}>
           <Pressable onPress={() => onNav(-1)} hitSlop={8} style={styles.nav}>
             <ChevronLeft size={16} color="#9AA0A6" />
@@ -157,11 +157,12 @@ export function DatePopover() {
           </View>
         )}
       </Animated.View>
-    </Modal>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  fill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   scrim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(20,24,28,0.18)' },
   card: { position: 'absolute', left: 18, width: 300, backgroundColor: color.bg, borderRadius: radius.cardL, padding: 14 },
   head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },

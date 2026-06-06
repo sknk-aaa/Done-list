@@ -83,11 +83,11 @@ export function MonthScreen() {
     [swipeAction, goMonth, setView],
   );
   const pan = Gesture.Pan()
-    .activeOffsetX([-15, 15])
-    .failOffsetY([-14, 14])
+    .activeOffsetX([-10, 10])
+    .failOffsetY([-22, 22])
     .onEnd((e) => {
       'worklet';
-      if (Math.abs(e.translationX) > 55 && Math.abs(e.translationX) > 1.2 * Math.abs(e.translationY)) {
+      if (Math.abs(e.translationX) > 32 && Math.abs(e.translationX) > Math.abs(e.translationY)) {
         runOnJS(onSwipe)(e.translationX > 0 ? 1 : -1);
       }
     });

@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 16,
     fontSize: font.size.h2,
-    fontWeight: '700',
+    fontWeight: '500',
     color: color.ink,
   },
   labelRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 18, marginBottom: 8 },
