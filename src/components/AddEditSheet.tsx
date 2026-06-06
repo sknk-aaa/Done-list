@@ -33,6 +33,13 @@ export function AddEditSheet() {
   const visible = sheet.mode !== null;
   const editing = sheet.mode === 'edit' ? sheet.editingItem : null;
 
+  // Keep the last open mode while the sheet animates closed (mode→null), so the
+  // content doesn't flash to the "add" look (new title / no delete) on close.
+  const [shownMode, setShownMode] = useState(sheet.mode);
+  useEffect(() => {
+    if (sheet.mode) setShownMode(sheet.mode);
+  }, [sheet.mode]);
+
   const [title, setTitle] = useState('');
   const [tagId, setTagId] = useState<number | null>(null);
   const [time, setTime] = useState<string | null>(null);
@@ -103,7 +110,7 @@ export function AddEditSheet() {
     <BottomSheet visible={visible} onClose={closeSheet} keyboardAvoiding={false}>
       <SheetHeader
         left={{ label: t('common.cancel'), onPress: closeSheet, muted: true }}
-        title={sheet.mode === 'edit' ? '' : t('sheet.addTitle')}
+        title={shownMode === 'edit' ? '' : t('sheet.addTitle')}
         right={{ label: t('common.save'), onPress: onSave, disabled: !canSave }}
       />
       <Pressable style={styles.body} onPress={() => Keyboard.dismiss()} accessible={false}>
@@ -193,7 +200,7 @@ export function AddEditSheet() {
           </>
         )}
 
-        {sheet.mode === 'edit' && (
+        {shownMode === 'edit' && (
           <Pressable onPress={onDelete} style={styles.delBtn}>
             <Text style={styles.delText}>{t('sheet.deleteTask')}</Text>
           </Pressable>
