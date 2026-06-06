@@ -19,9 +19,10 @@ type Props = {
   visible: boolean;
   onClose: () => void;
   children: ReactNode;
+  keyboardAvoiding?: boolean;
 };
 
-export function BottomSheet({ visible, onClose, children }: Props) {
+export function BottomSheet({ visible, onClose, children, keyboardAvoiding = true }: Props) {
   const { height: screenH } = useWindowDimensions();
   const [mounted, setMounted] = useState(visible);
   const progress = useSharedValue(0);
@@ -68,7 +69,7 @@ export function BottomSheet({ visible, onClose, children }: Props) {
       <AnimatedPressable style={[styles.scrim, scrimStyle]} onPress={onClose} />
       <KeyboardAvoidingView
         style={styles.kav}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={keyboardAvoiding && Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <GestureDetector gesture={dragGesture}>
           <Animated.View

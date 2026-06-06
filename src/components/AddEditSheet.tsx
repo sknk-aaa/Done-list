@@ -100,7 +100,7 @@ export function AddEditSheet() {
   };
 
   return (
-    <BottomSheet visible={visible} onClose={closeSheet}>
+    <BottomSheet visible={visible} onClose={closeSheet} keyboardAvoiding={false}>
       <SheetHeader
         left={{ label: t('common.cancel'), onPress: closeSheet, muted: true }}
         title={sheet.mode === 'edit' ? '' : t('sheet.addTitle')}
