@@ -103,6 +103,7 @@ export function DailyScreen() {
   const swipeAction = useAppStore((s) => s.swipeAction);
   const setSelectedDate = useAppStore((s) => s.setSelectedDate);
   const setView = useAppStore((s) => s.setView);
+  const sheetOpen = useAppStore((s) => s.sheet.mode !== null);
 
   const anchor = useRef(getTodayISO()).current;
   const dateForIndex = useCallback((i: number) => addDaysISO(anchor, i - RANGE), [anchor]);
@@ -210,7 +211,7 @@ export function DailyScreen() {
           <View style={styles.listWrap} onLayout={(e) => setAreaH(e.nativeEvent.layout.height)}>
             <DayPage date={selectedDate} width={width} height={areaH} />
           </View>
-          <Fab onPress={() => openAddSheet()} />
+          {!sheetOpen && <Fab onPress={() => openAddSheet()} />}
         </View>
       </GestureDetector>
     );
@@ -238,7 +239,7 @@ export function DailyScreen() {
           renderItem={({ item }) => <DayPage date={dateForIndex(item)} width={width} height={areaH} />}
         />
       </View>
-      <Fab onPress={() => openAddSheet()} />
+      {!sheetOpen && <Fab onPress={() => openAddSheet()} />}
     </View>
   );
 }

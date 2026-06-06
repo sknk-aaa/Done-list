@@ -104,7 +104,7 @@ export function BottomSheet({ visible, onClose, children, keyboardAvoiding = tru
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const styles = StyleSheet.create({
-  fill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
+  fill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 50, elevation: 50 },
   scrim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(20,24,28,0.38)' },
   kav: { flex: 1, justifyContent: 'flex-end' },
   sheet: {
