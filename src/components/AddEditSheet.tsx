@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
@@ -63,6 +63,14 @@ export function AddEditSheet() {
     setShowPicker(false);
   }, [sheet.mode, sheet.editingItem, sheet.presetDate]);
 
+  // Focus the name field when opening the add sheet (after the open animation).
+  const nameRef = useRef<TextInput>(null);
+  useEffect(() => {
+    if (sheet.mode !== 'add') return;
+    const id = setTimeout(() => nameRef.current?.focus(), 320);
+    return () => clearTimeout(id);
+  }, [sheet.mode]);
+
   const canSave = title.trim().length > 0;
 
   const onSave = async () => {
@@ -100,6 +108,7 @@ export function AddEditSheet() {
       />
       <View style={styles.body}>
         <TextInput
+          ref={nameRef}
           style={styles.nameInput}
           placeholder={t('sheet.namePlaceholder')}
           placeholderTextColor={color.muted}
