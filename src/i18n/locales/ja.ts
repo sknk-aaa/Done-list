@@ -80,6 +80,7 @@ const ja: typeof en = {
     report: '不具合・要望を報告',
     review: 'レビューして応援する',
     replayOnboarding: 'オンボーディングを見る',
+    restore: '購入を復元',
   },
   onboarding: {
     next: '次へ',
@@ -93,6 +94,9 @@ const ja: typeof en = {
     comingSoon: '準備中です',
     deleted: 'タスクを削除しました',
     undo: '元に戻す',
+    proUnlocked: 'Proになりました。ありがとう！',
+    purchaseFailed: '購入を完了できませんでした',
+    restoredNone: '復元できる購入はありません',
   },
   app: {
     name: 'toDone',

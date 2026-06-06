@@ -78,6 +78,7 @@ const en = {
     report: 'Report a problem',
     review: 'Rate & support us',
     replayOnboarding: 'Replay onboarding',
+    restore: 'Restore purchases',
   },
   onboarding: {
     next: 'Next',
@@ -91,6 +92,9 @@ const en = {
     comingSoon: 'Coming soon',
     deleted: 'Task deleted',
     undo: 'Undo',
+    proUnlocked: 'Pro unlocked — thank you!',
+    purchaseFailed: 'Purchase could not be completed',
+    restoredNone: 'No purchases to restore',
   },
   app: {
     name: 'toDone',

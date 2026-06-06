@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { Chat, Check, ChevronRight, Compass, ProSpark, Question, Star } from '@/icons';
+import { purchasePro, purchasesAvailable, restorePro } from '@/lib/purchases';
 import { useAppStore, type SwipeAction } from '@/state/store';
 import { font, radius, shadow } from '@/theme/tokens';
 import { useColors, type Colors } from '@/theme/theme';
@@ -59,6 +60,24 @@ export function Drawer() {
     close();
     showToast(t('toast.comingSoon'));
   };
+  const upgrade = async () => {
+    if (!purchasesAvailable()) {
+      showToast(t('toast.comingSoon'));
+      return;
+    }
+    try {
+      if (await purchasePro()) showToast(t('toast.proUnlocked'));
+    } catch {
+      showToast(t('toast.purchaseFailed'));
+    }
+  };
+  const restore = async () => {
+    if (!purchasesAvailable()) {
+      showToast(t('toast.comingSoon'));
+      return;
+    }
+    showToast((await restorePro()) ? t('toast.proUnlocked') : t('toast.restoredNone'));
+  };
 
   if (!mounted) return null;
 
@@ -72,17 +91,19 @@ export function Drawer() {
                 <Check size={22} color="#fff" strokeWidth={3} />
               </View>
               <Text style={styles.appName}>{t('app.name')}</Text>
-              <Text style={styles.plan}>{t('drawer.planFree')}</Text>
+              <Text style={styles.plan}>{isPro ? t('drawer.planPro') : t('drawer.planFree')}</Text>
             </View>
 
-            <Pressable style={[styles.card, styles.proRow]} onPress={soon}>
-              <ProSpark size={22} color={c.teal} />
-              <View style={styles.proText}>
-                <Text style={styles.proTitle}>{t('drawer.upgrade')}</Text>
-                <Text style={styles.proSub}>{t('drawer.upgradeSub')}</Text>
-              </View>
-              <ChevronRight size={20} color={c.chevron} />
-            </Pressable>
+            {!isPro && (
+              <Pressable style={[styles.card, styles.proRow]} onPress={() => void upgrade()}>
+                <ProSpark size={22} color={c.teal} />
+                <View style={styles.proText}>
+                  <Text style={styles.proTitle}>{t('drawer.upgrade')}</Text>
+                  <Text style={styles.proSub}>{t('drawer.upgradeSub')}</Text>
+                </View>
+                <ChevronRight size={20} color={c.chevron} />
+              </Pressable>
+            )}
 
             <Text style={styles.sectionLabel}>{t('drawer.settings')}</Text>
             <View style={styles.card}>
@@ -90,17 +111,20 @@ export function Drawer() {
                 <Text style={styles.rowTitle}>{t('drawer.showTime')}</Text>
                 <Switch value={showTime} onValueChange={setShowTime} />
               </View>
-              <View style={[styles.settingRow, styles.divider]}>
-                <View style={styles.rowTitleWrap}>
+              {isPro ? (
+                <View style={[styles.settingRow, styles.divider]}>
                   <Text style={styles.rowTitle}>{t('drawer.darkTheme')}</Text>
-                  {!isPro && <Text style={styles.proTag}>{t('drawer.planPro')}</Text>}
-                </View>
-                {isPro ? (
                   <Switch value={darkMode} onValueChange={setDarkMode} />
-                ) : (
+                </View>
+              ) : (
+                <Pressable style={[styles.settingRow, styles.divider]} onPress={() => void upgrade()}>
+                  <View style={styles.rowTitleWrap}>
+                    <Text style={styles.rowTitle}>{t('drawer.darkTheme')}</Text>
+                    <Text style={styles.proTag}>{t('drawer.planPro')}</Text>
+                  </View>
                   <ChevronRight size={20} color={c.chevron} />
-                )}
-              </View>
+                </Pressable>
+              )}
               <View style={[styles.swipeBlock, styles.divider]}>
                 <Text style={styles.swipeLabel}>{t('drawer.swipeLabel')}</Text>
                 <Segmented<SwipeAction>
@@ -143,6 +167,12 @@ export function Drawer() {
         />
               <SupportRow icon={<Star />} label={t('drawer.review')} onPress={soon} />
             </View>
+
+            {!isPro && (
+              <Pressable onPress={() => void restore()} hitSlop={8} style={styles.restoreBtn}>
+                <Text style={styles.restoreText}>{t('drawer.restore')}</Text>
+              </Pressable>
+            )}
 
             <Text style={styles.footer}>
               {t('app.name')} v1.0.0
@@ -215,5 +245,7 @@ const makeStyles = (c: Colors) => StyleSheet.create({
   supportRow: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 15, paddingHorizontal: 16 },
   supportLabel: { flex: 1, fontSize: font.size.title, fontWeight: '500', color: c.ink },
 
-  footer: { textAlign: 'center', fontSize: font.size.caption, color: c.faint, marginTop: 26 },
+  restoreBtn: { alignSelf: 'center', paddingVertical: 8, marginTop: 18 },
+  restoreText: { fontSize: font.size.caption, color: c.muted, textDecorationLine: 'underline' },
+  footer: { textAlign: 'center', fontSize: font.size.caption, color: c.faint, marginTop: 14 },
 });

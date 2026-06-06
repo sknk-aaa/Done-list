@@ -10,6 +10,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import i18n from '@/i18n';
 import { useMigrations } from '@/db/client';
 import { initApp } from '@/db/queries';
+import { initPurchases } from '@/lib/purchases';
 import { useAppStore } from '@/state/store';
 import { ThemeProvider, useColors } from '@/theme/theme';
 import { color, font } from '@/theme/tokens';
@@ -41,6 +42,7 @@ export default function RootLayout() {
       hydrateSettings(settings);
       if (dark === '1') setDarkMode(true);
       if (settings.locale) i18n.changeLanguage(settings.locale);
+      void initPurchases();
       setReady(true);
     })();
     return () => {
