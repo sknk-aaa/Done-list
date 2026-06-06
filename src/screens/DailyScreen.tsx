@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
   filterClear: { fontSize: 13, fontWeight: '700', color: color.teal, marginLeft: 12 },
 
   listWrap: { flex: 1 },
-  list: { flex: 1, backgroundColor: color.bgSoft },
+  list: { flex: 1, backgroundColor: color.bg },
   listContent: { paddingHorizontal: space.screenX, flexGrow: 1 },
   sep: { height: StyleSheet.hairlineWidth, backgroundColor: color.line },
   todayBtn: {
