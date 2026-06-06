@@ -21,7 +21,7 @@ function ThemedStack() {
   return (
     <>
       <StatusBar style={dark ? 'light' : 'dark'} />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.bg } }} />
+      <Stack screenOptions={{ headerShown: false, gestureEnabled: false, contentStyle: { backgroundColor: c.bg } }} />
     </>
   );
 }
