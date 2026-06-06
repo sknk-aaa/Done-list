@@ -61,7 +61,7 @@ export function BottomSheet({ visible, onClose, children, keyboardAvoiding = tru
   // Drag the whole sheet down to dismiss (activates only on a downward drag,
   // so taps and text inputs keep working).
   const dragGesture = Gesture.Pan()
-    .activeOffsetY([4, 1000])
+    .activeOffsetY([-8, 8])
     .onStart(() => {
       runOnJS(dismissKeyboard)();
     })
