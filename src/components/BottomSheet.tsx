@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -28,18 +28,32 @@ export function BottomSheet({ visible, onClose, children, keyboardAvoiding = tru
   const progress = useSharedValue(0);
   const sheetH = useSharedValue(screenH);
   const dragY = useSharedValue(0);
+  const openedRef = useRef(false);
 
   useEffect(() => {
     if (visible) {
       setMounted(true);
       dragY.value = 0;
-      progress.value = withTiming(1, { duration: 320, easing: EASE });
+      // Hide off-screen and wait for onLayout to measure THIS open's height,
+      // then start the slide — avoids a jump from a stale cached height.
+      sheetH.value = screenH;
+      progress.value = 0;
+      openedRef.current = false;
     } else {
+      openedRef.current = false;
       progress.value = withTiming(0, { duration: 240, easing: EASE }, (finished) => {
         if (finished) runOnJS(setMounted)(false);
       });
     }
-  }, [visible, progress, dragY]);
+  }, [visible, progress, dragY, sheetH, screenH]);
+
+  const onSheetLayout = (h: number) => {
+    sheetH.value = h;
+    if (!openedRef.current) {
+      openedRef.current = true;
+      progress.value = withTiming(1, { duration: 320, easing: EASE });
+    }
+  };
 
   // Drag the whole sheet down to dismiss (activates only on a downward drag,
   // so taps and text inputs keep working).
@@ -74,9 +88,7 @@ export function BottomSheet({ visible, onClose, children, keyboardAvoiding = tru
         <GestureDetector gesture={dragGesture}>
           <Animated.View
             style={[styles.sheet, shadow.sheet, sheetStyle]}
-            onLayout={(e) => {
-              sheetH.value = e.nativeEvent.layout.height;
-            }}
+            onLayout={(e) => onSheetLayout(e.nativeEvent.layout.height)}
           >
             <View style={styles.grabZone}>
               <View style={styles.grab} />
