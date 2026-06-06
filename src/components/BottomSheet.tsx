@@ -15,6 +15,10 @@ const EASE = Easing.bezier(0.4, 0, 0.2, 1);
 const DISMISS_DISTANCE = 70;
 const DISMISS_VELOCITY = 500;
 
+// Wrap in a plain JS fn — passing the native Keyboard.dismiss straight to
+// runOnJS crashes on native.
+const dismissKeyboard = () => Keyboard.dismiss();
+
 type Props = {
   visible: boolean;
   onClose: () => void;
@@ -61,7 +65,7 @@ export function BottomSheet({ visible, onClose, children, keyboardAvoiding = tru
     .activeOffsetY([6, 1000])
     .failOffsetX([-20, 20])
     .onStart(() => {
-      runOnJS(Keyboard.dismiss)();
+      runOnJS(dismissKeyboard)();
     })
     .onUpdate((e) => {
       dragY.value = Math.max(0, e.translationY);
