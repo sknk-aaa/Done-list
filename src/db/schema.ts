@@ -35,7 +35,7 @@ export const settings = sqliteTable('settings', {
   launchCount: integer('launch_count').notNull().default(0), // アプリ起動回数（レビュー判定用）
   reviewRequested: integer('review_requested', { mode: 'boolean' }).notNull().default(false),
   showTime: integer('show_time', { mode: 'boolean' }).notNull().default(true),
-  swipeAction: text('swipe_action').notNull().default('tab'), // 'date' | 'tab'
+  swipeAction: text('swipe_action').notNull().default('date'), // 'date' | 'tab'
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
 });

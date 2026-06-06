@@ -83,7 +83,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   launchCount: 0,
   reviewRequested: false,
   showTime: true,
-  swipeAction: 'tab',
+  swipeAction: 'date',
 
   selectedDate: today,
   view: 'daily',

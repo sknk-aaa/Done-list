@@ -2,7 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { runOnJS } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import ReorderableList, {
   type ReorderableListReorderEvent,
   reorderItems as arrayReorder,
@@ -11,7 +17,7 @@ import ReorderableList, {
 import { AppHeader, HeaderCaret } from '@/components/AppHeader';
 import { Fab } from '@/components/Fab';
 import { TaskRow } from '@/components/TaskRow';
-import { Plus } from '@/icons';
+import { Pencil, Undo } from '@/icons';
 import { useDailyItems } from '@/data/useData';
 import type { ItemWithTag } from '@/db/types';
 import { formatLong, getTodayISO } from '@/lib/date';
@@ -81,6 +87,14 @@ export function DailyScreen() {
     void reorderTasks(next.map((i) => i.id));
   };
 
+  // Gentle cross-fade when the day changes (swipe / date tap / back-to-today).
+  const fade = useSharedValue(1);
+  useEffect(() => {
+    fade.value = 0.25;
+    fade.value = withTiming(1, { duration: 240, easing: Easing.out(Easing.cubic) });
+  }, [selectedDate, fade]);
+  const fadeStyle = useAnimatedStyle(() => ({ opacity: fade.value }));
+
   const left = (
     <Pressable style={styles.dhead} onPress={() => openDatePop('daily')} hitSlop={6}>
       <Text style={styles.dhMain}>{formatLong(selectedDate, lang)}</Text>
@@ -93,8 +107,9 @@ export function DailyScreen() {
       {isToday ? (
         <Text style={styles.todayLabel}>{t('daily.today')}</Text>
       ) : (
-        <Pressable onPress={goToday} hitSlop={6}>
-          <Text style={styles.backToday}>↩ {t('daily.backToToday')}</Text>
+        <Pressable onPress={goToday} hitSlop={6} style={styles.backTodayRow}>
+          <Undo size={13} color={color.teal} strokeWidth={2.4} />
+          <Text style={styles.backToday}>{t('daily.backToToday')}</Text>
         </Pressable>
       )}
       <Text style={styles.statusDot}> · </Text>
@@ -129,39 +144,41 @@ export function DailyScreen() {
         </View>
       )}
 
-      <ReorderableList
-        data={rows}
-        keyExtractor={(it) => String(it.id)}
-        style={styles.list}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-        onReorder={handleReorder}
-        ItemSeparatorComponent={() => <View style={styles.sep} />}
-        renderItem={({ item }) => (
-          <TaskRow
-            item={item}
-            showTime={showTime}
-            draggable={!active}
-            onToggle={() => setComplete(item, !item.isCompleted)}
-            onPress={() => openEditSheet(item)}
-          />
-        )}
-        ListEmptyComponent={
-          active ? (
-            <View style={styles.empty}>
-              <Text style={styles.emptyText}>{t('daily.empty')}</Text>
-            </View>
-          ) : (
-            <View style={styles.empty}>
-              <View style={styles.emptyIcon}>
-                <Plus size={30} color={color.teal} strokeWidth={2.4} />
+      <Animated.View style={[styles.listWrap, fadeStyle]}>
+        <ReorderableList
+          data={rows}
+          keyExtractor={(it) => String(it.id)}
+          style={styles.list}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          onReorder={handleReorder}
+          ItemSeparatorComponent={() => <View style={styles.sep} />}
+          renderItem={({ item }) => (
+            <TaskRow
+              item={item}
+              showTime={showTime}
+              draggable={!active}
+              onToggle={() => setComplete(item, !item.isCompleted)}
+              onPress={() => openEditSheet(item)}
+            />
+          )}
+          ListEmptyComponent={
+            active ? (
+              <View style={styles.empty}>
+                <Text style={styles.emptyText}>{t('daily.empty')}</Text>
               </View>
-              <Text style={styles.emptyTitle}>{t('daily.emptyDay')}</Text>
-              <Text style={styles.emptyHint}>{t('daily.emptyDayHint')}</Text>
-            </View>
-          )
-        }
-      />
+            ) : (
+              <View style={styles.empty}>
+                <View style={styles.emptyIcon}>
+                  <Pencil size={28} color={color.teal} strokeWidth={2} />
+                </View>
+                <Text style={styles.emptyTitle}>{t('daily.emptyDay')}</Text>
+                <Text style={styles.emptyHint}>{t('daily.emptyDayHint')}</Text>
+              </View>
+            )
+          }
+        />
+      </Animated.View>
 
       <Fab onPress={() => openAddSheet()} />
       </View>
@@ -175,6 +192,7 @@ const styles = StyleSheet.create({
   dhMain: { fontSize: font.size.h2, fontWeight: '700', color: color.ink },
   statusRow: { flexDirection: 'row', alignItems: 'center' },
   todayLabel: { fontSize: font.size.caption, fontWeight: '600', color: color.teal },
+  backTodayRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   backToday: { fontSize: font.size.caption, fontWeight: '700', color: color.teal },
   statusDot: { fontSize: font.size.caption, color: color.muted },
   progress: { fontSize: font.size.caption, fontWeight: '500', color: color.muted },
@@ -193,10 +211,11 @@ const styles = StyleSheet.create({
   filterBarText: { flex: 1, fontSize: 13, fontWeight: '600', color: '#0F8A7C' },
   filterClear: { fontSize: 13, fontWeight: '700', color: color.teal, marginLeft: 12 },
 
+  listWrap: { flex: 1 },
   list: { flex: 1, backgroundColor: color.bgSoft },
   listContent: { paddingHorizontal: space.screenX, flexGrow: 1 },
   sep: { height: StyleSheet.hairlineWidth, backgroundColor: color.line },
-  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 100, paddingHorizontal: 40 },
+  empty: { flex: 1, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 64, paddingHorizontal: 40 },
   emptyIcon: {
     width: 64,
     height: 64,

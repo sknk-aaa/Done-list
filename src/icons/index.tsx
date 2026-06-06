@@ -92,6 +92,20 @@ export const ChevronLeft = ({ size = 22, color = C.teal, strokeWidth = 2.4 }: Ic
   </Svg>
 );
 
+export const Undo = ({ size = 14, color = C.teal, strokeWidth = 2.2 }: IconProps) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" stroke={color} {...stroke(strokeWidth)}>
+    <Polyline points="8 5 3 10 8 15" />
+    <Path d="M3 10h9a7 7 0 0 1 7 7v1" />
+  </Svg>
+);
+
+export const Pencil = ({ size = 30, color = C.teal, strokeWidth = 2 }: IconProps) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" stroke={color} {...stroke(strokeWidth)}>
+    <Path d="M14.5 5.5l4 4L8 20l-4.5 1L4.5 16.5 14.5 5.5z" />
+    <Line x1="13" y1="7" x2="17" y2="11" />
+  </Svg>
+);
+
 export const ChevronDown = ({ size = 18, color = '#B0B5B9', strokeWidth = 2.2 }: IconProps) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" stroke={color} {...stroke(strokeWidth)}>
     <Polyline points="6 9 12 15 18 9" />
