@@ -14,7 +14,7 @@ import { Toast } from '@/components/Toast';
 import { DailyScreen } from '@/screens/DailyScreen';
 import { MonthScreen } from '@/screens/MonthScreen';
 import { useAppStore } from '@/state/store';
-import { color } from '@/theme/tokens';
+import { useColors } from '@/theme/theme';
 
 // Dev-only: expose the store to the web preview harness for driving overlays.
 if (__DEV__ && typeof window !== 'undefined') {
@@ -26,6 +26,7 @@ export default function AppShell() {
   const view = useAppStore((s) => s.view);
   const setView = useAppStore((s) => s.setView);
   const setOnboardingOpen = useAppStore((s) => s.setOnboardingOpen);
+  const c = useColors();
 
   useEffect(() => {
     AsyncStorage.getItem(ONBOARDED_KEY).then((v) => {
@@ -44,7 +45,7 @@ export default function AppShell() {
   const pagerStyle = useAnimatedStyle(() => ({ transform: [{ translateX: tx.value }] }));
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { backgroundColor: c.bg }]}>
       <Animated.View style={[styles.pager, { width: width * 2 }, pagerStyle]}>
         <View style={{ width }}>
           <DailyScreen />
@@ -67,6 +68,6 @@ export default function AppShell() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: color.bg, overflow: 'hidden' },
+  root: { flex: 1, overflow: 'hidden' },
   pager: { flex: 1, flexDirection: 'row' },
 });

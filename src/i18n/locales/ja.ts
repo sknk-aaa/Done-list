@@ -69,6 +69,7 @@ const ja: typeof en = {
     upgradeSub: '広告なし',
     settings: '設定',
     showTime: '時刻を表示',
+    darkTheme: 'ダークテーマ',
     swipeTitle: 'スワイプ操作',
     swipeLabel: '画面を左右にスワイプしたとき',
     swipeDate: '日付・月の移動',

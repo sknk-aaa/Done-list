@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -9,11 +9,14 @@ import { useTags } from '@/data/useData';
 import { createTag, deleteTag } from '@/db/queries';
 import { ChevronLeft } from '@/icons';
 import { useAppStore } from '@/state/store';
-import { color, font, presetColors, radius, shadow } from '@/theme/tokens';
+import { font, presetColors, radius, shadow } from '@/theme/tokens';
+import { useColors, type Colors } from '@/theme/theme';
 
 const EASE = Easing.bezier(0.4, 0, 0.2, 1);
 
 export function TagEditScreen() {
+  const c = useColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
   const { t } = useTranslation();
   const open = useAppStore((s) => s.tagEditOpen);
   const setOpen = useAppStore((s) => s.setTagEditOpen);
@@ -78,7 +81,7 @@ export function TagEditScreen() {
       <Animated.View style={[styles.screen, { paddingTop: insets.top }, slideStyle]}>
         <View style={styles.bar}>
           <Pressable style={styles.back} onPress={() => setOpen(false)} hitSlop={8}>
-            <ChevronLeft size={22} color={color.teal} />
+            <ChevronLeft size={22} color={c.teal} />
             <Text style={styles.backText}>{t('common.back')}</Text>
           </Pressable>
           <Text style={styles.title}>{t('tagEdit.title')}</Text>
@@ -106,7 +109,7 @@ export function TagEditScreen() {
             <TextInput
               style={styles.input}
               placeholder={t('tagEdit.namePlaceholder')}
-              placeholderTextColor={color.muted}
+              placeholderTextColor={c.muted}
               value={name}
               onChangeText={setName}
               maxLength={20}
@@ -133,45 +136,45 @@ export function TagEditScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: color.bgSoft },
+const makeStyles = (c: Colors) => StyleSheet.create({
+  screen: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: c.bgSoft },
   bar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 12,
     paddingVertical: 10,
-    backgroundColor: color.bg,
+    backgroundColor: c.bg,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: color.line,
+    borderBottomColor: c.line,
   },
   back: { flexDirection: 'row', alignItems: 'center', minWidth: 72 },
-  backText: { fontSize: font.size.title, color: color.teal },
-  title: { fontSize: font.size.title, fontWeight: '700', color: color.ink },
+  backText: { fontSize: font.size.title, color: c.teal },
+  title: { fontSize: font.size.title, fontWeight: '700', color: c.ink },
   body: { padding: 18 },
-  sectionLabel: { fontSize: font.size.small, fontWeight: '600', color: color.muted, marginTop: 8, marginBottom: 8, marginLeft: 4 },
-  card: { backgroundColor: color.bg, borderRadius: radius.card, ...shadow.card },
+  sectionLabel: { fontSize: font.size.small, fontWeight: '600', color: c.muted, marginTop: 8, marginBottom: 8, marginLeft: 4 },
+  card: { backgroundColor: c.bg, borderRadius: radius.card, ...shadow.card },
   tagRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 15, paddingHorizontal: 16 },
-  divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: color.line },
+  divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: c.line },
   left: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   dot: { width: 13, height: 13, borderRadius: 7 },
-  tagName: { fontSize: font.size.title, color: color.ink },
-  delete: { fontSize: font.size.body, fontWeight: '600', color: color.red },
+  tagName: { fontSize: font.size.title, color: c.ink },
+  delete: { fontSize: font.size.body, fontWeight: '600', color: c.red },
   input: {
-    backgroundColor: color.field,
+    backgroundColor: c.field,
     borderRadius: radius.field,
     margin: 16,
     marginBottom: 12,
     paddingVertical: 14,
     paddingHorizontal: 16,
     fontSize: font.size.title,
-    color: color.ink,
+    color: c.ink,
   },
   swatchRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, paddingHorizontal: 16, marginBottom: 8 },
   swatchWrap: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: 'transparent' },
-  swatchSelected: { borderColor: color.teal },
+  swatchSelected: { borderColor: c.teal },
   swatch: { width: 34, height: 34, borderRadius: 17 },
-  addBtn: { backgroundColor: color.teal, borderRadius: radius.field, margin: 16, marginTop: 8, paddingVertical: 15, alignItems: 'center' },
+  addBtn: { backgroundColor: c.teal, borderRadius: radius.field, margin: 16, marginTop: 8, paddingVertical: 15, alignItems: 'center' },
   addBtnDisabled: { opacity: 0.4 },
   addText: { fontSize: font.size.title, fontWeight: '700', color: '#fff' },
 });

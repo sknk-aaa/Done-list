@@ -1,11 +1,15 @@
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Pressable } from 'react-native-gesture-handler';
 
-import { color, font } from '@/theme/tokens';
+import { font } from '@/theme/tokens';
+import { useColors, type Colors } from '@/theme/theme';
 
 type Action = { label: string; onPress: () => void; muted?: boolean; disabled?: boolean };
 
 export function SheetHeader({ left, title, right }: { left: Action; title: string; right: Action }) {
+  const c = useColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
   return (
     <View style={styles.header}>
       <View style={styles.side}>
@@ -23,7 +27,7 @@ export function SheetHeader({ left, title, right }: { left: Action; title: strin
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Colors) => StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -33,9 +37,9 @@ const styles = StyleSheet.create({
   },
   side: { flex: 1, alignItems: 'flex-start' },
   right: { alignItems: 'flex-end' },
-  title: { fontSize: font.size.title, fontWeight: '700', color: color.ink },
+  title: { fontSize: font.size.title, fontWeight: '700', color: c.ink },
   action: { fontSize: font.size.title },
-  accent: { color: color.teal, fontWeight: '600' },
-  muted: { color: color.muted },
+  accent: { color: c.teal, fontWeight: '600' },
+  muted: { color: c.muted },
   disabled: { opacity: 0.4 },
 });

@@ -1,10 +1,11 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, useMemo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Polygon } from 'react-native-svg';
 
 import { Funnel, Hamburger } from '@/icons';
-import { color, space } from '@/theme/tokens';
+import { space } from '@/theme/tokens';
+import { useColors, type Colors } from '@/theme/theme';
 
 type Props = {
   left: ReactNode;
@@ -15,26 +16,30 @@ type Props = {
 };
 
 export function HeaderCaret() {
+  const c = useColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
   return (
     <Svg width={10} height={7} viewBox="0 0 10 7" style={styles.caret}>
-      <Polygon points="0,0 10,0 5,7" fill="#9AA0A6" />
+      <Polygon points="0,0 10,0 5,7" fill={c.muted} />
     </Svg>
   );
 }
 
 export function AppHeader({ left, sub, filterActive, onFilter, onMenu }: Props) {
   const insets = useSafeAreaInsets();
+  const c = useColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
   return (
     <View style={[styles.wrap, { paddingTop: insets.top + 6 }]}>
       <View style={styles.row}>
         <View style={styles.left}>{left}</View>
         <View style={styles.tools}>
           <Pressable onPress={onFilter} hitSlop={10} style={styles.funnelWrap}>
-            <Funnel size={26} color={color.teal} />
+            <Funnel size={26} color={c.teal} />
             {filterActive && <View style={styles.filterDot} />}
           </Pressable>
           <Pressable onPress={onMenu} hitSlop={10}>
-            <Hamburger size={28} color="#3A3F44" />
+            <Hamburger size={28} color={c.ink2} />
           </Pressable>
         </View>
       </View>
@@ -43,8 +48,8 @@ export function AppHeader({ left, sub, filterActive, onFilter, onMenu }: Props) 
   );
 }
 
-const styles = StyleSheet.create({
-  wrap: { paddingHorizontal: space.headerX, paddingBottom: 10, backgroundColor: color.bg },
+const makeStyles = (c: Colors) => StyleSheet.create({
+  wrap: { paddingHorizontal: space.headerX, paddingBottom: 10, backgroundColor: c.bg },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   left: { flexShrink: 1 },
   tools: { flexDirection: 'row', alignItems: 'center', gap: 18 },
@@ -56,9 +61,9 @@ const styles = StyleSheet.create({
     width: 9,
     height: 9,
     borderRadius: 5,
-    backgroundColor: color.teal,
+    backgroundColor: c.teal,
     borderWidth: 1.5,
-    borderColor: color.bg,
+    borderColor: c.bg,
   },
   caret: { marginLeft: 7, marginBottom: 2 },
   sub: { marginTop: 3 },

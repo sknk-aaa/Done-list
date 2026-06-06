@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ChevronLeft, ChevronRight } from '@/icons';
@@ -11,7 +11,8 @@ import {
   parseISO,
   toISO,
 } from '@/lib/date';
-import { color, font } from '@/theme/tokens';
+import { font } from '@/theme/tokens';
+import { useColors, type Colors } from '@/theme/theme';
 
 type Props = {
   value: string; // selected ISO
@@ -21,6 +22,8 @@ type Props = {
 };
 
 export function MiniCalendar({ value, todayISO, lang, onPick }: Props) {
+  const c = useColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
   const init = parseISO(value);
   const [y, setY] = useState(init.y);
   const [m, setM] = useState(init.m0);
@@ -85,19 +88,19 @@ export function MiniCalendar({ value, todayISO, lang, onPick }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Colors) => StyleSheet.create({
   wrap: { paddingVertical: 8 },
   head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 8, marginBottom: 6 },
   nav: { padding: 4 },
-  title: { fontSize: font.size.title, fontWeight: '700', color: color.ink },
+  title: { fontSize: font.size.title, fontWeight: '700', color: c.ink },
   row: { flexDirection: 'row' },
-  dow: { width: `${100 / 7}%`, textAlign: 'center', fontSize: 12, color: color.muted, paddingBottom: 4 },
-  sun: { color: color.red },
+  dow: { width: `${100 / 7}%`, textAlign: 'center', fontSize: 12, color: c.muted, paddingBottom: 4 },
+  sun: { color: c.red },
   grid: { flexDirection: 'row', flexWrap: 'wrap' },
   cell: { width: `${100 / 7}%`, aspectRatio: 1, alignItems: 'center', justifyContent: 'center' },
   day: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
-  daySelected: { backgroundColor: color.teal },
-  dayText: { fontSize: font.size.body, color: color.ink },
-  dayToday: { color: color.teal, fontWeight: '700' },
-  daySelectedText: { color: color.white, fontWeight: '700' },
+  daySelected: { backgroundColor: c.teal },
+  dayText: { fontSize: font.size.body, color: c.ink },
+  dayToday: { color: c.teal, fontWeight: '700' },
+  daySelectedText: { color: c.white, fontWeight: '700' },
 });

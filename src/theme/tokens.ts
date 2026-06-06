@@ -4,7 +4,7 @@
  * All sizes are in points (RN default == iOS pt == CSS px in the mock).
  */
 
-export const color = {
+export const lightColors = {
   // Brand / accent
   teal: '#48C1A8',
   tealDark: '#3AAB93',
@@ -12,15 +12,22 @@ export const color = {
 
   // Neutrals
   ink: '#2C2E33', // primary text
+  ink2: '#3A3F44', // strong secondary (headings, icons)
   muted: '#9CA1A7', // secondary text
+  faint: '#B4B9BD', // placeholders / hints / dim
   line: '#EDEEF0', // hairline dividers / cell borders
+  divider: '#E2E5E8', // grab handle, dots
   bg: '#FFFFFF', // screen background
-  bgSoft: '#F6F7F8', // pressed states, inset fields
+  bgSoft: '#F6F7F8', // pressed states, inset fields, drawer panel
+  surface: '#FFFFFF', // cards, sheets, tab bar
   field: '#F3F4F5', // input field background
   segTrack: '#F0F1F2', // segmented-control track
   switchOff: '#DFE2E5', // toggle off track
+  selectedCell: '#F2FBFA', // month selected cell bg
+  filterBg: '#E6F6F4', // active-filter banner bg
+  filterText: '#0F8A7C', // active-filter banner text
 
-  // Tag / status palette (soft)
+  // Tag / status palette (soft) — shared across themes
   blue: '#4A90E2',
   green: '#48C1A8',
   orange: '#F0934A',
@@ -30,10 +37,53 @@ export const color = {
   red: '#EF5B52',
   gray: '#A7ADB3',
 
-  white: '#FFFFFF',
+  white: '#FFFFFF', // on-accent text
   chevron: '#C5CACE',
+  scrim: 'rgba(20,24,28,0.38)',
   statusBarIcon: '#000000',
-} as const;
+};
+
+export type Colors = typeof lightColors;
+
+// Subtle-navy dark palette (Pro). Accent + tag colors stay the same.
+export const darkColors: Colors = {
+  teal: '#48C1A8',
+  tealDark: '#3AAB93',
+  tealTint: 'rgba(72,193,168,0.22)',
+
+  ink: '#E8EAED',
+  ink2: '#D4D8DE',
+  muted: '#9AA1AC',
+  faint: '#6F7884',
+  line: '#2A313D',
+  divider: '#323A46',
+  bg: '#161A22',
+  bgSoft: '#1E2430',
+  surface: '#1E2430',
+  field: '#232A36',
+  segTrack: '#232A36',
+  switchOff: '#3A434F',
+  selectedCell: '#22303A',
+  filterBg: '#16302C',
+  filterText: '#5FD3BD',
+
+  blue: '#4A90E2',
+  green: '#48C1A8',
+  orange: '#F0934A',
+  purple: '#8A5CA8',
+  gold: '#E6BD4F',
+  pink: '#EF6E9A',
+  red: '#FF6B62',
+  gray: '#A7ADB3',
+
+  white: '#FFFFFF',
+  chevron: '#5A636F',
+  scrim: 'rgba(0,0,0,0.50)',
+  statusBarIcon: '#FFFFFF',
+};
+
+// Back-compat default (light). Prefer useColors() in components for theming.
+export const color = lightColors;
 
 /** Tag categories → color. Tag dot + the colored check ring use this. */
 export const tagColor: Record<string, string> = {

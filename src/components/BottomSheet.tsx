@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState, useMemo } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -9,7 +9,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { color, radius, shadow } from '@/theme/tokens';
+import { radius, shadow } from '@/theme/tokens';
+import { useColors, type Colors } from '@/theme/theme';
 
 const EASE = Easing.bezier(0.4, 0, 0.2, 1);
 const DISMISS_DISTANCE = 70;
@@ -26,6 +27,8 @@ type Props = {
 };
 
 export function BottomSheet({ visible, onClose, children, keyboardAvoiding = true }: Props) {
+  const c = useColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
   const { height: screenH } = useWindowDimensions();
   const [mounted, setMounted] = useState(visible);
   const progress = useSharedValue(0);
@@ -108,17 +111,17 @@ export function BottomSheet({ visible, onClose, children, keyboardAvoiding = tru
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Colors) => StyleSheet.create({
   fill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   scrim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(20,24,28,0.38)' },
   kav: { flex: 1, justifyContent: 'flex-end' },
   sheet: {
-    backgroundColor: color.bg,
+    backgroundColor: c.bg,
     borderTopLeftRadius: radius.sheetTop,
     borderTopRightRadius: radius.sheetTop,
     maxHeight: '92%',
     overflow: 'hidden',
   },
   grabZone: { paddingTop: 8, paddingBottom: 6, alignItems: 'center' },
-  grab: { width: 38, height: 5, borderRadius: 3, backgroundColor: '#E2E5E8' },
+  grab: { width: 38, height: 5, borderRadius: 3, backgroundColor: c.divider },
 });

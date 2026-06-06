@@ -1,15 +1,19 @@
+import { useMemo } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 
-import { color, size } from '@/theme/tokens';
+import { size } from '@/theme/tokens';
+import { useColors, type Colors } from '@/theme/theme';
 
 const { w, h, knob, pad } = size.switch;
 
 export function Switch({ value, onValueChange }: { value: boolean; onValueChange: (v: boolean) => void }) {
+  const c = useColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
   const p = useDerivedValue(() => withTiming(value ? 1 : 0, { duration: 200 }), [value]);
 
   const trackStyle = useAnimatedStyle(() => ({
-    backgroundColor: value ? color.teal : color.switchOff,
+    backgroundColor: value ? c.teal : c.switchOff,
   }));
   const knobStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: p.value * (w - knob - pad * 2) }],
@@ -24,7 +28,7 @@ export function Switch({ value, onValueChange }: { value: boolean; onValueChange
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Colors) => StyleSheet.create({
   track: { width: w, height: h, borderRadius: h / 2, padding: pad, justifyContent: 'center' },
   knob: {
     width: knob,

@@ -1,12 +1,15 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 
 import { useAppStore } from '@/state/store';
-import { color, font } from '@/theme/tokens';
+import { font } from '@/theme/tokens';
+import { useColors, type Colors } from '@/theme/theme';
 
 export function Toast() {
+  const c = useColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
   const toast = useAppStore((s) => s.toast);
   const clearToast = useAppStore((s) => s.clearToast);
   const insets = useSafeAreaInsets();
@@ -44,7 +47,7 @@ export function Toast() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Colors) => StyleSheet.create({
   wrap: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
   toast: {
     flexDirection: 'row',
@@ -56,5 +59,5 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
   text: { color: '#fff', fontSize: font.size.body, fontWeight: '600' },
-  action: { color: color.teal, fontSize: font.size.body, fontWeight: '700' },
+  action: { color: c.teal, fontSize: font.size.body, fontWeight: '700' },
 });

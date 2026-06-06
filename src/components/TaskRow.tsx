@@ -1,12 +1,12 @@
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { ItemWithTag } from '@/db/queries';
 import { Bell, Note } from '@/icons';
-import { color, font } from '@/theme/tokens';
+import { font } from '@/theme/tokens';
+import { useColors, type Colors } from '@/theme/theme';
 
 import { CheckRing } from './CheckRing';
-
-const TAGLESS_RING = '#CFD3D6';
 
 type Props = {
   item: ItemWithTag;
@@ -16,7 +16,9 @@ type Props = {
 };
 
 export function TaskRow({ item, showTime, onToggle, onPress }: Props) {
-  const tagColor = item.tag?.color ?? TAGLESS_RING;
+  const c = useColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
+  const tagColor = item.tag?.color ?? c.chevron;
   const hasSub = !!item.tag || !!item.memo;
   const showTimeVal = showTime && !!item.time;
 
@@ -41,7 +43,7 @@ export function TaskRow({ item, showTime, onToggle, onPress }: Props) {
       </View>
       {showTimeVal && (
         <View style={styles.timeWrap}>
-          {item.notifyEnabled && <Bell size={12} color={color.teal} />}
+          {item.notifyEnabled && <Bell size={12} color={c.teal} />}
           <Text style={styles.time}>{item.time}</Text>
         </View>
       )}
@@ -49,15 +51,15 @@ export function TaskRow({ item, showTime, onToggle, onPress }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Colors) => StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 17 },
-  pressed: { backgroundColor: color.bgSoft },
+  pressed: { backgroundColor: c.bgSoft },
   main: { flex: 1, gap: 6 },
-  title: { fontSize: font.size.title, fontWeight: '600', color: color.ink },
+  title: { fontSize: font.size.title, fontWeight: '600', color: c.ink },
   sub: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   tagWrap: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   dot: { width: 6, height: 6, borderRadius: 3 },
   tagName: { fontSize: font.size.caption, fontWeight: '600' },
   timeWrap: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  time: { fontSize: font.size.body, fontWeight: '600', color: '#7C8186', fontVariant: ['tabular-nums'] },
+  time: { fontSize: font.size.body, fontWeight: '600', color: c.muted, fontVariant: ['tabular-nums'] },
 });

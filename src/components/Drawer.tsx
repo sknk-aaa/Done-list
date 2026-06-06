@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -6,7 +6,8 @@ import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withTiming
 
 import { Chat, Check, ChevronRight, Compass, ProSpark, Question, Star } from '@/icons';
 import { useAppStore, type SwipeAction } from '@/state/store';
-import { color, font, radius, shadow } from '@/theme/tokens';
+import { font, radius, shadow } from '@/theme/tokens';
+import { useColors, type Colors } from '@/theme/theme';
 
 import { Segmented } from './Segmented';
 import { Switch } from './Switch';
@@ -17,11 +18,16 @@ const FAQ_URL = `${SITE}/faq.html`;
 const CONTACT_FORM = { en: 'https://tally.so/r/81rG5Y', ja: 'https://tally.so/r/obzogX' };
 
 export function Drawer() {
+  const c = useColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
   const { t, i18n } = useTranslation();
   const open = useAppStore((s) => s.drawerOpen);
   const setOpen = useAppStore((s) => s.setDrawerOpen);
   const showTime = useAppStore((s) => s.showTime);
   const setShowTime = useAppStore((s) => s.setShowTime);
+  const darkMode = useAppStore((s) => s.darkMode);
+  const setDarkMode = useAppStore((s) => s.setDarkMode);
+  const isPro = useAppStore((s) => s.isPro);
   const swipeAction = useAppStore((s) => s.swipeAction);
   const setSwipeAction = useAppStore((s) => s.setSwipeAction);
   const setOnboardingOpen = useAppStore((s) => s.setOnboardingOpen);
@@ -70,12 +76,12 @@ export function Drawer() {
             </View>
 
             <Pressable style={[styles.card, styles.proRow]} onPress={soon}>
-              <ProSpark size={22} color={color.teal} />
+              <ProSpark size={22} color={c.teal} />
               <View style={styles.proText}>
                 <Text style={styles.proTitle}>{t('drawer.upgrade')}</Text>
                 <Text style={styles.proSub}>{t('drawer.upgradeSub')}</Text>
               </View>
-              <ChevronRight size={20} color={color.chevron} />
+              <ChevronRight size={20} color={c.chevron} />
             </Pressable>
 
             <Text style={styles.sectionLabel}>{t('drawer.settings')}</Text>
@@ -83,6 +89,17 @@ export function Drawer() {
               <View style={styles.settingRow}>
                 <Text style={styles.rowTitle}>{t('drawer.showTime')}</Text>
                 <Switch value={showTime} onValueChange={setShowTime} />
+              </View>
+              <View style={[styles.settingRow, styles.divider]}>
+                <View style={styles.rowTitleWrap}>
+                  <Text style={styles.rowTitle}>{t('drawer.darkTheme')}</Text>
+                  {!isPro && <Text style={styles.proTag}>{t('drawer.planPro')}</Text>}
+                </View>
+                {isPro ? (
+                  <Switch value={darkMode} onValueChange={setDarkMode} />
+                ) : (
+                  <ChevronRight size={20} color={c.chevron} />
+                )}
               </View>
               <View style={[styles.swipeBlock, styles.divider]}>
                 <Text style={styles.swipeLabel}>{t('drawer.swipeLabel')}</Text>
@@ -138,51 +155,65 @@ export function Drawer() {
 }
 
 function SupportRow({ icon, label, onPress, first }: { icon: ReactNode; label: string; onPress: () => void; first?: boolean }) {
+  const c = useColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
   return (
     <Pressable style={[styles.supportRow, !first && styles.divider]} onPress={onPress}>
       {icon}
       <Text style={styles.supportLabel}>{label}</Text>
-      <ChevronRight size={20} color={color.chevron} />
+      <ChevronRight size={20} color={c.chevron} />
     </Pressable>
   );
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Colors) => StyleSheet.create({
   fill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, flexDirection: 'row', justifyContent: 'flex-end' },
   scrim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(20,24,28,0.38)' },
-  panel: { backgroundColor: '#F5F6F7' },
+  panel: { backgroundColor: c.bgSoft },
   content: { paddingHorizontal: 18, paddingBottom: 20 },
   appHeader: { paddingTop: 48, paddingBottom: 14, alignItems: 'flex-start' },
   appIcon: {
     width: 52,
     height: 52,
     borderRadius: 14,
-    backgroundColor: color.teal,
+    backgroundColor: c.teal,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
   },
-  appName: { fontSize: font.size.h1, fontWeight: '700', color: color.ink },
-  plan: { fontSize: font.size.caption, color: color.muted, marginTop: 2 },
+  appName: { fontSize: font.size.h1, fontWeight: '700', color: c.ink },
+  plan: { fontSize: font.size.caption, color: c.muted, marginTop: 2 },
 
-  card: { backgroundColor: color.bg, borderRadius: radius.card, ...shadow.card, marginBottom: 6 },
-  divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: color.line },
+  card: { backgroundColor: c.bg, borderRadius: radius.card, ...shadow.card, marginBottom: 6 },
+  divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: c.line },
 
   proRow: { flexDirection: 'row', alignItems: 'center', padding: 16, gap: 14 },
   proText: { flex: 1 },
-  proTitle: { fontSize: font.size.title, fontWeight: '600', color: color.teal },
-  proSub: { fontSize: font.size.caption, color: color.muted, marginTop: 2 },
+  proTitle: { fontSize: font.size.title, fontWeight: '600', color: c.teal },
+  proSub: { fontSize: font.size.caption, color: c.muted, marginTop: 2 },
 
-  sectionLabel: { fontSize: font.size.small, fontWeight: '600', color: color.muted, paddingTop: 20, paddingBottom: 8, paddingLeft: 4 },
+  sectionLabel: { fontSize: font.size.small, fontWeight: '600', color: c.muted, paddingTop: 20, paddingBottom: 8, paddingLeft: 4 },
   settingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 14, paddingHorizontal: 16 },
-  rowTitle: { fontSize: font.size.title, color: color.ink },
+  rowTitle: { fontSize: font.size.title, color: c.ink },
+  rowTitleWrap: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  proTag: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: c.teal,
+    borderWidth: 1,
+    borderColor: c.teal,
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    overflow: 'hidden',
+  },
   swipeBlock: { paddingVertical: 14, paddingHorizontal: 16 },
-  swipeLabel: { fontSize: font.size.caption, color: color.muted, marginBottom: 10 },
+  swipeLabel: { fontSize: font.size.caption, color: c.muted, marginBottom: 10 },
 
   supportRow: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 15, paddingHorizontal: 16 },
-  supportLabel: { flex: 1, fontSize: font.size.title, fontWeight: '500', color: color.ink },
+  supportLabel: { flex: 1, fontSize: font.size.title, fontWeight: '500', color: c.ink },
 
-  footer: { textAlign: 'center', fontSize: font.size.caption, color: '#BCC1C6', marginTop: 26 },
+  footer: { textAlign: 'center', fontSize: font.size.caption, color: c.faint, marginTop: 26 },
 });

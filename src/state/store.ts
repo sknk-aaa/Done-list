@@ -1,9 +1,11 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 
 import { patchSettings } from '@/db/queries';
 import type { Settings } from '@/db/schema';
 import type { ItemWithTag } from '@/db/types';
 import { addDaysISO, getTodayISO, parseISO } from '@/lib/date';
+import { FORCE_PRO } from '@/lib/dev';
 
 export type FilterStatus = 'all' | 'done' | 'todo';
 export type Filter = { status: FilterStatus; tagIds: number[] };
@@ -22,6 +24,8 @@ type AppState = {
   reviewRequested: boolean;
   showTime: boolean;
   swipeAction: SwipeAction;
+  darkMode: boolean; // Pro dark theme preference (persisted in AsyncStorage)
+  isPro: boolean; // entitlement (RevenueCat; dev-forced in dev)
 
   // navigation
   selectedDate: string; // ISO 'YYYY-MM-DD'
@@ -46,6 +50,8 @@ type AppState = {
   hydrateSettings: (s: Settings) => void;
   setShowTime: (v: boolean) => void;
   setSwipeAction: (v: SwipeAction) => void;
+  setDarkMode: (v: boolean) => void;
+  setPro: (v: boolean) => void;
   setAccentColor: (v: string) => void;
   setLocale: (v: string | null) => void;
   markReviewRequested: () => void;
@@ -85,6 +91,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   reviewRequested: false,
   showTime: true,
   swipeAction: 'date',
+  darkMode: false,
+  isPro: FORCE_PRO,
 
   selectedDate: today,
   view: 'daily',
@@ -117,6 +125,11 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ showTime: v });
     void patchSettings({ showTime: v });
   },
+  setDarkMode: (v) => {
+    set({ darkMode: v });
+    void AsyncStorage.setItem('todone_dark', v ? '1' : '0');
+  },
+  setPro: (v) => set({ isPro: v }),
   setSwipeAction: (v) => {
     set({ swipeAction: v });
     void patchSettings({ swipeAction: v });

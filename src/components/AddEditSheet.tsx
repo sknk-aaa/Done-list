@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Keyboard, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Pressable } from 'react-native-gesture-handler';
@@ -9,7 +9,8 @@ import { formatLong, formatTime, getTodayISO, timeToDate } from '@/lib/date';
 import { ensureNotificationPermission } from '@/lib/notifications';
 import { removeTask, saveEditTask, saveNewTask } from '@/lib/taskActions';
 import { useAppStore } from '@/state/store';
-import { color, font, radius } from '@/theme/tokens';
+import { font, radius } from '@/theme/tokens';
+import { useColors, type Colors } from '@/theme/theme';
 
 import { BottomSheet } from './BottomSheet';
 import { MiniCalendar } from './MiniCalendar';
@@ -23,6 +24,8 @@ if (Platform.OS !== 'web') {
 }
 
 export function AddEditSheet() {
+  const c = useColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
   const { t, i18n } = useTranslation();
   const lang = i18n.language === 'ja' ? 'ja' : 'en';
   const sheet = useAppStore((s) => s.sheet);
@@ -130,7 +133,7 @@ export function AddEditSheet() {
           ref={nameRef}
           style={styles.nameInput}
           placeholder={t('sheet.namePlaceholder')}
-          placeholderTextColor={color.muted}
+          placeholderTextColor={c.muted}
           value={title}
           onChangeText={setTitle}
           maxLength={80}
@@ -140,7 +143,7 @@ export function AddEditSheet() {
         <TextInput
           style={[styles.field, styles.memoInput]}
           placeholder={t('sheet.memoPlaceholder')}
-          placeholderTextColor={color.muted}
+          placeholderTextColor={c.muted}
           value={memo}
           onChangeText={setMemo}
           multiline
@@ -191,7 +194,7 @@ export function AddEditSheet() {
             <Text style={styles.label}>{t('sheet.time')}</Text>
             <Pressable style={styles.field} onPress={() => Platform.OS !== 'web' && setShowPicker(true)}>
               <Text style={[styles.fieldText, !time && styles.placeholder]}>{time ?? '--:--'}</Text>
-              <Clock size={18} color={color.muted} />
+              <Clock size={18} color={c.muted} />
             </Pressable>
             <View style={styles.notifyRow}>
               <Text style={styles.fieldText}>{t('sheet.notify')}</Text>
@@ -223,21 +226,21 @@ export function AddEditSheet() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Colors) => StyleSheet.create({
   body: { paddingHorizontal: 22, paddingTop: 4 },
   nameInput: {
-    backgroundColor: color.field,
+    backgroundColor: c.field,
     borderRadius: radius.field,
     paddingVertical: 12,
     paddingHorizontal: 14,
     fontSize: font.size.input,
     fontWeight: '500',
-    color: color.ink,
+    color: c.ink,
   },
   labelRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 18, marginBottom: 8 },
-  labelInline: { fontSize: font.size.body, color: color.muted },
-  label: { fontSize: font.size.body, color: color.muted, marginTop: 18, marginBottom: 8 },
-  link: { fontSize: font.size.body, fontWeight: '600', color: color.teal },
+  labelInline: { fontSize: font.size.body, color: c.muted },
+  label: { fontSize: font.size.body, color: c.muted, marginTop: 18, marginBottom: 8 },
+  link: { fontSize: font.size.body, fontWeight: '600', color: c.teal },
   tagWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   pill: {
     flexDirection: 'row',
@@ -248,11 +251,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 14,
   },
-  pillIdle: { borderColor: color.line },
+  pillIdle: { borderColor: c.line },
   pillDot: { width: 8, height: 8, borderRadius: 4 },
-  pillText: { fontSize: font.size.body, fontWeight: '600', color: color.ink },
+  pillText: { fontSize: font.size.body, fontWeight: '600', color: c.ink },
   field: {
-    backgroundColor: color.field,
+    backgroundColor: c.field,
     borderRadius: radius.field,
     paddingVertical: 15,
     paddingHorizontal: 16,
@@ -260,11 +263,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-  fieldText: { fontSize: font.size.title, color: color.ink },
+  fieldText: { fontSize: font.size.title, color: c.ink },
   dateText: { flex: 1 },
-  placeholder: { color: color.muted },
+  placeholder: { color: c.muted },
   notifyRow: {
-    backgroundColor: color.bgSoft,
+    backgroundColor: c.bgSoft,
     borderRadius: radius.field,
     paddingVertical: 13,
     paddingHorizontal: 16,
@@ -273,9 +276,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  hint: { fontSize: font.size.caption, color: color.muted, marginTop: 6, marginLeft: 4 },
+  hint: { fontSize: font.size.caption, color: c.muted, marginTop: 6, marginLeft: 4 },
   memoInput: { minHeight: 90, paddingTop: 14, textAlignVertical: 'top', alignItems: 'flex-start' },
   delBtn: { marginTop: 26, alignItems: 'center', paddingVertical: 12 },
-  delText: { fontSize: font.size.title, fontWeight: '600', color: color.red },
+  delText: { fontSize: font.size.title, fontWeight: '600', color: c.red },
   bottomPad: { height: 28 },
 });

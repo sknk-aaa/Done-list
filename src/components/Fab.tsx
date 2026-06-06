@@ -1,20 +1,24 @@
+import { useMemo } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 
 import { Plus } from '@/icons';
-import { color, shadow, size } from '@/theme/tokens';
+import { shadow, size } from '@/theme/tokens';
+import { useColors, type Colors } from '@/theme/theme';
 
 export function Fab({ onPress }: { onPress: () => void }) {
+  const c = useColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
   return (
     <Pressable
       onPress={onPress}
       style={({ pressed }) => [styles.fab, shadow.fab, pressed && styles.pressed]}
     >
-      <Plus size={size.fabIcon} color={color.white} strokeWidth={2.6} />
+      <Plus size={size.fabIcon} color={c.white} strokeWidth={2.6} />
     </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Colors) => StyleSheet.create({
   fab: {
     position: 'absolute',
     right: 22,
@@ -22,9 +26,9 @@ const styles = StyleSheet.create({
     width: size.fab,
     height: size.fab,
     borderRadius: size.fab / 2,
-    backgroundColor: color.teal,
+    backgroundColor: c.teal,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pressed: { backgroundColor: color.tealDark },
+  pressed: { backgroundColor: c.tealDark },
 });

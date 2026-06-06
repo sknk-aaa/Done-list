@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,9 +17,12 @@ import {
 } from '@/lib/date';
 import { HeaderCaret } from '@/components/AppHeader';
 import { useAppStore } from '@/state/store';
-import { color, font, radius, shadow } from '@/theme/tokens';
+import { font, radius, shadow } from '@/theme/tokens';
+import { useColors, type Colors } from '@/theme/theme';
 
 export function DatePopover() {
+  const c = useColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
   const { t, i18n } = useTranslation();
   void t;
   const lang = i18n.language === 'ja' ? 'ja' : 'en';
@@ -161,28 +164,28 @@ export function DatePopover() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Colors) => StyleSheet.create({
   fill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   scrim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(20,24,28,0.18)' },
-  card: { position: 'absolute', left: 18, width: 300, backgroundColor: color.bg, borderRadius: radius.cardL, padding: 14 },
+  card: { position: 'absolute', left: 18, width: 300, backgroundColor: c.bg, borderRadius: radius.cardL, padding: 14 },
   head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
   nav: { padding: 4 },
   titleBtn: { flexDirection: 'row', alignItems: 'center' },
-  title: { fontSize: font.size.title, fontWeight: '700', color: color.ink },
+  title: { fontSize: font.size.title, fontWeight: '700', color: c.ink },
   row: { flexDirection: 'row' },
-  dow: { width: `${100 / 7}%`, textAlign: 'center', fontSize: 12, color: color.muted, paddingBottom: 6 },
-  sun: { color: color.red },
+  dow: { width: `${100 / 7}%`, textAlign: 'center', fontSize: 12, color: c.muted, paddingBottom: 6 },
+  sun: { color: c.red },
   grid: { flexDirection: 'row', flexWrap: 'wrap' },
   dcell: { width: `${100 / 7}%`, aspectRatio: 1, alignItems: 'center', justifyContent: 'center' },
   day: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
-  daySel: { backgroundColor: color.teal },
-  dayText: { fontSize: font.size.body, color: color.ink },
-  dayToday: { color: color.teal, fontWeight: '700' },
+  daySel: { backgroundColor: c.teal },
+  dayText: { fontSize: font.size.body, color: c.ink },
+  dayToday: { color: c.teal, fontWeight: '700' },
   daySelText: { color: '#fff', fontWeight: '700' },
   mgrid: { flexDirection: 'row', flexWrap: 'wrap' },
   mcell: { width: '25%', padding: 4, alignItems: 'center' },
   mo: { width: '100%', paddingVertical: 12, borderRadius: 10, alignItems: 'center' },
-  moSel: { backgroundColor: color.teal },
-  moText: { fontSize: font.size.body, color: color.ink },
+  moSel: { backgroundColor: c.teal },
+  moText: { fontSize: font.size.body, color: c.ink },
   moSelText: { color: '#fff', fontWeight: '700' },
 });

@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 import { Pressable } from 'react-native-gesture-handler';
@@ -5,13 +6,16 @@ import { Pressable } from 'react-native-gesture-handler';
 import { useTags } from '@/data/useData';
 import { Check } from '@/icons';
 import { useAppStore, type FilterStatus } from '@/state/store';
-import { color, font } from '@/theme/tokens';
+import { font } from '@/theme/tokens';
+import { useColors, type Colors } from '@/theme/theme';
 
 import { BottomSheet } from './BottomSheet';
 import { Segmented } from './Segmented';
 import { SheetHeader } from './SheetHeader';
 
 export function FilterSheet() {
+  const c = useColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
   const { t } = useTranslation();
   const filterOpen = useAppStore((s) => s.filterOpen);
   const setFilterOpen = useAppStore((s) => s.setFilterOpen);
@@ -67,22 +71,22 @@ export function FilterSheet() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Colors) => StyleSheet.create({
   body: { paddingHorizontal: 22, paddingTop: 6 },
-  label: { fontSize: font.size.body, color: color.muted, marginTop: 18, marginBottom: 8 },
+  label: { fontSize: font.size.body, color: c.muted, marginTop: 18, marginBottom: 8 },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 13 },
   left: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   dot: { width: 10, height: 10, borderRadius: 5 },
-  name: { fontSize: font.size.title, color: color.ink },
+  name: { fontSize: font.size.title, color: c.ink },
   check: {
     width: 24,
     height: 24,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: '#D5D9DD',
+    borderColor: c.divider,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  checkOn: { backgroundColor: color.teal, borderColor: color.teal },
+  checkOn: { backgroundColor: c.teal, borderColor: c.teal },
   bottomPad: { height: 24 },
 });

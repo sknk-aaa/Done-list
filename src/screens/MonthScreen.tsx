@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   type NativeScrollEvent,
@@ -29,7 +29,8 @@ import {
 } from '@/lib/date';
 import { matchesFilter } from '@/lib/filter';
 import { isFilterActive, useAppStore } from '@/state/store';
-import { color, font } from '@/theme/tokens';
+import { useColors, type Colors } from '@/theme/theme';
+import { font } from '@/theme/tokens';
 
 function chunk<T>(arr: T[], n: number): T[][] {
   const out: T[][] = [];
@@ -72,6 +73,8 @@ export function MonthScreen() {
 
   const scrollRef = useRef<ScrollView>(null);
   const [areaH, setAreaH] = useState(0);
+  const c = useColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
 
   // Three panels (prev / current / next) for a paging carousel.
   const metas = [-1, 0, 1].map((off) => {
@@ -151,14 +154,14 @@ export function MonthScreen() {
   const left = (
     <View style={styles.ymBar}>
       <Pressable onPress={() => go(-1)} hitSlop={16} style={({ pressed }) => [styles.arrow, pressed && styles.arrowPressed]}>
-        <ChevronLeft size={22} color="#8A8F94" strokeWidth={2.4} />
+        <ChevronLeft size={22} color={c.muted} strokeWidth={2.4} />
       </Pressable>
       <Pressable style={styles.ym} onPress={() => openDatePop('month')} hitSlop={6}>
         <Text style={styles.ymText}>{ymLabel}</Text>
         <HeaderCaret />
       </Pressable>
       <Pressable onPress={() => go(1)} hitSlop={16} style={({ pressed }) => [styles.arrow, pressed && styles.arrowPressed]}>
-        <ChevronRight size={22} color="#8A8F94" strokeWidth={2.4} />
+        <ChevronRight size={22} color={c.muted} strokeWidth={2.4} />
       </Pressable>
     </View>
   );
@@ -212,15 +215,15 @@ export function MonthScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: color.bg },
+const makeStyles = (c: Colors) => StyleSheet.create({
+  screen: { flex: 1, backgroundColor: c.bg },
   ymBar: { flexDirection: 'row', alignItems: 'center' },
   arrow: { paddingVertical: 6, paddingHorizontal: 6, borderRadius: 10 },
-  arrowPressed: { backgroundColor: color.bgSoft },
+  arrowPressed: { backgroundColor: c.bgSoft },
   clip: { flex: 1 },
   ym: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18 },
-  ymText: { fontSize: font.size.h2, fontWeight: '600', color: '#565B60' },
+  ymText: { fontSize: font.size.h2, fontWeight: '600', color: c.ink2 },
   dow: { flexDirection: 'row', paddingHorizontal: 12, paddingTop: 2, paddingBottom: 8 },
-  dowText: { flex: 1, textAlign: 'center', fontSize: 15, color: '#8A8F94' },
-  dowSun: { color: '#8A8F94' },
+  dowText: { flex: 1, textAlign: 'center', fontSize: 15, color: c.muted },
+  dowSun: { color: c.muted },
 });

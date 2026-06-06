@@ -67,6 +67,7 @@ const en = {
     upgradeSub: 'Remove ads',
     settings: 'Settings',
     showTime: 'Show time',
+    darkTheme: 'Dark theme',
     swipeTitle: 'Swipe action',
     swipeLabel: 'When swiping left/right',
     swipeDate: 'Move day/month',

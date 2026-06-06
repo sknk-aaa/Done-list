@@ -1,6 +1,8 @@
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { color, font, shadow } from '@/theme/tokens';
+import { font, shadow } from '@/theme/tokens';
+import { useColors, type Colors } from '@/theme/theme';
 
 export type Segment<T extends string> = { value: T; label: string };
 
@@ -11,6 +13,8 @@ type Props<T extends string> = {
 };
 
 export function Segmented<T extends string>({ segments, value, onChange }: Props<T>) {
+  const c = useColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
   return (
     <View style={styles.track}>
       {segments.map((s) => {
@@ -27,12 +31,12 @@ export function Segmented<T extends string>({ segments, value, onChange }: Props
   );
 }
 
-const styles = StyleSheet.create({
-  track: { flexDirection: 'row', backgroundColor: color.segTrack, borderRadius: 9, padding: 3 },
+const makeStyles = (c: Colors) => StyleSheet.create({
+  track: { flexDirection: 'row', backgroundColor: c.segTrack, borderRadius: 9, padding: 3 },
   seg: { flex: 1 },
   pill: { paddingVertical: 7, borderRadius: 7, alignItems: 'center' },
-  pillActive: { backgroundColor: color.white },
+  pillActive: { backgroundColor: c.white },
   label: { fontSize: font.size.body, fontWeight: '600' },
-  labelActive: { color: color.teal },
-  labelInactive: { color: '#8A8F94' },
+  labelActive: { color: c.teal },
+  labelInactive: { color: c.muted },
 });

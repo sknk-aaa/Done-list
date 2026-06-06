@@ -1,8 +1,10 @@
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { TabDaily, TabMonth } from '@/icons';
-import { color, size } from '@/theme/tokens';
+import { size } from '@/theme/tokens';
+import { useColors, type Colors } from '@/theme/theme';
 
 type TabView = 'daily' | 'month';
 
@@ -12,20 +14,24 @@ type Props = {
 };
 
 export function BottomTabBar({ view, onChange }: Props) {
+  const c = useColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
   const insets = useSafeAreaInsets();
   return (
     <View style={[styles.bar, { height: size.tabBarH + insets.bottom, paddingBottom: insets.bottom }]}>
       <Tab active={view === 'daily'} onPress={() => onChange('daily')}>
-        <TabDaily size={24} color={view === 'daily' ? color.teal : color.muted} />
+        <TabDaily size={24} color={view === 'daily' ? c.teal : c.muted} />
       </Tab>
       <Tab active={view === 'month'} onPress={() => onChange('month')}>
-        <TabMonth size={24} color={view === 'month' ? color.teal : color.muted} />
+        <TabMonth size={24} color={view === 'month' ? c.teal : c.muted} />
       </Tab>
     </View>
   );
 }
 
 function Tab({ active, onPress, children }: { active: boolean; onPress: () => void; children: React.ReactNode }) {
+  const c = useColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
   return (
     <Pressable style={styles.tab} onPress={onPress}>
       <View style={[styles.topBorder, active && styles.topBorderActive]} />
@@ -34,14 +40,14 @@ function Tab({ active, onPress, children }: { active: boolean; onPress: () => vo
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Colors) => StyleSheet.create({
   bar: {
     flexDirection: 'row',
-    backgroundColor: color.bg,
+    backgroundColor: c.bg,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: color.line,
+    borderTopColor: c.line,
   },
   tab: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   topBorder: { position: 'absolute', top: 0, left: 0, right: 0, height: 3, backgroundColor: 'transparent' },
-  topBorderActive: { backgroundColor: color.teal },
+  topBorderActive: { backgroundColor: c.teal },
 });

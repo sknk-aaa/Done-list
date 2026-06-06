@@ -1,7 +1,8 @@
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { ItemWithTag } from '@/db/queries';
-import { color } from '@/theme/tokens';
+import { useColors, type Colors } from '@/theme/theme';
 
 import { Chip } from './Chip';
 
@@ -24,6 +25,8 @@ type Props = {
 };
 
 export function MonthGrid({ weeks, filterActive, onDayPress }: Props) {
+  const c = useColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
   return (
     <View style={styles.grid}>
       {weeks.map((week, wi) => (
@@ -58,34 +61,34 @@ export function MonthGrid({ weeks, filterActive, onDayPress }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Colors) => StyleSheet.create({
   grid: { flex: 1, paddingHorizontal: 5, overflow: 'hidden' },
   week: { flex: 1, flexDirection: 'row' },
   cell: {
     flex: 1,
     minWidth: 0,
     borderWidth: 0.5,
-    borderColor: '#ECEEF0',
+    borderColor: c.line,
     paddingTop: 5,
     paddingBottom: 4,
     paddingHorizontal: 1.5,
     gap: 2.5,
     overflow: 'hidden',
   },
-  cellSelected: { borderWidth: 1.5, borderColor: color.teal, borderRadius: 10, backgroundColor: '#F2FBFA' },
-  dnum: { fontSize: 14, fontWeight: '600', color: '#33383D', lineHeight: 14, paddingLeft: 3, marginBottom: 2 },
-  sun: { color: color.red },
-  outNum: { color: '#C4C8CC' },
+  cellSelected: { borderWidth: 1.5, borderColor: c.teal, borderRadius: 10, backgroundColor: c.selectedCell },
+  dnum: { fontSize: 14, fontWeight: '600', color: c.ink2, lineHeight: 14, paddingLeft: 3, marginBottom: 2 },
+  sun: { color: c.red },
+  outNum: { color: c.faint },
   todayPill: {
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: 'rgba(72,193,168,0.18)',
+    backgroundColor: c.tealTint,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 2,
     marginLeft: 1,
   },
-  todayNum: { fontSize: 14, fontWeight: '700', color: color.teal, lineHeight: 14 },
-  more: { fontSize: 11, color: '#9AA0A6', textAlign: 'center', fontWeight: '600', marginTop: 1 },
+  todayNum: { fontSize: 14, fontWeight: '700', color: c.teal, lineHeight: 14 },
+  more: { fontSize: 11, color: c.muted, textAlign: 'center', fontWeight: '600', marginTop: 1 },
 });

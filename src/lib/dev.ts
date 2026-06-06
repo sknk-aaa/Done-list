@@ -9,3 +9,6 @@ export const SEED = __DEV__ && true;
 
 /** Pinned "today" used only while SEED is true (matches the approved mocks). */
 export const DEV_TODAY = '2026-06-19';
+
+/** Dev-only: unlock Pro (dark theme etc.) without a real purchase. False for release. */
+export const FORCE_PRO = __DEV__ && true;
