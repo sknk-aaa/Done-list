@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
@@ -58,8 +58,11 @@ export function BottomSheet({ visible, onClose, children, keyboardAvoiding = tru
   // Drag the whole sheet down to dismiss (activates only on a downward drag,
   // so taps and text inputs keep working).
   const dragGesture = Gesture.Pan()
-    .activeOffsetY([4, 1000])
+    .activeOffsetY([6, 1000])
     .failOffsetX([-20, 20])
+    .onStart(() => {
+      runOnJS(Keyboard.dismiss)();
+    })
     .onUpdate((e) => {
       dragY.value = Math.max(0, e.translationY);
     })

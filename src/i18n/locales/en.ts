@@ -86,6 +86,8 @@ const en = {
   },
   toast: {
     comingSoon: 'Coming soon',
+    deleted: 'Task deleted',
+    undo: 'Undo',
   },
   app: {
     name: 'toDone',

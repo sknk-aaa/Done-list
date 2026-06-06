@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Keyboard, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { useTags } from '@/data/useData';
 import { Calendar, ChevronDown, Clock } from '@/icons';
@@ -28,6 +28,7 @@ export function AddEditSheet() {
   const closeSheet = useAppStore((s) => s.closeSheet);
   const showTime = useAppStore((s) => s.showTime);
   const setTagEditOpen = useAppStore((s) => s.setTagEditOpen);
+  const showToast = useAppStore((s) => s.showToast);
   const tags = useTags();
 
   const visible = sheet.mode !== null;
@@ -97,8 +98,18 @@ export function AddEditSheet() {
 
   const onDelete = async () => {
     if (!editing) return;
-    await removeTask(editing.id);
+    const it = editing;
+    const restore = {
+      title: it.title,
+      memo: it.memo,
+      date: it.date,
+      time: it.time,
+      notifyEnabled: it.notifyEnabled,
+      tagId: it.tagId,
+    };
+    await removeTask(it.id);
     closeSheet();
+    showToast(t('toast.deleted'), { label: t('toast.undo'), run: () => void saveNewTask(restore) });
   };
 
   const onToggleNotify = async (v: boolean) => {
@@ -113,7 +124,7 @@ export function AddEditSheet() {
         title={shownMode === 'edit' ? '' : t('sheet.addTitle')}
         right={{ label: t('common.save'), onPress: onSave, disabled: !canSave }}
       />
-      <Pressable style={styles.body} onPress={() => Keyboard.dismiss()} accessible={false}>
+      <View style={styles.body}>
         <TextInput
           ref={nameRef}
           style={styles.nameInput}
@@ -206,7 +217,7 @@ export function AddEditSheet() {
           </Pressable>
         )}
         <View style={styles.bottomPad} />
-      </Pressable>
+      </View>
     </BottomSheet>
   );
 }

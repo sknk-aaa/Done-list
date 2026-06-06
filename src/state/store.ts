@@ -9,6 +9,7 @@ export type FilterStatus = 'all' | 'done' | 'todo';
 export type Filter = { status: FilterStatus; tagIds: number[] };
 export type SwipeAction = 'date' | 'tab';
 export type SheetMode = 'add' | 'edit' | null;
+export type Toast = { msg: string; action?: { label: string; run: () => void } };
 
 type SheetState = { mode: SheetMode; editingItem: ItemWithTag | null; presetDate: string | null };
 
@@ -39,7 +40,7 @@ type AppState = {
   datePopContext: 'daily' | 'month';
   tagEditOpen: boolean;
   onboardingOpen: boolean;
-  toast: string | null;
+  toast: Toast | null;
 
   // actions
   hydrateSettings: (s: Settings) => void;
@@ -69,7 +70,7 @@ type AppState = {
   closeDatePop: () => void;
   setTagEditOpen: (v: boolean) => void;
   setOnboardingOpen: (v: boolean) => void;
-  showToast: (msg: string) => void;
+  showToast: (msg: string, action?: Toast['action']) => void;
   clearToast: () => void;
 };
 
@@ -169,7 +170,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   closeDatePop: () => set({ datePopOpen: false }),
   setTagEditOpen: (v) => set({ tagEditOpen: v }),
   setOnboardingOpen: (v) => set({ onboardingOpen: v }),
-  showToast: (msg) => set({ toast: msg }),
+  showToast: (msg, action) => set({ toast: { msg, action } }),
   clearToast: () => set({ toast: null }),
 }));
 

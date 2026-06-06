@@ -88,6 +88,8 @@ const ja: typeof en = {
   },
   toast: {
     comingSoon: '準備中です',
+    deleted: 'タスクを削除しました',
+    undo: '元に戻す',
   },
   app: {
     name: 'toDone',
