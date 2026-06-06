@@ -98,11 +98,9 @@ export function Onboarding() {
           <Pressable style={styles.primary} onPress={next}>
             <Text style={styles.primaryText}>{isLast ? tx('始める', 'Get Started') : tx('次へ', 'Next')}</Text>
           </Pressable>
-          {!isLast && (
-            <Pressable onPress={finish} style={styles.skip}>
-              <Text style={styles.skipText}>{tx('スキップ', 'Skip')}</Text>
-            </Pressable>
-          )}
+          <Pressable onPress={finish} style={styles.skip} disabled={isLast}>
+            <Text style={[styles.skipText, isLast && styles.skipHidden]}>{tx('スキップ', 'Skip')}</Text>
+          </Pressable>
         </View>
     </Animated.View>
   );
@@ -211,6 +209,7 @@ const styles = StyleSheet.create({
   primaryText: { color: '#fff', fontSize: font.size.title, fontWeight: '700' },
   skip: { paddingVertical: 6 },
   skipText: { fontSize: font.size.body, color: color.muted },
+  skipHidden: { opacity: 0 },
 
   // previews
   card: { width: 250, backgroundColor: color.bg, borderRadius: radius.cardL, padding: 16 },

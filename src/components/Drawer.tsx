@@ -13,7 +13,7 @@ import { useColors, type Colors } from '@/theme/theme';
 import { Segmented } from './Segmented';
 import { Switch } from './Switch';
 
-const APP_ICON = require('../../icon.png');
+const APP_ICON = require('../../assets/images/icon-sm.png');
 const EASE = Easing.bezier(0.4, 0, 0.2, 1);
 const SITE = 'https://sknk-aaa.github.io/Done-list';
 const FAQ_URL = `${SITE}/faq.html`;
