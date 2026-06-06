@@ -140,7 +140,7 @@ export function MonthScreen() {
         hitSlop={16}
         style={({ pressed }) => [styles.arrow, pressed && styles.arrowPressed]}
       >
-        <ChevronLeft size={24} color="#7A7F84" strokeWidth={2.6} />
+        <ChevronLeft size={22} color="#8A8F94" strokeWidth={2.4} />
       </Pressable>
       <Pressable style={styles.ym} onPress={() => openDatePop('month')} hitSlop={6}>
         <Text style={styles.ymText}>{ymLabel}</Text>
@@ -151,7 +151,7 @@ export function MonthScreen() {
         hitSlop={16}
         style={({ pressed }) => [styles.arrow, pressed && styles.arrowPressed]}
       >
-        <ChevronRight size={24} color="#7A7F84" strokeWidth={2.6} />
+        <ChevronRight size={22} color="#8A8F94" strokeWidth={2.4} />
       </Pressable>
     </View>
   );
@@ -188,10 +188,10 @@ export function MonthScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: color.bg },
   ymBar: { flexDirection: 'row', alignItems: 'center' },
-  arrow: { paddingVertical: 6, paddingHorizontal: 9, borderRadius: 10 },
+  arrow: { paddingVertical: 6, paddingHorizontal: 6, borderRadius: 10 },
   arrowPressed: { backgroundColor: color.bgSoft },
   gridWrap: { flex: 1 },
-  ym: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 4 },
+  ym: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18 },
   ymText: { fontSize: font.size.h2, fontWeight: '600', color: '#565B60' },
   dow: { flexDirection: 'row', paddingHorizontal: 12, paddingTop: 2, paddingBottom: 8 },
   dowText: { flex: 1, textAlign: 'center', fontSize: 15, color: '#8A8F94' },
