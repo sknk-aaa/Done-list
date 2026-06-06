@@ -88,7 +88,7 @@ const en = {
     comingSoon: 'Coming soon',
   },
   app: {
-    name: 'Done Log',
+    name: 'toDone',
   },
 };
 

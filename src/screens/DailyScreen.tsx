@@ -1,19 +1,26 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { runOnJS } from 'react-native-reanimated';
+import ReorderableList, {
+  type ReorderableListReorderEvent,
+  reorderItems as arrayReorder,
+} from 'react-native-reorderable-list';
 
 import { AppHeader, HeaderCaret } from '@/components/AppHeader';
 import { Fab } from '@/components/Fab';
 import { TaskRow } from '@/components/TaskRow';
 import { Plus } from '@/icons';
 import { useDailyItems } from '@/data/useData';
+import type { ItemWithTag } from '@/db/types';
 import { formatLong, getTodayISO } from '@/lib/date';
 import { matchesFilter } from '@/lib/filter';
-import { setComplete } from '@/lib/taskActions';
+import { reorderTasks, setComplete } from '@/lib/taskActions';
 import { isFilterActive, useAppStore } from '@/state/store';
 import { color, font, space } from '@/theme/tokens';
+
+const ts = (v: unknown): number => (v instanceof Date ? v.getTime() : typeof v === 'number' ? v : 0);
 
 export function DailyScreen() {
   const { t, i18n } = useTranslation();
@@ -53,11 +60,26 @@ export function DailyScreen() {
     });
 
   const all = useDailyItems(selectedDate);
-  const visible = all.filter((it) => matchesFilter(it, filter));
+  const visible = useMemo(() => all.filter((it) => matchesFilter(it, filter)), [all, filter]);
   const doneCount = visible.filter((it) => it.isCompleted).length;
 
   const isToday = selectedDate === getTodayISO();
   const active = isFilterActive(filter);
+
+  // Optimistic copy so a drag-drop shows instantly; re-sync whenever the DB
+  // content changes (order, completion, edits, add/delete).
+  const sig = visible.map((i) => `${i.id}:${i.sortOrder}:${i.isCompleted ? 1 : 0}:${ts(i.updatedAt)}`).join('|');
+  const [rows, setRows] = useState<ItemWithTag[]>(visible);
+  useEffect(() => {
+    setRows(visible);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sig]);
+
+  const handleReorder = ({ from, to }: ReorderableListReorderEvent) => {
+    const next = arrayReorder(rows, from, to);
+    setRows(next);
+    void reorderTasks(next.map((i) => i.id));
+  };
 
   const left = (
     <Pressable style={styles.dhead} onPress={() => openDatePop('daily')} hitSlop={6}>
@@ -107,17 +129,19 @@ export function DailyScreen() {
         </View>
       )}
 
-      <FlatList
-        data={visible}
+      <ReorderableList
+        data={rows}
         keyExtractor={(it) => String(it.id)}
         style={styles.list}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
+        onReorder={handleReorder}
         ItemSeparatorComponent={() => <View style={styles.sep} />}
         renderItem={({ item }) => (
           <TaskRow
             item={item}
             showTime={showTime}
+            draggable={!active}
             onToggle={() => setComplete(item, !item.isCompleted)}
             onPress={() => openEditSheet(item)}
           />

@@ -1,4 +1,4 @@
-# やったこと管理（Done-list）
+# toDone（Done-list）
 
 「やること / やったこと」を記録するログ型タスクアプリ。ToDo としても使えるが、主役は「後から振り返れること」（月ビュー）。
 Expo + React Native + TypeScript、ローカル SQLite（Drizzle）。英語プライマリ / 日本語ローカライズ。

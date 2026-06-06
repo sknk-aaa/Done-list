@@ -1,4 +1,4 @@
-import { createItem, deleteItem, toggleComplete, updateItem, type ItemInput } from '@/db/queries';
+import { createItem, deleteItem, reorderItems, toggleComplete, updateItem, type ItemInput } from '@/db/queries';
 import type { Item } from '@/db/schema';
 
 import { reconcileNotifications } from './notifications';
@@ -24,4 +24,9 @@ export async function saveEditTask(id: number, input: ItemInput): Promise<void> 
 export async function removeTask(id: number): Promise<void> {
   await deleteItem(id);
   await reconcileNotifications();
+}
+
+/** Persist drag-reordered ids (within one date). No notify/review impact. */
+export async function reorderTasks(orderedIds: number[]): Promise<void> {
+  await reorderItems(orderedIds);
 }

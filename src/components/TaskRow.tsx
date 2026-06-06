@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useReorderableDrag } from 'react-native-reorderable-list';
 
 import type { ItemWithTag } from '@/db/queries';
 import { Bell, Note } from '@/icons';
@@ -11,17 +12,24 @@ const TAGLESS_RING = '#CFD3D6';
 type Props = {
   item: ItemWithTag;
   showTime: boolean;
+  draggable?: boolean;
   onToggle: () => void;
   onPress: () => void;
 };
 
-export function TaskRow({ item, showTime, onToggle, onPress }: Props) {
+export function TaskRow({ item, showTime, draggable, onToggle, onPress }: Props) {
+  const drag = useReorderableDrag();
   const tagColor = item.tag?.color ?? TAGLESS_RING;
   const hasSub = !!item.tag || !!item.memo;
   const showTimeVal = showTime && !!item.time;
 
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.row, pressed && styles.pressed]}>
+    <Pressable
+      onPress={onPress}
+      onLongPress={draggable ? drag : undefined}
+      delayLongPress={220}
+      style={({ pressed }) => [styles.row, pressed && styles.pressed]}
+    >
       <CheckRing done={item.isCompleted} color={tagColor} onToggle={onToggle} />
       <View style={styles.main}>
         <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">

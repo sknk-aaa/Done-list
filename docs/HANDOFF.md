@@ -8,13 +8,13 @@
 - ジェスチャー：横スワイプ（日次=日付移動/画面切替・月次=月移動/画面切替、ドロワーで共通設定。**既定=画面切替**）。月ビューは日付左右の矢印でも月移動可。
 - 通知（expo-notifications：全件リコンサイル）、アプリ内レビュー（expo-store-review：§10 条件）。オンボの「始める」でホーム遷移後に通知許可をリクエスト。
 - アイコン/スプラッシュ：`icon.png`（1024・alpha除去済）をアイコン兼スプラッシュに使用。スプラッシュ/Android背景はアイコンと同じ teal `#05AEA9`。
+- 並び替え：デイリーで**長押しドラッグ並び替え**（`react-native-reorderable-list`、`reorderTasks`→`sortOrder` 永続化）。絞り込み中は無効。
 - i18n：en プライマリ / ja。Web（Playwright）で全画面の見た目をデザインと照合済み。
+- アプリ名は **`toDone`** に確定（`app.json` name / i18n `app.name`、言語非連動）。
 
 ## 残タスク
 
-- [ ] **長押しドラッグでの並び替え**（SPEC §4/§8）。`sortOrder` 更新の口（`reorderItems`）は実装済み。UI は未実装（`react-native-draggable-flatlist` 導入が有力）。
 - [ ] **手動レビュー導線**（ドロワー「レビューして応援する」）を App Store の `?action=write-review` URL へ。現在はトースト（App Store ID 未定）。
-- [ ] **アプリ名**：端末表示名は `app.json` の「やったこと管理」固定（言語非連動）。英語圏で「Done Log」表示にするなら iOS の `CFBundleDisplayName` ローカライズが別途必要（未対応）。
 - [ ] **広告**：初版は広告なしでリリース（方針A）。AdMob は後日追加（`react-native-google-mobile-ads`／Expo Go 不可・Dev Build 化が必要）。
 - [ ] **実機での通知/レビュー/スプラッシュ動作確認**（Web では検証不可）。`expo prebuild` 後に確認。
 - [ ] **リリース前に `src/lib/dev.ts` の `SEED` を false**（実日付・空起動）。

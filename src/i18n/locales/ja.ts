@@ -90,7 +90,7 @@ const ja: typeof en = {
     comingSoon: '準備中です',
   },
   app: {
-    name: 'やったこと管理',
+    name: 'toDone',
   },
 };
 
