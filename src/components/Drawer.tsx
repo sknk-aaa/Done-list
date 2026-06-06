@@ -217,7 +217,7 @@ const makeStyles = (c: Colors) => StyleSheet.create({
   plan: { fontSize: font.size.caption, color: c.muted, marginTop: 2 },
 
   card: { backgroundColor: c.bg, borderRadius: radius.card, ...shadow.card, marginBottom: 6 },
-  divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: c.line },
+  divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: c.divider },
 
   proRow: { flexDirection: 'row', alignItems: 'center', padding: 16, gap: 14 },
   proText: { flex: 1 },
