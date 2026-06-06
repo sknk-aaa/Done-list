@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   type NativeScrollEvent,
@@ -65,13 +65,16 @@ export function DailyScreen() {
   const isToday = selectedDate === getTodayISO();
   const active = isFilterActive(filter);
 
-  // Optimistic copy of the centre day so a drag-drop shows instantly.
+  // Optimistic copy of the centre day so a drag-drop shows instantly. Sync it
+  // DURING render (not in an effect) so a day change doesn't leave the previous
+  // day's tasks on screen for a frame.
   const sig = curVisible.map((i) => `${i.id}:${i.sortOrder}:${i.isCompleted ? 1 : 0}:${ts(i.updatedAt)}`).join('|');
   const [rows, setRows] = useState<ItemWithTag[]>(curVisible);
-  useEffect(() => {
+  const sigRef = useRef(sig);
+  if (sigRef.current !== sig) {
+    sigRef.current = sig;
     setRows(curVisible);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sig]);
+  }
 
   const handleReorder = ({ from, to }: ReorderableListReorderEvent) => {
     const next = arrayReorder(rows, from, to);
