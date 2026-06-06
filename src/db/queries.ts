@@ -67,6 +67,20 @@ async function nextSortOrder(date: string): Promise<number> {
   return (max[0]?.v ?? -1) + 1;
 }
 
+/** Order a day: timed tasks by time ascending, untimed appended at the bottom. */
+async function sortDayByTime(date: string): Promise<void> {
+  const rows = await db
+    .select({ id: items.id, time: items.time })
+    .from(items)
+    .where(eq(items.date, date))
+    .orderBy(asc(items.sortOrder));
+  const timed = rows
+    .filter((r) => r.time != null)
+    .sort((a, b) => (a.time! < b.time! ? -1 : a.time! > b.time! ? 1 : 0));
+  const untimed = rows.filter((r) => r.time == null);
+  await reorderItems([...timed, ...untimed].map((r) => r.id));
+}
+
 export async function createItem(input: ItemInput): Promise<Item> {
   const now = new Date();
   const sortOrder = await nextSortOrder(input.date);
@@ -86,6 +100,8 @@ export async function createItem(input: ItemInput): Promise<Item> {
       completedAt: null,
     })
     .returning();
+  // Place the new task by time (timed → time order, untimed → bottom).
+  await sortDayByTime(input.date);
   return row;
 }
 

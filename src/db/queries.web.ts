@@ -108,6 +108,13 @@ export async function createItem(input: ItemInput): Promise<Item> {
     completedAt: null,
   };
   mem.items.push(it);
+  // Place the new task by time (timed → time order, untimed → bottom).
+  const day = mem.items.filter((i) => i.date === input.date).sort((a, b) => a.sortOrder - b.sortOrder);
+  const timed = day.filter((i) => i.time != null).sort((a, b) => (a.time! < b.time! ? -1 : a.time! > b.time! ? 1 : 0));
+  const untimed = day.filter((i) => i.time == null);
+  [...timed, ...untimed].forEach((i, idx) => {
+    i.sortOrder = idx;
+  });
   bump();
   return it;
 }
