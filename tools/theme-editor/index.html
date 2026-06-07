@@ -39,16 +39,17 @@
     <h1>Live テーマエディタ</h1>
     <p class="hint">右は<b>本物のアプリ(Web)</b>。色を変えると即反映されます。Saveでこちら(JSON)に保存→反映します。</p>
     <div class="urlbar">
-      <input id="url" value="http://localhost:8081" />
+      <input id="url" value="http://localhost:8090" />
       <button onclick="reloadApp()">読込</button>
     </div>
     <div id="groups"></div>
   </div>
   <div class="stage">
-    <div class="frame"><iframe id="app" src="http://localhost:8081"></iframe></div>
+    <div class="frame"><iframe id="app" src="http://localhost:8090"></iframe></div>
     <div class="note">アプリが出ない場合：Metro の web ポートを上の欄に入れて「読込」（例 8081/8082/8101）。</div>
   </div>
   <div class="bar">
+    <button class="reset" onclick="undo()">↩ 戻す</button>
     <button class="reset" onclick="resetAll()">初期値</button>
     <button class="save" onclick="save()">Save</button>
   </div>
@@ -69,6 +70,9 @@ const GROUPS=[
   {name:'状態色',items:[['selectedCell','選択セルの塗り(月)','color'],['filterBg','絞り込み背景','color'],['filterText','絞り込み文字','color'],['red','日曜/削除','color']]},
 ];
 let V={...DEFAULTS};
+let history=[];
+function snap(){ const cur=JSON.stringify(V); if(history.length&&history[history.length-1]===cur)return; history.push(cur); if(history.length>100)history.shift(); }
+function undo(){ if(!history.length){showToast('戻せる変更がありません');return;} V=JSON.parse(history.pop()); buildPanel(); push(); showToast('1つ戻しました'); }
 
 function hexA(hex,a){const h=hex.replace('#','');const n=parseInt(h,16);return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;}
 function values(){ // resolved Colors override sent to the app
@@ -80,8 +84,8 @@ function buildPanel(){
   const root=document.getElementById('groups');root.innerHTML='';
   for(const g of GROUPS){const box=document.createElement('div');box.className='group';box.innerHTML=`<h2>${g.name}</h2>`;
     for(const[k,label,type,min,max,step]of g.items){const row=document.createElement('div');row.className='ctl';
-      if(type==='color')row.innerHTML=`<label>${label}</label><input type="color" value="${V[k]}" oninput="set('${k}',this.value,this)"><span class="val">${V[k]}</span>`;
-      else row.innerHTML=`<label>${label}</label><input type="range" min="${min}" max="${max}" step="${step}" value="${V[k]}" oninput="set('${k}',+this.value,this)"><span class="val" id="v-${k}">${V[k]}</span>`;
+      if(type==='color')row.innerHTML=`<label>${label}</label><input type="color" value="${V[k]}" onfocus="snap()" oninput="set('${k}',this.value,this)"><span class="val">${V[k]}</span>`;
+      else row.innerHTML=`<label>${label}</label><input type="range" min="${min}" max="${max}" step="${step}" value="${V[k]}" onpointerdown="snap()" oninput="set('${k}',+this.value,this)"><span class="val" id="v-${k}">${V[k]}</span>`;
       box.appendChild(row);}
     root.appendChild(box);}
 }
@@ -89,7 +93,7 @@ function set(k,val,el){V[k]=val;const v=document.getElementById('v-'+k);if(v)v.t
 function reloadApp(){const f=document.getElementById('app');f.src=document.getElementById('url').value;}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1600);}
 async function save(){try{const r=await fetch('/save',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({values:values(),raw:V},null,2)});showToast(r.ok?'保存しました(theme-draft.json)':'保存失敗');}catch{showToast('保存失敗(サーバ未起動?)');}}
-function resetAll(){V={...DEFAULTS};buildPanel();push();showToast('初期値に戻しました');}
+function resetAll(){snap();V={...DEFAULTS};buildPanel();push();showToast('初期値に戻しました');}
 
 document.getElementById('app').addEventListener('load',()=>setTimeout(push,400));
 async function init(){try{const r=await fetch('/tokens');const s=await r.json();if(s&&s.raw)V={...DEFAULTS,...s.raw};}catch{}buildPanel();}
