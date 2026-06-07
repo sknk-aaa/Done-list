@@ -251,7 +251,7 @@ export function DailyScreen() {
 const makeStyles = (c: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: c.bg },
   dhead: { flexDirection: 'row', alignItems: 'center' },
-  dhMain: { fontSize: font.size.h2, fontWeight: '700', color: c.ink },
+  dhMain: { fontSize: 18, fontWeight: '700', color: c.ink },
   statusRow: { flexDirection: 'row', alignItems: 'center' },
   todayLabel: { fontSize: font.size.caption, fontWeight: '600', color: c.teal },
   backTodayRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },

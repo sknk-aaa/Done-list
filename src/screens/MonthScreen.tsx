@@ -222,7 +222,7 @@ const makeStyles = (c: Colors) => StyleSheet.create({
   arrowPressed: { backgroundColor: c.bgSoft },
   clip: { flex: 1 },
   ym: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18 },
-  ymText: { fontSize: font.size.h2, fontWeight: '600', color: c.ink2 },
+  ymText: { fontSize: 18, fontWeight: '600', color: c.ink2 },
   dow: { flexDirection: 'row', paddingHorizontal: 12, paddingTop: 2, paddingBottom: 8 },
   dowText: { flex: 1, textAlign: 'center', fontSize: 15, color: c.muted },
   dowSun: { color: c.muted },

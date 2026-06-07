@@ -117,8 +117,14 @@ export function AddEditSheet() {
   };
 
   const onToggleNotify = async (v: boolean) => {
-    if (v && Platform.OS !== 'web') await ensureNotificationPermission();
-    setNotify(v);
+    setNotify(v); // reflect intent immediately (don't block on permission)
+    if (v && Platform.OS !== 'web') {
+      try {
+        await ensureNotificationPermission();
+      } catch {
+        // Expo Go / permission quirks: keep the toggle on; delivery needs a dev/prod build.
+      }
+    }
   };
 
   return (
