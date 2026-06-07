@@ -65,8 +65,9 @@ function DayPage({ date, width, height }: { date: string; width: number; height:
           </View>
         ) : (
           <>
-            {visible.map((item) => (
+            {visible.map((item, i) => (
               <Fragment key={item.id}>
+                {i > 0 && <View style={styles.sep} />}
                 <TaskRow
                   item={item}
                   showTime={showTime}
@@ -283,7 +284,7 @@ const makeStyles = (c: Colors) => StyleSheet.create({
 
   listWrap: { flex: 1 },
   list: { flex: 1, backgroundColor: c.listBg },
-  listContent: { paddingHorizontal: space.screenX, paddingTop: 12, flexGrow: 1 },
+  listContent: { paddingHorizontal: space.screenX, paddingTop: 4, flexGrow: 1 },
   sep: { height: StyleSheet.hairlineWidth, backgroundColor: c.line },
   todayBtn: {
     flexDirection: 'row',
