@@ -4,7 +4,7 @@ import { Keyboard, Platform, StyleSheet, Text, TextInput, View } from 'react-nat
 import { Pressable } from 'react-native-gesture-handler';
 
 import { useTags } from '@/data/useData';
-import { Calendar, ChevronDown, Clock } from '@/icons';
+import { Calendar, ChevronDown } from '@/icons';
 import { formatLong, formatTime, getTodayISO, timeToDate } from '@/lib/date';
 import { ensureNotificationPermission } from '@/lib/notifications';
 import { haptics } from '@/lib/haptics';
@@ -52,7 +52,6 @@ export function AddEditSheet() {
   const [date, setDate] = useState(getTodayISO());
   const [memo, setMemo] = useState('');
   const [showCal, setShowCal] = useState(false);
-  const [showPicker, setShowPicker] = useState(false);
 
   useEffect(() => {
     if (sheet.mode === 'add') {
@@ -72,7 +71,6 @@ export function AddEditSheet() {
       setMemo(it.memo ?? '');
     }
     setShowCal(false);
-    setShowPicker(false);
   }, [sheet.mode, sheet.editingItem, sheet.presetDate]);
 
   // Focus the name field when opening the add sheet (after the open animation).
@@ -196,27 +194,39 @@ export function AddEditSheet() {
           />
         )}
 
-        <Text style={styles.label}>{t('sheet.time')}</Text>
-        <Pressable style={styles.field} onPress={() => Platform.OS !== 'web' && setShowPicker(true)}>
-          <Text style={[styles.fieldText, !time && styles.placeholder]}>{time ?? '--:--'}</Text>
-          <Clock size={18} color={c.muted} />
-        </Pressable>
+        <View style={styles.notifyRow}>
+          <Text style={styles.fieldText}>{t('sheet.time')}</Text>
+          <View style={styles.timeRight}>
+            {Platform.OS !== 'web' && DateTimePicker ? (
+              time != null ? (
+                <>
+                  <Pressable onPress={() => setTime(null)} hitSlop={8} accessibilityLabel="時刻をクリア">
+                    <Text style={styles.clearTime}>クリア</Text>
+                  </Pressable>
+                  <DateTimePicker
+                    value={timeToDate(time)}
+                    mode="time"
+                    display="compact"
+                    onChange={(_e, d) => {
+                      if (d) setTime(formatTime(d));
+                    }}
+                  />
+                </>
+              ) : (
+                <Pressable onPress={() => setTime(formatTime(new Date()))} hitSlop={8} accessibilityLabel="時刻を設定">
+                  <Text style={styles.addTime}>＋ 時刻</Text>
+                </Pressable>
+              )
+            ) : (
+              <Text style={[styles.fieldText, !time && styles.placeholder]}>{time ?? '--:--'}</Text>
+            )}
+          </View>
+        </View>
         <View style={styles.notifyRow}>
           <Text style={styles.fieldText}>{t('sheet.notify')}</Text>
           <Switch value={notify} onValueChange={onToggleNotify} />
         </View>
         {notify && !time && <Text style={styles.hint}>{t('sheet.notifyNoTime')}</Text>}
-        {showPicker && DateTimePicker && (
-          <DateTimePicker
-            value={timeToDate(time)}
-            mode="time"
-            is24Hour
-            onChange={(_e, d) => {
-              setShowPicker(false);
-              if (d) setTime(formatTime(d));
-            }}
-          />
-        )}
 
         {shownMode === 'edit' && (
           <Pressable onPress={onDelete} style={styles.delBtn}>
@@ -279,6 +289,9 @@ const makeStyles = (c: Colors) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  timeRight: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  clearTime: { fontSize: font.size.caption, color: c.muted },
+  addTime: { fontSize: font.size.title, fontWeight: '600', color: c.teal },
   hint: { fontSize: font.size.caption, color: c.muted, marginTop: 6, marginLeft: 4 },
   memoInput: { minHeight: 90, paddingTop: 14, textAlignVertical: 'top', alignItems: 'flex-start' },
   delBtn: { marginTop: 26, alignItems: 'center', paddingVertical: 12 },

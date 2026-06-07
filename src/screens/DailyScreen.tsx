@@ -68,7 +68,7 @@ function DayPage({ date, width, height }: { date: string; width: number; height:
             {visible.map((item, i) => (
               <Animated.View
                 key={item.id}
-                layout={LinearTransition.springify().damping(18).reduceMotion(ReduceMotion.System)}
+                layout={LinearTransition.duration(160).reduceMotion(ReduceMotion.System)}
                 entering={FadeIn.duration(180).reduceMotion(ReduceMotion.System)}
                 exiting={FadeOut.duration(140).reduceMotion(ReduceMotion.System)}
               >
