@@ -13,9 +13,10 @@ type Props = {
   showTime: boolean;
   onToggle: () => void;
   onPress: () => void;
+  onLongPress?: () => void;
 };
 
-export function TaskRow({ item, showTime, onToggle, onPress }: Props) {
+export function TaskRow({ item, showTime, onToggle, onPress, onLongPress }: Props) {
   const c = useColors();
   const styles = useMemo(() => makeStyles(c), [c]);
   const tagColor = item.tag?.color ?? c.teal; // タグなしはアクセント色（チップは出さない）
@@ -23,7 +24,12 @@ export function TaskRow({ item, showTime, onToggle, onPress }: Props) {
   const showTimeVal = showTime && !!item.time;
 
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.row, pressed && styles.pressed]}>
+    <Pressable
+      onPress={onPress}
+      onLongPress={onLongPress}
+      delayLongPress={220}
+      style={({ pressed }) => [styles.row, pressed && styles.pressed]}
+    >
       <CheckRing done={item.isCompleted} color={tagColor} onToggle={onToggle} />
       <View style={styles.main}>
         <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">

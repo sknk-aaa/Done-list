@@ -46,6 +46,7 @@ type AppState = {
   faqOpen: boolean;
   onboardingOpen: boolean;
   themeOverride: Record<string, string> | null;
+  reordering: boolean;
   toast: Toast | null;
 
   // actions
@@ -80,6 +81,7 @@ type AppState = {
   setFaqOpen: (v: boolean) => void;
   setOnboardingOpen: (v: boolean) => void;
   setThemeOverride: (v: Record<string, string> | null) => void;
+  setReordering: (v: boolean) => void;
   showToast: (msg: string, action?: Toast['action']) => void;
   clearToast: () => void;
 };
@@ -114,6 +116,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   faqOpen: false,
   onboardingOpen: false,
   themeOverride: null,
+  reordering: false,
   toast: null,
 
   hydrateSettings: (s) =>
@@ -190,6 +193,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   setTagEditOpen: (v) => set({ tagEditOpen: v }),
   setFaqOpen: (v) => set({ faqOpen: v }),
   setThemeOverride: (v) => set({ themeOverride: v }),
+  setReordering: (v) => set({ reordering: v }),
   setOnboardingOpen: (v) => set({ onboardingOpen: v }),
   showToast: (msg, action) => set({ toast: { msg, action } }),
   clearToast: () => set({ toast: null }),
