@@ -35,6 +35,8 @@ const makeStyles = (c: Colors) => StyleSheet.create({
     height: knob,
     borderRadius: knob / 2,
     backgroundColor: '#fff',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(0,0,0,0.15)',
     shadowColor: '#000',
     shadowOpacity: 0.18,
     shadowRadius: 1.5,

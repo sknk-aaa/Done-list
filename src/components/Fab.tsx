@@ -13,7 +13,7 @@ export function Fab({ onPress }: { onPress: () => void }) {
       onPress={onPress}
       style={({ pressed }) => [styles.fab, shadow.fab, pressed && styles.pressed]}
     >
-      <Plus size={size.fabIcon} color={c.white} strokeWidth={2.6} />
+      <Plus size={size.fabIcon} color={c.onAccent} strokeWidth={2.6} />
     </Pressable>
   );
 }

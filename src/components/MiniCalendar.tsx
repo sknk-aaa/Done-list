@@ -102,5 +102,5 @@ const makeStyles = (c: Colors) => StyleSheet.create({
   daySelected: { backgroundColor: c.teal },
   dayText: { fontSize: font.size.body, color: c.ink },
   dayToday: { color: c.teal, fontWeight: '700' },
-  daySelectedText: { color: c.white, fontWeight: '700' },
+  daySelectedText: { color: c.onAccent, fontWeight: '700' },
 });

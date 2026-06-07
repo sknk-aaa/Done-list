@@ -5,10 +5,11 @@
  */
 
 export const lightColors = {
-  // Brand / accent (monochrome black)
-  teal: '#000000',
+  // Brand / accent (monochrome, near-black)
+  teal: '#1C1F24',
   tealDark: '#333333',
-  tealTint: 'rgba(0,0,0,0.16)', // today pill bg, light fills
+  tealTint: 'rgba(0,0,0,0.10)', // today pill bg, light fills
+  onAccent: '#FFFFFF', // text/icons on top of the accent
 
   // Neutrals
   ink: '#2C2E33', // primary text
@@ -50,9 +51,10 @@ export type Colors = typeof lightColors;
 
 // Subtle-navy dark palette (Pro). Accent + tag colors stay the same.
 export const darkColors: Colors = {
-  teal: '#4A8CB0',
-  tealDark: '#3E7B9C',
-  tealTint: 'rgba(74,140,176,0.26)',
+  teal: '#E8EAED',
+  tealDark: '#C7CBD1',
+  tealTint: 'rgba(232,234,237,0.16)',
+  onAccent: '#1A1D24',
 
   ink: '#E8EAED',
   ink2: '#D4D8DE',

@@ -176,5 +176,5 @@ const makeStyles = (c: Colors) => StyleSheet.create({
   swatch: { width: 34, height: 34, borderRadius: 17 },
   addBtn: { backgroundColor: c.teal, borderRadius: radius.field, margin: 16, marginTop: 8, paddingVertical: 15, alignItems: 'center' },
   addBtnDisabled: { opacity: 0.4 },
-  addText: { fontSize: font.size.title, fontWeight: '700', color: '#fff' },
+  addText: { fontSize: font.size.title, fontWeight: '700', color: c.onAccent },
 });

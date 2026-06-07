@@ -128,7 +128,7 @@ const makeStyles = (c: Colors) =>
       height: 22,
       borderRadius: 6,
       backgroundColor: c.teal,
-      color: c.white,
+      color: c.onAccent,
       fontSize: 13,
       fontWeight: '800',
       textAlign: 'center',

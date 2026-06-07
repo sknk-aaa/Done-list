@@ -116,7 +116,7 @@ const makeStyles = (c: Colors) =>
     selCircle: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 15, backgroundColor: c.teal },
     hasCircle: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 15, backgroundColor: c.tealTint },
     num: { fontSize: font.size.body, fontWeight: '600', color: c.ink2 },
-    numSel: { color: '#fff', fontWeight: '700' },
+    numSel: { color: c.onAccent, fontWeight: '700' },
     numToday: { color: c.teal, fontWeight: '700' },
     badge: {
       position: 'absolute',
@@ -130,5 +130,5 @@ const makeStyles = (c: Colors) =>
       alignItems: 'center',
       justifyContent: 'center',
     },
-    badgeText: { fontSize: 10, fontWeight: '700', color: '#fff' },
+    badgeText: { fontSize: 10, fontWeight: '700', color: c.onAccent },
   });

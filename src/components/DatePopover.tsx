@@ -181,11 +181,11 @@ const makeStyles = (c: Colors) => StyleSheet.create({
   daySel: { backgroundColor: c.teal },
   dayText: { fontSize: font.size.title, color: c.ink },
   dayToday: { color: c.teal, fontWeight: '700' },
-  daySelText: { color: '#fff', fontWeight: '700' },
+  daySelText: { color: c.onAccent, fontWeight: '700' },
   mgrid: { flexDirection: 'row', flexWrap: 'wrap' },
   mcell: { width: '25%', padding: 4, alignItems: 'center' },
   mo: { width: '100%', paddingVertical: 15, borderRadius: 10, alignItems: 'center' },
   moSel: { backgroundColor: c.teal },
   moText: { fontSize: font.size.title, color: c.ink },
-  moSelText: { color: '#fff', fontWeight: '700' },
+  moSelText: { color: c.onAccent, fontWeight: '700' },
 });
