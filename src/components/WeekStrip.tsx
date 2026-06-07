@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { FadeIn, runOnJS, ZoomIn } from 'react-native-reanimated';
 
+import { useMonthItems } from '@/data/useData';
 import { addDaysISO, getTodayISO, parseISO } from '@/lib/date';
 import { useColors, type Colors } from '@/theme/theme';
 import { font } from '@/theme/tokens';
@@ -31,6 +32,13 @@ export function WeekStrip({ selectedDate, lang, onSelect, onShiftWeek }: Props) 
   const days = Array.from({ length: 7 }, (_, i) => addDaysISO(start, i));
   const labels = lang === 'ja' ? DOW_JA : DOW_EN;
 
+  const weekItems = useMonthItems(start, days[6]);
+  const doneByDate = useMemo(() => {
+    const m: Record<string, number> = {};
+    for (const it of weekItems) if (it.isCompleted) m[it.date] = (m[it.date] ?? 0) + 1;
+    return m;
+  }, [weekItems]);
+
   const pan = Gesture.Pan()
     .activeOffsetX([-15, 15])
     .failOffsetY([-12, 12])
@@ -48,6 +56,7 @@ export function WeekStrip({ selectedDate, lang, onSelect, onShiftWeek }: Props) 
           {days.map((d, i) => {
             const sel = d === selectedDate;
             const isToday = d === today;
+            const done = doneByDate[d] ?? 0;
             return (
               <Pressable key={d} style={styles.cell} onPress={() => onSelect(d)} hitSlop={4}>
                 <Text style={[styles.dow, i === 0 && styles.sun]}>{labels[i]}</Text>
@@ -63,6 +72,11 @@ export function WeekStrip({ selectedDate, lang, onSelect, onShiftWeek }: Props) 
                   >
                     {parseISO(d).d}
                   </Text>
+                  {done > 0 && (
+                    <View style={styles.badge}>
+                      <Text style={styles.badgeText}>{done}</Text>
+                    </View>
+                  )}
                 </View>
               </Pressable>
             );
@@ -92,4 +106,17 @@ const makeStyles = (c: Colors) =>
     num: { fontSize: font.size.body, fontWeight: '600', color: c.ink2 },
     numSel: { color: '#fff', fontWeight: '700' },
     numToday: { color: c.teal, fontWeight: '700' },
+    badge: {
+      position: 'absolute',
+      top: -5,
+      right: -9,
+      minWidth: 16,
+      height: 16,
+      borderRadius: 8,
+      paddingHorizontal: 3,
+      backgroundColor: c.teal,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    badgeText: { fontSize: 10, fontWeight: '700', color: '#fff' },
   });
