@@ -22,7 +22,7 @@ export function Switch({ value, onValueChange }: { value: boolean; onValueChange
   return (
     <Pressable onPress={() => onValueChange(!value)} hitSlop={6}>
       <Animated.View style={[styles.track, trackStyle]}>
-        <Animated.View style={[styles.knob, knobStyle]} />
+        <Animated.View style={[styles.knob, { backgroundColor: value ? c.onAccent : '#fff' }, knobStyle]} />
       </Animated.View>
     </Pressable>
   );
