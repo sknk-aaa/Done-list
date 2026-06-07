@@ -69,11 +69,11 @@ const makeStyles = (c: Colors) => StyleSheet.create({
   },
   pressed: { backgroundColor: c.bgSoft },
   main: { flex: 1, gap: 5 },
-  title: { fontSize: 14.5, fontWeight: '600', color: c.ink },
+  title: { fontSize: 14.5, fontWeight: '500', color: c.ink2 },
   sub: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   tagWrap: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   dot: { width: 6, height: 6, borderRadius: 3 },
   tagName: { fontSize: font.size.caption, fontWeight: '600' },
   timeWrap: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  time: { fontSize: 12.5, fontWeight: '600', color: c.muted, fontVariant: ['tabular-nums'] },
+  time: { fontSize: 11.5, fontWeight: '600', color: c.muted, fontVariant: ['tabular-nums'] },
 });
