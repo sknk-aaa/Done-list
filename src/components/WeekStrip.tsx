@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { runOnJS } from 'react-native-reanimated';
+import Animated, { FadeIn, runOnJS, ZoomIn } from 'react-native-reanimated';
 
 import { addDaysISO, getTodayISO, parseISO } from '@/lib/date';
 import { useColors, type Colors } from '@/theme/theme';
@@ -43,20 +43,37 @@ export function WeekStrip({ selectedDate, lang, onSelect, onShiftWeek }: Props) 
   return (
     <GestureDetector gesture={pan}>
       <View style={styles.strip}>
-        {days.map((d, i) => {
-          const sel = d === selectedDate;
-          const isToday = d === today;
-          return (
-            <Pressable key={d} style={styles.cell} onPress={() => onSelect(d)} hitSlop={4}>
-              <Text style={[styles.dow, i === 0 && styles.sun]}>{labels[i]}</Text>
-              <View style={[styles.numWrap, sel && styles.numWrapSel]}>
-                <Text style={[styles.num, sel && styles.numSel, isToday && !sel && styles.numToday, i === 0 && !sel && styles.sun]}>
-                  {parseISO(d).d}
-                </Text>
-              </View>
-            </Pressable>
-          );
-        })}
+        {/* key by week start → fades in when the week changes */}
+        <Animated.View key={start} entering={FadeIn.duration(200)} style={styles.row}>
+          {days.map((d, i) => {
+            const sel = d === selectedDate;
+            const isToday = d === today;
+            return (
+              <Pressable key={d} style={styles.cell} onPress={() => onSelect(d)} hitSlop={4}>
+                <Text style={[styles.dow, i === 0 && styles.sun]}>{labels[i]}</Text>
+                <View style={styles.numWrap}>
+                  {sel && (
+                    <Animated.View
+                      key={d}
+                      entering={ZoomIn.springify().damping(12).stiffness(170)}
+                      style={styles.selCircle}
+                    />
+                  )}
+                  <Text
+                    style={[
+                      styles.num,
+                      sel && styles.numSel,
+                      isToday && !sel && styles.numToday,
+                      i === 0 && !sel && styles.sun,
+                    ]}
+                  >
+                    {parseISO(d).d}
+                  </Text>
+                </View>
+              </Pressable>
+            );
+          })}
+        </Animated.View>
       </View>
     </GestureDetector>
   );
@@ -65,7 +82,6 @@ export function WeekStrip({ selectedDate, lang, onSelect, onShiftWeek }: Props) 
 const makeStyles = (c: Colors) =>
   StyleSheet.create({
     strip: {
-      flexDirection: 'row',
       paddingHorizontal: 10,
       paddingTop: 2,
       paddingBottom: 10,
@@ -73,11 +89,12 @@ const makeStyles = (c: Colors) =>
       borderBottomWidth: StyleSheet.hairlineWidth,
       borderBottomColor: c.line,
     },
+    row: { flexDirection: 'row' },
     cell: { flex: 1, alignItems: 'center', gap: 5 },
     dow: { fontSize: 11, color: c.muted, fontWeight: '600' },
     sun: { color: c.red },
-    numWrap: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
-    numWrapSel: { backgroundColor: c.teal },
+    numWrap: { width: 30, height: 30, alignItems: 'center', justifyContent: 'center' },
+    selCircle: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 15, backgroundColor: c.teal },
     num: { fontSize: font.size.body, fontWeight: '600', color: c.ink2 },
     numSel: { color: '#fff', fontWeight: '700' },
     numToday: { color: c.teal, fontWeight: '700' },
