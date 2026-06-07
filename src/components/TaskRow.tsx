@@ -26,7 +26,7 @@ export function TaskRow({ item, showTime, onToggle, onPress }: Props) {
     <Pressable onPress={onPress} style={({ pressed }) => [styles.row, pressed && styles.pressed]}>
       <CheckRing done={item.isCompleted} color={tagColor} onToggle={onToggle} />
       <View style={styles.main}>
-        <Text style={[styles.title, item.isCompleted && styles.titleDone]} numberOfLines={1} ellipsizeMode="tail">
+        <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
           {item.title}
         </Text>
         {hasSub && (
@@ -56,7 +56,6 @@ const makeStyles = (c: Colors) => StyleSheet.create({
   pressed: { backgroundColor: c.bgSoft },
   main: { flex: 1, gap: 5 },
   title: { fontSize: 14.5, fontWeight: '600', color: c.ink2 },
-  titleDone: { color: c.muted },
   sub: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   tagWrap: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   dot: { width: 6, height: 6, borderRadius: 3 },
