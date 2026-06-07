@@ -208,9 +208,9 @@ const makeStyles = (c: Colors) => StyleSheet.create({
   panel: { backgroundColor: c.bgSoft },
   content: { paddingHorizontal: 18, paddingBottom: 20 },
   appHeader: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingTop: 46, paddingBottom: 18 },
-  appIcon: { width: 56, height: 56, borderRadius: 15 },
+  appIcon: { width: 56, height: 56, borderRadius: 15, borderWidth: StyleSheet.hairlineWidth, borderColor: c.line },
   appHeaderText: { flex: 1 },
-  appName: { fontSize: 22, fontWeight: '800', color: c.ink, letterSpacing: 0.2 },
+  appName: { fontSize: 22, fontWeight: '700', color: c.ink, letterSpacing: -0.2 },
   planPill: {
     alignSelf: 'flex-start',
     marginTop: 5,
@@ -232,7 +232,7 @@ const makeStyles = (c: Colors) => StyleSheet.create({
   proTitle: { fontSize: font.size.title, fontWeight: '600', color: c.teal },
   proSub: { fontSize: font.size.caption, color: c.muted, marginTop: 2 },
 
-  sectionLabel: { fontSize: font.size.small, fontWeight: '600', color: c.muted, paddingTop: 20, paddingBottom: 8, paddingLeft: 4 },
+  sectionLabel: { fontSize: 12, fontWeight: '600', color: c.muted, letterSpacing: 0.6, paddingTop: 22, paddingBottom: 8, paddingLeft: 6 },
   settingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 14, paddingHorizontal: 16 },
   rowTitle: { fontSize: font.size.title, color: c.ink },
   rowTitleWrap: { flexDirection: 'row', alignItems: 'center', gap: 8 },
