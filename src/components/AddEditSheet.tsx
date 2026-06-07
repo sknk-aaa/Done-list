@@ -31,7 +31,6 @@ export function AddEditSheet() {
   const lang = i18n.language === 'ja' ? 'ja' : 'en';
   const sheet = useAppStore((s) => s.sheet);
   const closeSheet = useAppStore((s) => s.closeSheet);
-  const showTime = useAppStore((s) => s.showTime);
   const setTagEditOpen = useAppStore((s) => s.setTagEditOpen);
   const showToast = useAppStore((s) => s.showToast);
   const tags = useTags();
@@ -92,8 +91,8 @@ export function AddEditSheet() {
       title: title.trim(),
       memo: memo.trim() || null,
       date,
-      time: showTime ? time : null,
-      notifyEnabled: showTime ? notify : false,
+      time,
+      notifyEnabled: notify,
       tagId,
     };
     if (sheet.mode === 'edit' && editing) await saveEditTask(editing.id, input);
@@ -197,30 +196,26 @@ export function AddEditSheet() {
           />
         )}
 
-        {showTime && (
-          <>
-            <Text style={styles.label}>{t('sheet.time')}</Text>
-            <Pressable style={styles.field} onPress={() => Platform.OS !== 'web' && setShowPicker(true)}>
-              <Text style={[styles.fieldText, !time && styles.placeholder]}>{time ?? '--:--'}</Text>
-              <Clock size={18} color={c.muted} />
-            </Pressable>
-            <View style={styles.notifyRow}>
-              <Text style={styles.fieldText}>{t('sheet.notify')}</Text>
-              <Switch value={notify} onValueChange={onToggleNotify} />
-            </View>
-            {notify && !time && <Text style={styles.hint}>{t('sheet.notifyNoTime')}</Text>}
-            {showPicker && DateTimePicker && (
-              <DateTimePicker
-                value={timeToDate(time)}
-                mode="time"
-                is24Hour
-                onChange={(_e, d) => {
-                  setShowPicker(false);
-                  if (d) setTime(formatTime(d));
-                }}
-              />
-            )}
-          </>
+        <Text style={styles.label}>{t('sheet.time')}</Text>
+        <Pressable style={styles.field} onPress={() => Platform.OS !== 'web' && setShowPicker(true)}>
+          <Text style={[styles.fieldText, !time && styles.placeholder]}>{time ?? '--:--'}</Text>
+          <Clock size={18} color={c.muted} />
+        </Pressable>
+        <View style={styles.notifyRow}>
+          <Text style={styles.fieldText}>{t('sheet.notify')}</Text>
+          <Switch value={notify} onValueChange={onToggleNotify} />
+        </View>
+        {notify && !time && <Text style={styles.hint}>{t('sheet.notifyNoTime')}</Text>}
+        {showPicker && DateTimePicker && (
+          <DateTimePicker
+            value={timeToDate(time)}
+            mode="time"
+            is24Hour
+            onChange={(_e, d) => {
+              setShowPicker(false);
+              if (d) setTime(formatTime(d));
+            }}
+          />
         )}
 
         {shownMode === 'edit' && (
