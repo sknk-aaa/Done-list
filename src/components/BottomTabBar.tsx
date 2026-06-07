@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { TabDaily, TabMonth } from '@/icons';
+import { haptics } from '@/lib/haptics';
 import { size } from '@/theme/tokens';
 import { useColors, type Colors } from '@/theme/theme';
 
@@ -17,23 +18,43 @@ export function BottomTabBar({ view, onChange }: Props) {
   const c = useColors();
   const styles = useMemo(() => makeStyles(c), [c]);
   const insets = useSafeAreaInsets();
+  const go = (v: TabView) => {
+    if (v !== view) haptics.selection();
+    onChange(v);
+  };
   return (
     <View style={[styles.bar, { height: size.tabBarH + insets.bottom, paddingBottom: insets.bottom }]}>
-      <Tab active={view === 'daily'} onPress={() => onChange('daily')}>
+      <Tab active={view === 'daily'} onPress={() => go('daily')} label="デイリー">
         <TabDaily size={24} color={view === 'daily' ? c.teal : c.muted} />
       </Tab>
-      <Tab active={view === 'month'} onPress={() => onChange('month')}>
+      <Tab active={view === 'month'} onPress={() => go('month')} label="月ビュー">
         <TabMonth size={24} color={view === 'month' ? c.teal : c.muted} />
       </Tab>
     </View>
   );
 }
 
-function Tab({ active, onPress, children }: { active: boolean; onPress: () => void; children: React.ReactNode }) {
+function Tab({
+  active,
+  onPress,
+  label,
+  children,
+}: {
+  active: boolean;
+  onPress: () => void;
+  label: string;
+  children: React.ReactNode;
+}) {
   const c = useColors();
   const styles = useMemo(() => makeStyles(c), [c]);
   return (
-    <Pressable style={styles.tab} onPress={onPress}>
+    <Pressable
+      style={styles.tab}
+      onPress={onPress}
+      accessibilityRole="tab"
+      accessibilityState={{ selected: active }}
+      accessibilityLabel={label}
+    >
       <View style={[styles.topBorder, active && styles.topBorderActive]} />
       {children}
     </Pressable>

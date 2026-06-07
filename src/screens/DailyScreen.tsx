@@ -1,8 +1,8 @@
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { runOnJS } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, LinearTransition, ReduceMotion, runOnJS } from 'react-native-reanimated';
 
 import { AppHeader, HeaderCaret } from '@/components/AppHeader';
 import { Fab } from '@/components/Fab';
@@ -66,7 +66,12 @@ function DayPage({ date, width, height }: { date: string; width: number; height:
         ) : (
           <>
             {visible.map((item, i) => (
-              <Fragment key={item.id}>
+              <Animated.View
+                key={item.id}
+                layout={LinearTransition.springify().damping(18).reduceMotion(ReduceMotion.System)}
+                entering={FadeIn.duration(180).reduceMotion(ReduceMotion.System)}
+                exiting={FadeOut.duration(140).reduceMotion(ReduceMotion.System)}
+              >
                 {i > 0 && <View style={styles.sep} />}
                 <TaskRow
                   item={item}
@@ -74,7 +79,7 @@ function DayPage({ date, width, height }: { date: string; width: number; height:
                   onToggle={() => setComplete(item, !item.isCompleted)}
                   onPress={() => openEditSheet(item)}
                 />
-              </Fragment>
+              </Animated.View>
             ))}
             {!isToday && (
               <Pressable style={styles.todayBtn} onPress={goToday}>

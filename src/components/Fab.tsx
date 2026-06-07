@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 
 import { Plus } from '@/icons';
+import { haptics } from '@/lib/haptics';
 import { shadow, size } from '@/theme/tokens';
 import { useColors, type Colors } from '@/theme/theme';
 
@@ -10,8 +11,13 @@ export function Fab({ onPress }: { onPress: () => void }) {
   const styles = useMemo(() => makeStyles(c), [c]);
   return (
     <Pressable
-      onPress={onPress}
+      onPress={() => {
+        haptics.light();
+        onPress();
+      }}
       style={({ pressed }) => [styles.fab, shadow.fab, pressed && styles.pressed]}
+      accessibilityRole="button"
+      accessibilityLabel="タスクを追加"
     >
       <Plus size={size.fabIcon} color={c.onAccent} strokeWidth={2.6} />
     </Pressable>

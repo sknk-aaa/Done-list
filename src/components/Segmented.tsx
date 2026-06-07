@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { haptics } from '@/lib/haptics';
 import { font, shadow } from '@/theme/tokens';
 import { useColors, type Colors } from '@/theme/theme';
 
@@ -20,7 +21,16 @@ export function Segmented<T extends string>({ segments, value, onChange }: Props
       {segments.map((s) => {
         const active = s.value === value;
         return (
-          <Pressable key={s.value} style={styles.seg} onPress={() => onChange(s.value)}>
+          <Pressable
+            key={s.value}
+            style={styles.seg}
+            onPress={() => {
+              if (s.value !== value) haptics.selection();
+              onChange(s.value);
+            }}
+            accessibilityRole="button"
+            accessibilityState={{ selected: active }}
+          >
             <View style={[styles.pill, active && [styles.pillActive, shadow.card]]}>
               <Text style={[styles.label, active ? styles.labelActive : styles.labelInactive]}>{s.label}</Text>
             </View>

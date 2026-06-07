@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { FadeIn, runOnJS, ZoomIn } from 'react-native-reanimated';
+import Animated, { FadeIn, ReduceMotion, runOnJS, ZoomIn } from 'react-native-reanimated';
 
 import { useMonthItems } from '@/data/useData';
+import { haptics } from '@/lib/haptics';
 import { addDaysISO, getTodayISO, parseISO } from '@/lib/date';
 import { useColors, type Colors } from '@/theme/theme';
 import { font } from '@/theme/tokens';
@@ -65,11 +66,22 @@ export function WeekStrip({ selectedDate, lang, onSelect, onShiftWeek }: Props) 
             const done = s?.done ?? 0;
             const has = !!s?.has;
             return (
-              <Pressable key={d} style={styles.cell} onPress={() => onSelect(d)} hitSlop={4}>
+              <Pressable
+                key={d}
+                style={styles.cell}
+                onPress={() => {
+                  if (d !== selectedDate) haptics.selection();
+                  onSelect(d);
+                }}
+                hitSlop={4}
+                accessibilityRole="button"
+                accessibilityLabel={`${parseISO(d).m0 + 1}月${parseISO(d).d}日${done > 0 ? `・完了${done}` : ''}`}
+                accessibilityState={{ selected: sel }}
+              >
                 <Text style={[styles.dow, i === 0 && styles.sun]}>{labels[i]}</Text>
                 <View style={styles.numWrap}>
                   {sel ? (
-                    <Animated.View key={d} entering={ZoomIn.duration(120)} style={styles.selCircle} />
+                    <Animated.View key={d} entering={ZoomIn.duration(120).reduceMotion(ReduceMotion.System)} style={styles.selCircle} />
                   ) : has ? (
                     <View style={styles.hasCircle} />
                   ) : null}

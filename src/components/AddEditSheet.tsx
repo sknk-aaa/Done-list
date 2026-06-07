@@ -7,6 +7,7 @@ import { useTags } from '@/data/useData';
 import { Calendar, ChevronDown, Clock } from '@/icons';
 import { formatLong, formatTime, getTodayISO, timeToDate } from '@/lib/date';
 import { ensureNotificationPermission } from '@/lib/notifications';
+import { haptics } from '@/lib/haptics';
 import { removeTask, saveEditTask, saveNewTask } from '@/lib/taskActions';
 import { useAppStore } from '@/state/store';
 import { font, radius } from '@/theme/tokens';
@@ -102,6 +103,7 @@ export function AddEditSheet() {
 
   const onDelete = async () => {
     if (!editing) return;
+    haptics.medium();
     const it = editing;
     const restore = {
       title: it.title,

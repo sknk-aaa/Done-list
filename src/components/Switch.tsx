@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 
+import { haptics } from '@/lib/haptics';
 import { size } from '@/theme/tokens';
 import { useColors, type Colors } from '@/theme/theme';
 
@@ -20,7 +21,15 @@ export function Switch({ value, onValueChange }: { value: boolean; onValueChange
   }));
 
   return (
-    <Pressable onPress={() => onValueChange(!value)} hitSlop={6}>
+    <Pressable
+      onPress={() => {
+        haptics.selection();
+        onValueChange(!value);
+      }}
+      hitSlop={6}
+      accessibilityRole="switch"
+      accessibilityState={{ checked: value }}
+    >
       <Animated.View style={[styles.track, trackStyle]}>
         <Animated.View style={[styles.knob, { backgroundColor: value ? c.onAccent : '#fff' }, knobStyle]} />
       </Animated.View>
