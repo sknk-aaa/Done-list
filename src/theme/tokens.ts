@@ -5,10 +5,10 @@
  */
 
 export const lightColors = {
-  // Brand / accent
-  teal: '#48C1A8',
-  tealDark: '#3AAB93',
-  tealTint: 'rgba(72,193,168,0.18)', // today pill bg, light fills
+  // Brand / accent (calm muted blue)
+  teal: '#2F6E8F',
+  tealDark: '#285E7A',
+  tealTint: 'rgba(47,110,143,0.16)', // today pill bg, light fills
 
   // Neutrals
   ink: '#2C2E33', // primary text
@@ -23,9 +23,9 @@ export const lightColors = {
   field: '#F3F4F5', // input field background
   segTrack: '#F0F1F2', // segmented-control track
   switchOff: '#DFE2E5', // toggle off track
-  selectedCell: '#F2FBFA', // month selected cell bg
-  filterBg: '#E6F6F4', // active-filter banner bg
-  filterText: '#0F8A7C', // active-filter banner text
+  selectedCell: '#EEF4F8', // month selected cell bg
+  filterBg: '#E9F1F7', // active-filter banner bg
+  filterText: '#2A6483', // active-filter banner text
 
   // Tag / status palette (soft) — shared across themes
   blue: '#4A90E2',
@@ -47,9 +47,9 @@ export type Colors = typeof lightColors;
 
 // Subtle-navy dark palette (Pro). Accent + tag colors stay the same.
 export const darkColors: Colors = {
-  teal: '#48C1A8',
-  tealDark: '#3AAB93',
-  tealTint: 'rgba(72,193,168,0.22)',
+  teal: '#2F6E8F',
+  tealDark: '#285E7A',
+  tealTint: 'rgba(90,150,185,0.26)',
 
   ink: '#E8EAED',
   ink2: '#D4D8DE',
@@ -63,9 +63,9 @@ export const darkColors: Colors = {
   field: '#232A36',
   segTrack: '#232A36',
   switchOff: '#3A434F',
-  selectedCell: '#22303A',
-  filterBg: '#16302C',
-  filterText: '#5FD3BD',
+  selectedCell: '#1E2E3C',
+  filterBg: '#17293A',
+  filterText: '#7CB2D2',
 
   blue: '#4A90E2',
   green: '#48C1A8',
