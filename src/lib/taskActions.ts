@@ -6,8 +6,9 @@ import { maybeRequestReview } from './review';
 
 export async function setComplete(item: Pick<Item, 'id' | 'isCompleted'>, value: boolean): Promise<void> {
   await toggleComplete(item.id, value);
-  await reconcileNotifications();
-  if (value) await maybeRequestReview();
+  // Side effects must not block the checkmark UI update — run after, non-blocking.
+  void reconcileNotifications();
+  if (value) void maybeRequestReview();
 }
 
 export async function saveNewTask(input: ItemInput): Promise<Item> {

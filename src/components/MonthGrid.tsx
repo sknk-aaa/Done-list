@@ -76,7 +76,7 @@ const makeStyles = (c: Colors) => StyleSheet.create({
     overflow: 'hidden',
   },
   cellSelected: { borderWidth: 1.5, borderColor: c.teal, borderRadius: 10, backgroundColor: c.selectedCell },
-  dnum: { fontSize: 14, fontWeight: '600', color: c.ink2, lineHeight: 14, paddingLeft: 3, marginBottom: 2 },
+  dnum: { fontSize: 14, fontWeight: '600', color: c.ink2, height: 20, lineHeight: 20, paddingLeft: 3, marginBottom: 2 },
   sun: { color: c.red },
   outNum: { color: c.faint },
   todayPill: {
