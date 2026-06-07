@@ -4,7 +4,6 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSequence,
-  withSpring,
   withTiming,
   ZoomIn,
 } from 'react-native-reanimated';
@@ -26,8 +25,8 @@ export function CheckRing({ done, color, onToggle }: Props) {
     if (!done) {
       haptics.medium();
       scale.value = withSequence(
-        withTiming(1.18, { duration: 110, reduceMotion: ReduceMotion.System }),
-        withSpring(1, { damping: 9, stiffness: 220, reduceMotion: ReduceMotion.System }),
+        withTiming(1.12, { duration: 70, reduceMotion: ReduceMotion.System }),
+        withTiming(1, { duration: 100, reduceMotion: ReduceMotion.System }),
       );
     } else {
       haptics.selection();
