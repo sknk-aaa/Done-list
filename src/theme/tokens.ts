@@ -5,9 +5,9 @@
  */
 
 export const lightColors = {
-  // Brand / accent (calm muted blue)
+  // Brand / accent (monochrome black)
   teal: '#000000',
-  tealDark: '#3881a8',
+  tealDark: '#333333',
   tealTint: 'rgba(0,0,0,0.16)', // today pill bg, light fills
 
   // Neutrals
