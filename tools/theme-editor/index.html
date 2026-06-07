@@ -48,13 +48,13 @@
   .bar .save{background:var(--brand);color:#fff}.bar .ghost{background:#eceef2;color:#3a414a}
 
   /* ===== right stage ===== */
-  .stage{flex:1;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 30%,#f3f4f7,#e2e5ea);position:relative}
+  .stage{flex:1;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 30%,#f3f4f7,#e2e5ea);position:relative;overflow:auto}
   .devices{display:flex;gap:28px;align-items:flex-start;transform:scale(var(--scale,1));transform-origin:center;position:relative}
   .dcol{display:flex;flex-direction:column;align-items:center;gap:8px}
   .cap{font-size:12px;color:#6b7280;font-weight:600}
   .bezel{background:#0b0b0d;border-radius:58px;padding:13px;box-shadow:0 30px 80px rgba(0,0,0,.35),inset 0 0 0 2px #2a2a2e}
   .screen{position:relative;border-radius:46px;overflow:hidden;background:#fff;width:var(--sw,393px);height:var(--sh,852px)}
-  #ref-img{width:100%;height:100%;object-fit:cover;display:block}
+  #ref-img{width:100%;height:100%;object-fit:fill;display:block}
   /* overlay mode: stack reference over live with opacity */
   .stage.overlay .devices{gap:0}
   .stage.overlay #ref-col{position:absolute;left:0;top:0;opacity:var(--ovl,0.5);pointer-events:none}
@@ -135,7 +135,7 @@
       <div class="dcol" id="ref-col" style="display:none">
         <div class="device">
           <div class="bezel">
-            <div class="screen"><img id="ref-img" alt="reference" /></div>
+            <div class="screen" id="ref-screen"><img id="ref-img" alt="reference" /></div>
           </div>
         </div>
         <div class="cap">参照（あなたのスクショ）</div>
@@ -220,22 +220,28 @@ function showPick(d){
   const first=row.querySelector('.chip');if(first){const k=first.getAttribute('onclick').match(/'(.+?)'/)[1];highlightRow(k);}
 }
 
-let DEV=[393,852];
+let DEV=[393,852], refRatio=null;
 function applyDevice(){DEV=document.getElementById('device').value.split(',').map(Number);
-  const d=document.getElementById('devices');d.style.setProperty('--sw',DEV[0]+'px');d.style.setProperty('--sh',DEV[1]+'px');rescale();}
+  const d=document.getElementById('devices');d.style.setProperty('--sw',DEV[0]+'px');d.style.setProperty('--sh',DEV[1]+'px');fitRef();rescale();}
+function fitRef(){ // 参照枠を画像の実比率に合わせる（高さはライブと同じ＝歪み/切れなし）
+  if(!refRatio)return; const rs=document.getElementById('ref-screen');
+  rs.style.setProperty('--sh',DEV[1]+'px'); rs.style.setProperty('--sw',Math.round(DEV[1]*refRatio)+'px'); }
+function refW(){const rs=document.getElementById('ref-screen');const w=parseFloat(getComputedStyle(rs).getPropertyValue('--sw'))||DEV[0];return w;}
 function refShown(){return document.getElementById('ref-col').style.display!=='none' && !document.getElementById('stage').classList.contains('overlay');}
-function rescale(){const dw=DEV[0]+26, dh=DEV[1]+26;
-  const cols=refShown()?2:1; const totalW=cols*dw+(cols-1)*28;
-  const availH=window.innerHeight-40, availW=window.innerWidth-330-60;
-  const s=Math.min(1, availH/dh, availW/totalW);
+function rescale(){const dh=DEV[1]+26;
+  // 高さ基準でできるだけ大きく（横は溢れたらスクロール）→ 参照画像をくっきり見せる
+  const availH=window.innerHeight-40;
+  const s=Math.min(1, availH/dh);
   document.getElementById('devices').style.setProperty('--scale',s.toFixed(3));}
 
 function onImg(e){const f=e.target.files&&e.target.files[0];if(!f)return;const r=new FileReader();
   r.onload=()=>{setRef(r.result);try{localStorage.setItem('todoneRefImg',r.result);}catch(x){}};r.readAsDataURL(f);}
-function setRef(src){document.getElementById('ref-img').src=src;
+function setRef(src){const img=document.getElementById('ref-img');
+  img.onload=()=>{refRatio=img.naturalWidth/img.naturalHeight;fitRef();rescale();};
+  img.src=src;
   document.getElementById('ref-col').style.display='flex';
   document.getElementById('clrimg').style.display='';document.getElementById('ovlctl').style.display='flex';
-  document.getElementById('ovlop').style.display=document.getElementById('ovl').checked?'':'none';rescale();}
+  document.getElementById('ovlop').style.display=document.getElementById('ovl').checked?'':'none';}
 function clearImg(){document.getElementById('ref-img').removeAttribute('src');
   document.getElementById('ref-col').style.display='none';document.getElementById('clrimg').style.display='none';
   document.getElementById('ovlctl').style.display='none';document.getElementById('ovlop').style.display='none';
