@@ -28,7 +28,7 @@ export const lightColors = {
   filterText: '#2A6483', // active-filter banner text
   headerBg: '#fafafa', // daily/month header background
   tabBarBg: '#fafafa', // bottom tab bar (footer) background
-  listBg: '#f7f7f7', // daily task list background
+  listBg: '#f5f5f5', // daily task list background
 
   // Tag / status palette (soft) — shared across themes
   blue: '#4A90E2',

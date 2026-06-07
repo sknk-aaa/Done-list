@@ -1,19 +1,17 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { FlatList, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { runOnJS } from 'react-native-reanimated';
-import ReorderableList, { reorderItems, useReorderableDrag } from 'react-native-reorderable-list';
 
 import { AppHeader, HeaderCaret } from '@/components/AppHeader';
 import { Fab } from '@/components/Fab';
 import { TaskRow } from '@/components/TaskRow';
-import type { ItemWithTag } from '@/db/queries';
 import { Pencil, Undo } from '@/icons';
 import { useDailyItems } from '@/data/useData';
 import { addDaysISO, formatLong, getTodayISO } from '@/lib/date';
 import { matchesFilter } from '@/lib/filter';
-import { reorderTasks, setComplete } from '@/lib/taskActions';
+import { setComplete } from '@/lib/taskActions';
 import { isFilterActive, useAppStore } from '@/state/store';
 import { useColors, type Colors } from '@/theme/theme';
 import { font, space } from '@/theme/tokens';
@@ -27,32 +25,6 @@ const isoToUTC = (iso: string) => {
 };
 const diffDays = (aISO: string, bISO: string) => Math.round((isoToUTC(bISO) - isoToUTC(aISO)) / DAY_MS);
 
-/** A task card that long-presses into drag (must be inside ReorderableList). */
-function DraggableRow({
-  item,
-  showTime,
-  dragEnabled,
-  onToggle,
-  onPress,
-}: {
-  item: ItemWithTag;
-  showTime: boolean;
-  dragEnabled: boolean;
-  onToggle: () => void;
-  onPress: () => void;
-}) {
-  const drag = useReorderableDrag();
-  return (
-    <TaskRow
-      item={item}
-      showTime={showTime}
-      onToggle={onToggle}
-      onPress={onPress}
-      onLongPress={dragEnabled ? drag : undefined}
-    />
-  );
-}
-
 /** One day's task list — self-contained so paging never swaps data under it. */
 function DayPage({ date, width, height }: { date: string; width: number; height: number }) {
   const { t } = useTranslation();
@@ -60,7 +32,6 @@ function DayPage({ date, width, height }: { date: string; width: number; height:
   const filter = useAppStore((s) => s.filter);
   const openEditSheet = useAppStore((s) => s.openEditSheet);
   const goToday = useAppStore((s) => s.goToday);
-  const setReordering = useAppStore((s) => s.setReordering);
 
   const all = useDailyItems(date);
   const visible = useMemo(() => all.filter((it) => matchesFilter(it, filter)), [all, filter]);
@@ -69,66 +40,51 @@ function DayPage({ date, width, height }: { date: string; width: number; height:
   const c = useColors();
   const styles = useMemo(() => makeStyles(c), [c]);
 
-  const onReorder = useCallback(
-    ({ from, to }: { from: number; to: number }) => {
-      const next = reorderItems(visible, from, to);
-      void reorderTasks(next.map((i) => i.id));
-    },
-    [visible],
-  );
-
-  if (visible.length === 0) {
-    return (
-      <View style={[{ width, height }, styles.list]}>
-        <View style={styles.empty}>
-          {active ? (
-            <Text style={styles.emptyText}>{t('daily.empty')}</Text>
-          ) : (
-            <>
-              <View style={styles.emptyIcon}>
-                <Pencil size={28} color={c.teal} strokeWidth={2} />
-              </View>
-              <Text style={styles.emptyTitle}>{t('daily.emptyDay')}</Text>
-              <Text style={styles.emptyHint}>{t('daily.emptyDayHint')}</Text>
-            </>
-          )}
-        </View>
-      </View>
-    );
-  }
-
   return (
     <View style={{ width, height }}>
-      <ReorderableList
+      <ScrollView
         style={styles.list}
-        data={visible}
-        keyExtractor={(it) => String(it.id)}
-        renderItem={({ item }) => (
-          <DraggableRow
-            item={item}
-            showTime={showTime}
-            dragEnabled={!active}
-            onToggle={() => setComplete(item, !item.isCompleted)}
-            onPress={() => openEditSheet(item)}
-          />
-        )}
-        onReorder={onReorder}
-        onDragStart={() => setReordering(true)}
-        onDragEnd={() => setReordering(false)}
-        dragEnabled={!active}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
-        ListFooterComponent={
-          !isToday ? (
-            <Pressable style={styles.todayBtn} onPress={goToday}>
-              <View style={date < getTodayISO() ? styles.flip : undefined}>
-                <Undo size={15} color={c.teal} strokeWidth={2.4} />
-              </View>
-              <Text style={styles.todayBtnText}>{t('daily.backToToday')}</Text>
-            </Pressable>
-          ) : null
-        }
-      />
+        scrollEnabled={visible.length > 6}
+      >
+        {visible.length === 0 ? (
+          <View style={styles.empty}>
+            {active ? (
+              <Text style={styles.emptyText}>{t('daily.empty')}</Text>
+            ) : (
+              <>
+                <View style={styles.emptyIcon}>
+                  <Pencil size={28} color={c.teal} strokeWidth={2} />
+                </View>
+                <Text style={styles.emptyTitle}>{t('daily.emptyDay')}</Text>
+                <Text style={styles.emptyHint}>{t('daily.emptyDayHint')}</Text>
+              </>
+            )}
+          </View>
+        ) : (
+          <>
+            {visible.map((item) => (
+              <Fragment key={item.id}>
+                <TaskRow
+                  item={item}
+                  showTime={showTime}
+                  onToggle={() => setComplete(item, !item.isCompleted)}
+                  onPress={() => openEditSheet(item)}
+                />
+              </Fragment>
+            ))}
+            {!isToday && (
+              <Pressable style={styles.todayBtn} onPress={goToday}>
+                <View style={date < getTodayISO() ? styles.flip : undefined}>
+                  <Undo size={15} color={c.teal} strokeWidth={2.4} />
+                </View>
+                <Text style={styles.todayBtnText}>{t('daily.backToToday')}</Text>
+              </Pressable>
+            )}
+          </>
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -150,7 +106,6 @@ export function DailyScreen() {
   const setSelectedDate = useAppStore((s) => s.setSelectedDate);
   const setView = useAppStore((s) => s.setView);
   const sheetOpen = useAppStore((s) => s.sheet.mode !== null);
-  const reordering = useAppStore((s) => s.reordering);
 
   const anchor = useRef(getTodayISO()).current;
   const dateForIndex = useCallback((i: number) => addDaysISO(anchor, i - RANGE), [anchor]);
@@ -183,7 +138,6 @@ export function DailyScreen() {
 
   // tab mode: horizontal swipe switches to the month view.
   const viewPan = Gesture.Pan()
-    .enabled(!reordering)
     .activeOffsetX([-10, 10])
     .failOffsetY([-22, 22])
     .onEnd((e) => {
@@ -276,7 +230,6 @@ export function DailyScreen() {
           data={indices}
           horizontal
           pagingEnabled
-          scrollEnabled={!reordering}
           showsHorizontalScrollIndicator={false}
           keyExtractor={(i) => String(i)}
           getItemLayout={(_, index) => ({ length: width, offset: width * index, index })}
