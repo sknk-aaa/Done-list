@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect } from 'react';
-import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { AddEditSheet } from '@/components/AddEditSheet';
@@ -37,7 +37,7 @@ export default function AppShell() {
 
   // Dev-only: live theme editing from tools/theme-editor (web, via postMessage).
   useEffect(() => {
-    if (!__DEV__ || typeof window === 'undefined') return;
+    if (!__DEV__ || Platform.OS !== 'web' || typeof window === 'undefined') return;
     const onMsg = (e: MessageEvent) => {
       const d = e.data as { __todoneTheme?: boolean; values?: Record<string, string> | null };
       if (d && d.__todoneTheme) useAppStore.getState().setThemeOverride(d.values ?? null);
