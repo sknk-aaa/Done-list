@@ -53,7 +53,7 @@ export function TaskRow({ item, showTime, onToggle, onPress }: Props) {
 
 const makeStyles = (c: Colors) => StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 15 },
-  pressed: { backgroundColor: c.bgSoft },
+  pressed: { backgroundColor: c.bgSoft, transform: [{ scale: 0.985 }] },
   main: { flex: 1, gap: 5 },
   title: { fontSize: 14.5, fontWeight: '600', color: c.ink2 },
   sub: { flexDirection: 'row', alignItems: 'center', gap: 8 },

@@ -38,7 +38,7 @@ export function MonthGrid({ weeks, filterActive, onDayPress }: Props) {
             return (
               <Pressable
                 key={ci}
-                style={[styles.cell, cell.isSelected && styles.cellSelected]}
+                style={({ pressed }) => [styles.cell, cell.isSelected && styles.cellSelected, pressed && styles.cellPressed]}
                 onPress={() => !cell.out && onDayPress(cell)}
                 accessibilityRole="button"
                 accessibilityLabel={`${cell.day}日${cell.items.length > 0 ? `・${cell.items.length}件` : ''}`}
@@ -79,6 +79,7 @@ const makeStyles = (c: Colors) => StyleSheet.create({
     overflow: 'hidden',
   },
   cellSelected: { borderWidth: 1.5, borderColor: c.teal, borderRadius: 10, backgroundColor: c.selectedCell },
+  cellPressed: { opacity: 0.55 },
   dnum: { fontSize: 14, fontWeight: '600', color: c.ink2, height: 20, lineHeight: 20, paddingLeft: 3, marginBottom: 2 },
   sun: { color: c.red },
   outNum: { color: c.faint },

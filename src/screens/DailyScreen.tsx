@@ -50,7 +50,7 @@ function DayPage({ date, width, height }: { date: string; width: number; height:
         scrollEnabled={visible.length > 6}
       >
         {visible.length === 0 ? (
-          <View style={styles.empty}>
+          <Animated.View style={styles.empty} entering={FadeIn.duration(260).reduceMotion(ReduceMotion.System)}>
             {active ? (
               <Text style={styles.emptyText}>{t('daily.empty')}</Text>
             ) : (
@@ -62,7 +62,7 @@ function DayPage({ date, width, height }: { date: string; width: number; height:
                 <Text style={styles.emptyHint}>{t('daily.emptyDayHint')}</Text>
               </>
             )}
-          </View>
+          </Animated.View>
         ) : (
           <>
             {visible.map((item, i) => (

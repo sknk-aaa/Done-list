@@ -36,5 +36,5 @@ const makeStyles = (c: Colors) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pressed: { backgroundColor: c.tealDark },
+  pressed: { backgroundColor: c.tealDark, transform: [{ scale: 0.92 }] },
 });
