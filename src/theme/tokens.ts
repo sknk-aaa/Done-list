@@ -14,8 +14,8 @@ export const lightColors = {
   // Neutrals
   ink: '#2C2E33', // primary text
   ink2: '#3A3F44', // strong secondary (headings, icons)
-  muted: '#9CA1A7', // secondary text
-  faint: '#B4B9BD', // placeholders / hints / dim
+  muted: '#6E747C', // secondary text (AA on #FAFAFA)
+  faint: '#868C93', // placeholders / hints / dim
   line: '#EDEEF0', // hairline dividers / cell borders
   divider: '#E2E5E8', // grab handle, dots
   bg: '#FAFAFA', // screen background

@@ -34,11 +34,18 @@ export function AppHeader({ left, sub, filterActive, onFilter, onMenu }: Props) 
       <View style={styles.row}>
         <View style={styles.left}>{left}</View>
         <View style={styles.tools}>
-          <Pressable onPress={onFilter} hitSlop={10} style={styles.funnelWrap}>
+          <Pressable
+            onPress={onFilter}
+            hitSlop={10}
+            style={styles.funnelWrap}
+            accessibilityRole="button"
+            accessibilityLabel="絞り込み"
+            accessibilityState={{ selected: filterActive }}
+          >
             <Funnel size={26} color={c.teal} />
             {filterActive && <View style={styles.filterDot} />}
           </Pressable>
-          <Pressable onPress={onMenu} hitSlop={10}>
+          <Pressable onPress={onMenu} hitSlop={10} accessibilityRole="button" accessibilityLabel="メニュー">
             <Hamburger size={28} color={c.ink2} />
           </Pressable>
         </View>

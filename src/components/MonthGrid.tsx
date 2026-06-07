@@ -40,6 +40,9 @@ export function MonthGrid({ weeks, filterActive, onDayPress }: Props) {
                 key={ci}
                 style={[styles.cell, cell.isSelected && styles.cellSelected]}
                 onPress={() => !cell.out && onDayPress(cell)}
+                accessibilityRole="button"
+                accessibilityLabel={`${cell.day}日${cell.items.length > 0 ? `・${cell.items.length}件` : ''}`}
+                accessibilityState={{ selected: cell.isSelected }}
               >
                 {cell.isToday ? (
                   <View style={styles.todayPill}>
