@@ -18,7 +18,7 @@ type Props = {
 export function TaskRow({ item, showTime, onToggle, onPress }: Props) {
   const c = useColors();
   const styles = useMemo(() => makeStyles(c), [c]);
-  const tagColor = item.tag?.color ?? c.chevron;
+  const tagColor = item.tag?.color ?? c.teal; // タグなしはアクセント色（チップは出さない）
   const hasSub = !!item.tag || !!item.memo;
   const showTimeVal = showTime && !!item.time;
 
