@@ -59,5 +59,5 @@ const makeStyles = (c: Colors) => StyleSheet.create({
     borderRadius: 999,
   },
   text: { color: '#fff', fontSize: font.size.body, fontWeight: '600' },
-  action: { color: c.teal, fontSize: font.size.body, fontWeight: '700' },
+  action: { color: '#FFFFFF', fontSize: font.size.body, fontWeight: '700', textDecorationLine: 'underline' },
 });
