@@ -52,13 +52,7 @@ export function WeekStrip({ selectedDate, lang, onSelect, onShiftWeek }: Props) 
               <Pressable key={d} style={styles.cell} onPress={() => onSelect(d)} hitSlop={4}>
                 <Text style={[styles.dow, i === 0 && styles.sun]}>{labels[i]}</Text>
                 <View style={styles.numWrap}>
-                  {sel && (
-                    <Animated.View
-                      key={d}
-                      entering={ZoomIn.springify().damping(12).stiffness(170)}
-                      style={styles.selCircle}
-                    />
-                  )}
+                  {sel && <Animated.View key={d} entering={ZoomIn.duration(120)} style={styles.selCircle} />}
                   <Text
                     style={[
                       styles.num,

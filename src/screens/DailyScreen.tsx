@@ -193,7 +193,7 @@ export function DailyScreen() {
     <>
       <AppHeader
         left={left}
-        sub={sub}
+        sub={weekOpen ? undefined : sub}
         filterActive={active}
         onFilter={() => setFilterOpen(true)}
         onMenu={() => setDrawerOpen(true)}
