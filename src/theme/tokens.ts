@@ -26,9 +26,9 @@ export const lightColors = {
   selectedCell: '#EEF4F8', // month selected cell bg
   filterBg: '#E9F1F7', // active-filter banner bg
   filterText: '#2A6483', // active-filter banner text
-  headerBg: '#FFFFFF', // daily/month header background
-  tabBarBg: '#FFFFFF', // bottom tab bar (footer) background
-  listBg: '#FFFFFF', // daily task list background
+  headerBg: '#fafafa', // daily/month header background
+  tabBarBg: '#fafafa', // bottom tab bar (footer) background
+  listBg: '#f5f5f5', // daily task list background
 
   // Tag / status palette (soft) — shared across themes
   blue: '#4A90E2',
@@ -216,8 +216,8 @@ export const size = {
   tabBarSafeBottom: 22,
   fab: 64,
   fabIcon: 30,
-  statusCircle: 31, // task check ring (border 2)
-  statusCheck: 18, // checkmark glyph inside ring
+  statusCircle: 25, // task check ring (border 2)
+  statusCheck: 14, // checkmark glyph inside ring
   todayPill: 20, // month-grid "today" circle
   filterDot: 9, // active-filter dot on funnel icon
   drawerWidthPct: 0.84, // drawer = 84% of screen width
