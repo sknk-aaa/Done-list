@@ -38,12 +38,78 @@ export default function AppShell() {
   // Dev-only: live theme editing from tools/theme-editor (web, via postMessage).
   useEffect(() => {
     if (!__DEV__ || Platform.OS !== 'web' || typeof window === 'undefined') return;
+    let mode: 'interact' | 'edit' = 'interact';
+    let hl: HTMLElement | null = null;
+    const clearHL = () => {
+      if (hl) {
+        hl.style.outline = '';
+        hl.style.outlineOffset = '';
+        hl = null;
+      }
+    };
+    const nav = (a: string) => {
+      const s = useAppStore.getState();
+      s.closeSheet();
+      s.setDrawerOpen(false);
+      s.setFilterOpen(false);
+      s.setTagEditOpen(false);
+      s.setFaqOpen(false);
+      s.setOnboardingOpen(false);
+      if (a === 'daily') s.setView('daily');
+      else if (a === 'month') s.setView('month');
+      else if (a === 'drawer') s.setDrawerOpen(true);
+      else if (a === 'add') s.openAddSheet();
+      else if (a === 'filter') s.setFilterOpen(true);
+      else if (a === 'tagEdit') s.setTagEditOpen(true);
+      else if (a === 'faq') s.setFaqOpen(true);
+    };
     const onMsg = (e: MessageEvent) => {
-      const d = e.data as { __todoneTheme?: boolean; values?: Record<string, string> | null };
-      if (d && d.__todoneTheme) useAppStore.getState().setThemeOverride(d.values ?? null);
+      const d = e.data as {
+        __todoneTheme?: boolean; values?: Record<string, string> | null;
+        __todoneMode?: boolean; mode?: 'interact' | 'edit';
+        __todoneNav?: boolean; action?: string;
+      };
+      if (!d) return;
+      if (d.__todoneTheme) useAppStore.getState().setThemeOverride(d.values ?? null);
+      else if (d.__todoneMode) {
+        mode = d.mode ?? 'interact';
+        clearHL();
+        document.body.style.cursor = mode === 'edit' ? 'crosshair' : '';
+      } else if (d.__todoneNav && d.action) nav(d.action);
+    };
+    const transparent = (c: string) => !c || c === 'rgba(0, 0, 0, 0)' || c === 'transparent';
+    const onClickCapture = (e: MouseEvent) => {
+      if (mode !== 'edit') return;
+      e.preventDefault();
+      e.stopPropagation();
+      const el = e.target as HTMLElement;
+      const cs = getComputedStyle(el);
+      let bg = '';
+      let p: HTMLElement | null = el;
+      while (p) {
+        const b = getComputedStyle(p).backgroundColor;
+        if (!transparent(b)) { bg = b; break; }
+        p = p.parentElement;
+      }
+      const border = !transparent(cs.borderTopColor)
+        ? cs.borderTopColor
+        : !transparent(cs.borderColor) ? cs.borderColor : '';
+      clearHL();
+      hl = el;
+      el.style.outline = '2px solid #ff3b30';
+      el.style.outlineOffset = '1px';
+      window.parent.postMessage(
+        { __todonePick: true, bg, text: cs.color, border, tag: el.tagName.toLowerCase() },
+        '*',
+      );
     };
     window.addEventListener('message', onMsg);
-    return () => window.removeEventListener('message', onMsg);
+    document.addEventListener('click', onClickCapture, true);
+    return () => {
+      window.removeEventListener('message', onMsg);
+      document.removeEventListener('click', onClickCapture, true);
+      clearHL();
+    };
   }, []);
 
   const tx = useSharedValue(0);

@@ -3,100 +3,208 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>toDone — Live Theme Editor</title>
+<title>toDone — Theme Studio</title>
 <style>
   *{box-sizing:border-box}
-  body{margin:0;display:flex;height:100vh;background:#eceef1;color:#1c1f24;
-    font:14px/1.45 -apple-system,"Hiragino Sans",system-ui,sans-serif}
-  /* left controls */
-  .panel{width:320px;flex:0 0 320px;background:#fff;border-right:1px solid #dcdfe3;overflow-y:auto;padding:14px 14px 90px}
-  .panel h1{font-size:15px;margin:2px 0}
-  .panel .hint{color:#6b7280;font-size:11.5px;margin:0 0 12px}
-  .urlbar{display:flex;gap:6px;margin-bottom:12px}
-  .urlbar input{flex:1;border:1px solid #cfd3d8;border-radius:7px;padding:6px 8px;font-size:12px}
-  .urlbar button{border:1px solid #cfd3d8;background:#f4f5f7;border-radius:7px;padding:0 10px;cursor:pointer;font-size:12px}
-  .group{border:1px solid #e6e8eb;border-radius:10px;padding:8px 11px;margin-bottom:9px}
-  .group h2{font-size:12.5px;margin:0 0 6px;color:#374151}
-  .ctl{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:6px 0}
+  :root{--brand:#4A8CB0}
+  body{margin:0;display:flex;height:100vh;overflow:hidden;background:#e9ebef;color:#1c1f24;
+    font:13.5px/1.45 -apple-system,"Hiragino Sans",system-ui,sans-serif}
+
+  /* ===== left panel ===== */
+  .panel{width:330px;flex:0 0 330px;background:#fbfbfc;border-right:1px solid #d8dce1;display:flex;flex-direction:column}
+  .phead{padding:14px 14px 10px;border-bottom:1px solid #e6e8ec}
+  .phead h1{font-size:15px;margin:0 0 2px}
+  .phead p{margin:0;color:#7a828c;font-size:11px}
+  .modes{display:flex;gap:6px;margin-top:10px;background:#eceef2;padding:3px;border-radius:9px}
+  .modes button{flex:1;border:0;background:transparent;padding:7px;border-radius:7px;cursor:pointer;font-weight:600;color:#5b636d;font-size:12.5px}
+  .modes button.on{background:#fff;color:#1c1f24;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+  .nav{display:flex;flex-wrap:wrap;gap:5px;padding:10px 14px;border-bottom:1px solid #e6e8ec}
+  .nav button{border:1px solid #d4d8dd;background:#fff;border-radius:7px;padding:5px 9px;cursor:pointer;font-size:11.5px;color:#3a414a}
+  .nav button:hover{border-color:var(--brand);color:var(--brand)}
+  .scroll{flex:1;overflow-y:auto;padding:10px 14px 16px}
+
+  .pickcard{background:#1c1f24;color:#fff;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;display:none}
+  .pickcard.on{display:block}
+  .pickcard b{color:#9fd0e6}
+  .pickrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .pickrow .chip{background:#2c313a;border:0;color:#fff;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:11.5px}
+  .pickrow .chip:hover{background:var(--brand)}
+  .pickrow .sw{width:12px;height:12px;border-radius:3px;display:inline-block;vertical-align:-1px;margin-right:5px;border:1px solid rgba(255,255,255,.3)}
+
+  .sec{border:1px solid #e3e6ea;border-radius:11px;margin-bottom:10px;overflow:hidden}
+  .sec>h2{margin:0;font-size:12.5px;padding:9px 12px;background:var(--sbg,#f1f3f6);color:#374151;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+  .sec>h2 .arw{color:#9aa1ab;font-size:11px}
+  .sec .body{padding:6px 12px 10px}
+  .sec.col .body{display:none}
+  .ctl{display:flex;align-items:center;gap:8px;margin:7px 0;border-radius:7px;padding:2px 4px}
+  .ctl.hot{background:rgba(74,140,176,.16);outline:1px solid var(--brand)}
   .ctl label{font-size:12px;color:#4b5563;flex:1}
-  .ctl input[type=color]{width:36px;height:24px;border:1px solid #cfd3d8;border-radius:6px;padding:0;background:none}
-  .ctl input[type=range]{width:120px}
-  .ctl .val{font-size:10.5px;color:#6b7280;width:56px;text-align:right;font-variant-numeric:tabular-nums}
-  /* right preview */
-  .stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:18px;overflow:auto}
-  .frame{width:390px;height:844px;border:10px solid #111;border-radius:44px;overflow:hidden;background:#fff;box-shadow:0 18px 60px rgba(0,0,0,.25)}
-  iframe{width:100%;height:100%;border:0;display:block}
-  .note{color:#6b7280;font-size:12px}
-  .bar{position:fixed;left:0;bottom:0;width:320px;background:#fff;border-top:1px solid #dcdfe3;padding:11px 14px;display:flex;gap:8px}
-  .bar button{flex:1;padding:10px;border-radius:8px;border:0;font-weight:700;cursor:pointer}
-  .save{background:#4A8CB0;color:#fff}.reset{background:#eceef1;color:#374151}
-  .toast{position:fixed;left:160px;bottom:24px;transform:translateX(-50%);background:#1c1f24;color:#fff;padding:9px 14px;border-radius:9px;opacity:0;transition:.2s}
+  .ctl input[type=color]{width:34px;height:24px;border:1px solid #cfd3d8;border-radius:6px;padding:0;background:none}
+  .ctl input[type=range]{width:118px}
+  .ctl .val{font-size:10.5px;color:#7a828c;width:58px;text-align:right;font-variant-numeric:tabular-nums}
+
+  .bar{border-top:1px solid #d8dce1;padding:10px 12px;display:flex;gap:7px;background:#fbfbfc}
+  .bar button{flex:1;padding:10px;border-radius:8px;border:0;font-weight:700;cursor:pointer;font-size:12.5px}
+  .bar .save{background:var(--brand);color:#fff}.bar .ghost{background:#eceef2;color:#3a414a}
+
+  /* ===== right stage ===== */
+  .stage{flex:1;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 30%,#f3f4f7,#e2e5ea);position:relative}
+  .device{transform:scale(var(--scale,1));transform-origin:center}
+  .bezel{background:#0b0b0d;border-radius:58px;padding:13px;box-shadow:0 30px 80px rgba(0,0,0,.35),inset 0 0 0 2px #2a2a2e}
+  .screen{position:relative;border-radius:46px;overflow:hidden;background:#fff;width:var(--sw,393px);height:var(--sh,852px)}
+  .island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:118px;height:33px;background:#000;border-radius:20px;z-index:5}
+  .statusbar{position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:center;justify-content:space-between;padding:16px 30px 0;font-size:14px;font-weight:600;color:var(--sbColor,#000);z-index:4;pointer-events:none}
+  iframe{position:absolute;top:54px;left:0;width:100%;height:calc(100% - 54px);border:0;display:block;background:#fff}
+  .editmode .screen{box-shadow:inset 0 0 0 3px #ff3b30}
+  .hint2{position:absolute;bottom:16px;left:0;right:0;text-align:center;color:#8a929c;font-size:12px}
+  .toast{position:fixed;left:165px;bottom:18px;transform:translateX(-50%);background:#1c1f24;color:#fff;padding:9px 14px;border-radius:9px;opacity:0;transition:.2s;z-index:20}
   .toast.on{opacity:1}
+  .deverr{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#6b7280;font-size:12px;padding:0 20px}
 </style>
 </head>
 <body>
   <div class="panel">
-    <h1>Live テーマエディタ</h1>
-    <p class="hint">右は<b>本物のアプリ(Web)</b>。色を変えると即反映されます。Saveでこちら(JSON)に保存→反映します。</p>
-    <div class="urlbar">
-      <input id="url" value="http://localhost:8090" />
-      <button onclick="reloadApp()">読込</button>
+    <div class="phead">
+      <h1>toDone Theme Studio</h1>
+      <p>本物アプリをライブ編集。Saveでこちらに保存→反映します。</p>
+      <div class="modes">
+        <button id="m-interact" class="on" onclick="setMode('interact')">操作モード</button>
+        <button id="m-edit" onclick="setMode('edit')">編集モード</button>
+      </div>
+      <div style="margin-top:8px;display:flex;gap:6px;align-items:center">
+        <select id="device" onchange="applyDevice()" style="flex:1;padding:5px;border-radius:7px;border:1px solid #d4d8dd;font-size:12px">
+          <option value="393,852">iPhone 15 / 14 Pro (393×852)</option>
+          <option value="375,667">iPhone SE (375×667)</option>
+          <option value="430,932">15 Pro Max (430×932)</option>
+        </select>
+        <input id="url" value="http://localhost:8090" style="width:120px;padding:5px;border-radius:7px;border:1px solid #d4d8dd;font-size:11px"/>
+        <button onclick="reloadApp()" style="border:1px solid #d4d8dd;background:#fff;border-radius:7px;padding:0 8px;cursor:pointer">↻</button>
+      </div>
     </div>
-    <div id="groups"></div>
+    <div class="nav">
+      <button onclick="go('daily')">デイリー</button>
+      <button onclick="go('month')">月</button>
+      <button onclick="go('add')">追加シート</button>
+      <button onclick="go('filter')">絞り込み</button>
+      <button onclick="go('drawer')">メニュー</button>
+      <button onclick="go('tagEdit')">タグ編集</button>
+      <button onclick="go('faq')">FAQ</button>
+    </div>
+    <div class="scroll">
+      <div class="pickcard" id="pick">
+        <div>クリックした要素の色：</div>
+        <div class="pickrow" id="pickrow"></div>
+      </div>
+      <div id="groups"></div>
+    </div>
+    <div class="bar">
+      <button class="ghost" onclick="undo()">↩ 戻す</button>
+      <button class="ghost" onclick="resetAll()">初期値</button>
+      <button class="save" onclick="save()">Save</button>
+    </div>
   </div>
-  <div class="stage">
-    <div class="frame"><iframe id="app" src="http://localhost:8090"></iframe></div>
-    <div class="note">アプリが出ない場合：Metro の web ポートを上の欄に入れて「読込」（例 8081/8082/8101）。</div>
-  </div>
-  <div class="bar">
-    <button class="reset" onclick="undo()">↩ 戻す</button>
-    <button class="reset" onclick="resetAll()">初期値</button>
-    <button class="save" onclick="save()">Save</button>
+
+  <div class="stage" id="stage">
+    <div class="device" id="device-wrap">
+      <div class="bezel">
+        <div class="screen" id="screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span>● ▮▮ ▮</span></div>
+          <iframe id="app" src="http://localhost:8090"></iframe>
+        </div>
+      </div>
+    </div>
+    <div class="hint2" id="hint2">操作モード：普通に使えます。／編集モード：クリックでその色がどのトークンか分かります。</div>
   </div>
   <div class="toast" id="toast"></div>
 
 <script>
-// keys = tokens.ts color keys (merged into Colors at runtime). tealTint is computed from teal+alpha.
 const DEFAULTS={
   teal:'#4A8CB0', tealDark:'#3E7B9C', tintAlpha:0.16,
   ink:'#2C2E33', ink2:'#3A3F44', muted:'#9CA1A7', faint:'#B4B9BD',
-  line:'#EDEEF0', divider:'#E2E5E8', bg:'#FFFFFF', bgSoft:'#F6F7F8', field:'#F3F4F5', chevron:'#C5CACE',
-  selectedCell:'#EEF4F8', filterBg:'#E9F1F7', filterText:'#2A6483', red:'#EF5B52',
+  line:'#EDEEF0', divider:'#E2E5E8',
+  bg:'#FFFFFF', bgSoft:'#F6F7F8', surface:'#FFFFFF', field:'#F3F4F5', segTrack:'#F0F1F2', switchOff:'#DFE2E5',
+  selectedCell:'#EEF4F8', filterBg:'#E9F1F7', filterText:'#2A6483', chevron:'#C5CACE', red:'#EF5B52',
 };
+const LABELS={teal:'アクセント',tealDark:'濃いアクセント',tintAlpha:'淡塗りの濃さ',ink:'主要テキスト',ink2:'見出し/アイコン',muted:'補助テキスト',faint:'プレースホルダ',line:'罫線/セル枠',divider:'区切り線',bg:'背景',bgSoft:'淡い面/押下',surface:'カード/シート面',field:'入力欄',segTrack:'セグメント背景',switchOff:'スイッチOFF',selectedCell:'選択セル塗り(月)',filterBg:'絞り込み背景',filterText:'絞り込み文字',chevron:'シェブロン',red:'日曜/削除',};
 const GROUPS=[
-  {name:'アクセント',items:[['teal','アクセント色','color'],['tealDark','濃いアクセント(押下)','color'],['tintAlpha','淡塗りの濃さ(今日ピル等)','range',0,0.4,0.01]]},
-  {name:'テキスト',items:[['ink','主要テキスト','color'],['ink2','見出し/アイコン','color'],['muted','補助テキスト','color'],['faint','プレースホルダ','color']]},
-  {name:'線・面',items:[['line','罫線/セル枠','color'],['divider','区切り線','color'],['bg','背景','color'],['bgSoft','淡い面/押下','color'],['field','入力欄','color'],['chevron','シェブロン','color']]},
-  {name:'状態色',items:[['selectedCell','選択セルの塗り(月)','color'],['filterBg','絞り込み背景','color'],['filterText','絞り込み文字','color'],['red','日曜/削除','color']]},
+  {name:'アクセント',bg:'#eaf2f7',keys:['teal','tealDark','tintAlpha']},
+  {name:'テキスト',bg:'#f1f1f3',keys:['ink','ink2','muted','faint']},
+  {name:'背景・面',bg:'#eef2ee',keys:['bg','bgSoft','surface','field','segTrack','switchOff']},
+  {name:'線・区切り',bg:'#f3eee9',keys:['line','divider','chevron']},
+  {name:'状態色',bg:'#f3eef3',keys:['selectedCell','filterBg','filterText','red']},
 ];
-let V={...DEFAULTS};
-let history=[];
-function snap(){ const cur=JSON.stringify(V); if(history.length&&history[history.length-1]===cur)return; history.push(cur); if(history.length>100)history.shift(); }
-function undo(){ if(!history.length){showToast('戻せる変更がありません');return;} V=JSON.parse(history.pop()); buildPanel(); push(); showToast('1つ戻しました'); }
+let V={...DEFAULTS}, history=[], mode='interact';
+const F=()=>document.getElementById('app');
 
 function hexA(hex,a){const h=hex.replace('#','');const n=parseInt(h,16);return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;}
-function values(){ // resolved Colors override sent to the app
-  const o={}; for(const k in V){ if(k==='tintAlpha')continue; o[k]=V[k]; }
-  o.tealTint=hexA(V.teal,V.tintAlpha); return o;
-}
-function push(){ const f=document.getElementById('app'); try{ f.contentWindow.postMessage({__todoneTheme:true,values:values()},'*'); }catch(e){} }
+function parseColor(s){ if(!s)return null; s=s.trim();
+  if(s[0]==='#'){const h=s.replace('#','');const n=parseInt(h.length===3?h.split('').map(c=>c+c).join(''):h,16);return[(n>>16)&255,(n>>8)&255,n&255,1];}
+  const m=s.match(/rgba?\(([^)]+)\)/); if(!m)return null; const a=m[1].split(',').map(x=>parseFloat(x)); return[a[0]|0,a[1]|0,a[2]|0,a[3]==null?1:a[3]];}
+function eqColor(a,b){ if(!a||!b)return false; return a[0]===b[0]&&a[1]===b[1]&&a[2]===b[2]&&Math.abs(a[3]-b[3])<0.06;}
+function tokenRgb(k){ if(k==='tintAlpha')return null; if(k==='tealTint')return parseColor(hexA(V.teal,V.tintAlpha)); return parseColor(V[k]); }
+function matchToken(colorStr){ const c=parseColor(colorStr); if(!c)return []; const out=[];
+  for(const k in V){ if(k==='tintAlpha')continue; if(eqColor(c,tokenRgb(k)))out.push(k);}
+  if(eqColor(c,tokenRgb('tealTint')))out.push('tintAlpha'); return out; }
+
+function values(){const o={};for(const k in V){if(k==='tintAlpha')continue;o[k]=V[k];}o.tealTint=hexA(V.teal,V.tintAlpha);return o;}
+function push(){try{F().contentWindow.postMessage({__todoneTheme:true,values:values()},'*');}catch(e){}}
+function setMode(m){mode=m;document.getElementById('m-interact').classList.toggle('on',m==='interact');
+  document.getElementById('m-edit').classList.toggle('on',m==='edit');
+  document.getElementById('stage').classList.toggle('editmode',m==='edit');
+  document.getElementById('hint2').textContent = m==='edit'?'編集モード：プレビュー内をクリック→使われている色トークンを表示します。':'操作モード：普通に使えます。';
+  if(m!=='edit')document.getElementById('pick').classList.remove('on');
+  try{F().contentWindow.postMessage({__todoneMode:true,mode:m},'*');}catch(e){}}
+function go(action){try{F().contentWindow.postMessage({__todoneNav:true,action},'*');}catch(e){}}
+
+function snap(){const c=JSON.stringify(V);if(history.length&&history[history.length-1]===c)return;history.push(c);if(history.length>120)history.shift();}
+function undo(){if(!history.length){toast('戻せる変更がありません');return;}V=JSON.parse(history.pop());buildPanel();push();toast('1つ戻しました');}
+function resetAll(){snap();V={...DEFAULTS};buildPanel();push();toast('初期値に戻しました');}
+
 function buildPanel(){
   const root=document.getElementById('groups');root.innerHTML='';
-  for(const g of GROUPS){const box=document.createElement('div');box.className='group';box.innerHTML=`<h2>${g.name}</h2>`;
-    for(const[k,label,type,min,max,step]of g.items){const row=document.createElement('div');row.className='ctl';
-      if(type==='color')row.innerHTML=`<label>${label}</label><input type="color" value="${V[k]}" onfocus="snap()" oninput="set('${k}',this.value,this)"><span class="val">${V[k]}</span>`;
-      else row.innerHTML=`<label>${label}</label><input type="range" min="${min}" max="${max}" step="${step}" value="${V[k]}" onpointerdown="snap()" oninput="set('${k}',+this.value,this)"><span class="val" id="v-${k}">${V[k]}</span>`;
-      box.appendChild(row);}
-    root.appendChild(box);}
+  for(const g of GROUPS){
+    const sec=document.createElement('div');sec.className='sec';sec.style.setProperty('--sbg',g.bg);
+    let body='';
+    for(const k of g.keys){
+      const isRange=(k==='tintAlpha');
+      if(isRange) body+=`<div class="ctl" id="row-${k}"><label>${LABELS[k]}</label><input type="range" min="0" max="0.4" step="0.01" value="${V[k]}" onpointerdown="snap()" oninput="set('${k}',+this.value,this)"><span class="val" id="v-${k}">${V[k]}</span></div>`;
+      else body+=`<div class="ctl" id="row-${k}"><label>${LABELS[k]}</label><input type="color" value="${V[k]}" onfocus="snap()" oninput="set('${k}',this.value,this)"><span class="val">${V[k]}</span></div>`;
+    }
+    sec.innerHTML=`<h2 onclick="this.parentNode.classList.toggle('col')">${g.name}<span class="arw">▾</span></h2><div class="body">${body}</div>`;
+    root.appendChild(sec);
+  }
 }
 function set(k,val,el){V[k]=val;const v=document.getElementById('v-'+k);if(v)v.textContent=val;if(el&&el.type==='color'&&el.nextElementSibling)el.nextElementSibling.textContent=val;push();}
-function reloadApp(){const f=document.getElementById('app');f.src=document.getElementById('url').value;}
-function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1600);}
-async function save(){try{const r=await fetch('/save',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({values:values(),raw:V},null,2)});showToast(r.ok?'保存しました(theme-draft.json)':'保存失敗');}catch{showToast('保存失敗(サーバ未起動?)');}}
-function resetAll(){snap();V={...DEFAULTS};buildPanel();push();showToast('初期値に戻しました');}
 
-document.getElementById('app').addEventListener('load',()=>setTimeout(push,400));
-async function init(){try{const r=await fetch('/tokens');const s=await r.json();if(s&&s.raw)V={...DEFAULTS,...s.raw};}catch{}buildPanel();}
+function highlightRow(k){const r=document.getElementById('row-'+k);if(!r)return;
+  // expand parent section if collapsed
+  const sec=r.closest('.sec'); if(sec)sec.classList.remove('col');
+  r.scrollIntoView({behavior:'smooth',block:'center'});r.classList.add('hot');setTimeout(()=>r.classList.remove('hot'),1600);}
+function showPick(d){
+  const card=document.getElementById('pick'),row=document.getElementById('pickrow');
+  const parts=[['背景',d.bg],['文字',d.text],['枠',d.border]];
+  let html='';const seen=new Set();
+  for(const[label,col]of parts){ if(!col)continue; const ks=matchToken(col); for(const k of ks){ if(seen.has(label+k))continue;seen.add(label+k);
+    html+=`<button class="chip" onclick="highlightRow('${k}')"><span class="sw" style="background:${col}"></span>${label}: ${LABELS[k]||k}</button>`; } }
+  if(!html)html=`<span style="color:#9aa1ab">該当トークンなし（タグ色など個別色かも）</span>`;
+  row.innerHTML=html;card.classList.add('on');
+  // auto flash first match
+  const first=row.querySelector('.chip');if(first){const k=first.getAttribute('onclick').match(/'(.+?)'/)[1];highlightRow(k);}
+}
+
+function applyDevice(){const[w,h]=document.getElementById('device').value.split(',').map(Number);
+  const s=document.getElementById('screen');s.style.setProperty('--sw',w+'px');s.style.setProperty('--sh',h+'px');rescale();}
+function rescale(){const h=parseInt(getComputedStyle(document.getElementById('screen')).getPropertyValue('--sh'))+26;
+  const avail=window.innerHeight-40;document.getElementById('device-wrap').style.setProperty('--scale',Math.min(1,avail/h).toFixed(3));}
+function reloadApp(){F().src=document.getElementById('url').value;}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1500);}
+async function save(){try{const r=await fetch('/save',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({values:values(),raw:V},null,2)});toast(r.ok?'保存しました(theme-draft.json)':'保存失敗');}catch{toast('保存失敗(サーバ未起動?)');}}
+
+window.addEventListener('message',e=>{const d=e.data;if(d&&d.__todonePick)showPick(d);});
+window.addEventListener('resize',rescale);
+F().addEventListener('load',()=>setTimeout(()=>{push();if(mode==='edit')setMode('edit');},500));
+async function init(){try{const r=await fetch('/tokens');const s=await r.json();if(s&&s.raw)V={...DEFAULTS,...s.raw};}catch{}buildPanel();applyDevice();}
 init();
 </script>
 </body>
