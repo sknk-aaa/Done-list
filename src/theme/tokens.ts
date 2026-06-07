@@ -26,6 +26,9 @@ export const lightColors = {
   selectedCell: '#EEF4F8', // month selected cell bg
   filterBg: '#E9F1F7', // active-filter banner bg
   filterText: '#2A6483', // active-filter banner text
+  headerBg: '#FFFFFF', // daily/month header background
+  tabBarBg: '#FFFFFF', // bottom tab bar (footer) background
+  listBg: '#FFFFFF', // daily task list background
 
   // Tag / status palette (soft) — shared across themes
   blue: '#4A90E2',
@@ -66,6 +69,9 @@ export const darkColors: Colors = {
   selectedCell: '#1E2E3C',
   filterBg: '#17293A',
   filterText: '#7CB2D2',
+  headerBg: '#161A22',
+  tabBarBg: '#161A22',
+  listBg: '#161A22',
 
   blue: '#4A90E2',
   green: '#48C1A8',

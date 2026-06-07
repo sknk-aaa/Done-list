@@ -152,12 +152,14 @@ const DEFAULTS={
   line:'#EDEEF0', divider:'#E2E5E8',
   bg:'#FFFFFF', bgSoft:'#F6F7F8', surface:'#FFFFFF', field:'#F3F4F5', segTrack:'#F0F1F2', switchOff:'#DFE2E5',
   selectedCell:'#EEF4F8', filterBg:'#E9F1F7', filterText:'#2A6483', chevron:'#C5CACE', red:'#EF5B52',
+  headerBg:'#FFFFFF', tabBarBg:'#FFFFFF', listBg:'#FFFFFF',
 };
-const LABELS={teal:'アクセント',tealDark:'濃いアクセント',tintAlpha:'淡塗りの濃さ',ink:'主要テキスト',ink2:'見出し/アイコン',muted:'補助テキスト',faint:'プレースホルダ',line:'罫線/セル枠',divider:'区切り線',bg:'背景',bgSoft:'淡い面/押下',surface:'カード/シート面',field:'入力欄',segTrack:'セグメント背景',switchOff:'スイッチOFF',selectedCell:'選択セル塗り(月)',filterBg:'絞り込み背景',filterText:'絞り込み文字',chevron:'シェブロン',red:'日曜/削除',};
+const LABELS={teal:'アクセント',tealDark:'濃いアクセント',tintAlpha:'淡塗りの濃さ',ink:'主要テキスト',ink2:'見出し/アイコン',muted:'補助テキスト',faint:'プレースホルダ',line:'罫線/セル枠',divider:'区切り線',bg:'背景',bgSoft:'淡い面/押下',surface:'カード/シート面',field:'入力欄',segTrack:'セグメント背景',switchOff:'スイッチOFF',selectedCell:'選択セル塗り(月)',filterBg:'絞り込み背景',filterText:'絞り込み文字',chevron:'シェブロン',red:'日曜/削除',headerBg:'ヘッダー背景',tabBarBg:'フッター(下部タブ)背景',listBg:'タスクリスト背景',};
 const GROUPS=[
   {name:'アクセント',bg:'#eaf2f7',keys:['teal','tealDark','tintAlpha']},
   {name:'テキスト',bg:'#f1f1f3',keys:['ink','ink2','muted','faint']},
-  {name:'背景・面',bg:'#eef2ee',keys:['bg','bgSoft','surface','field','segTrack','switchOff']},
+  {name:'画面パーツ背景',bg:'#e9efe9',keys:['headerBg','listBg','tabBarBg','bg']},
+  {name:'面・入力',bg:'#eef2ee',keys:['bgSoft','surface','field','segTrack','switchOff']},
   {name:'線・区切り',bg:'#f3eee9',keys:['line','divider','chevron']},
   {name:'状態色',bg:'#f3eef3',keys:['selectedCell','filterBg','filterText','red']},
 ];

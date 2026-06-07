@@ -43,7 +43,7 @@ function Tab({ active, onPress, children }: { active: boolean; onPress: () => vo
 const makeStyles = (c: Colors) => StyleSheet.create({
   bar: {
     flexDirection: 'row',
-    backgroundColor: c.bg,
+    backgroundColor: c.tabBarBg,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: c.line,
   },

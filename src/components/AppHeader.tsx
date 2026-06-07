@@ -49,7 +49,7 @@ export function AppHeader({ left, sub, filterActive, onFilter, onMenu }: Props) 
 }
 
 const makeStyles = (c: Colors) => StyleSheet.create({
-  wrap: { paddingHorizontal: space.headerX, paddingBottom: 10, backgroundColor: c.bg },
+  wrap: { paddingHorizontal: space.headerX, paddingBottom: 10, backgroundColor: c.headerBg },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   left: { flexShrink: 1 },
   tools: { flexDirection: 'row', alignItems: 'center', gap: 18 },
