@@ -64,10 +64,10 @@ export const derivedDone = (day: number, index: number) => (day + index) % 3 ===
 
 /** Default tag set (name → preset color), shown in the mock and seeded on first run. */
 export const DEFAULT_TAGS: { name: string; color: string }[] = [
-  { name: '仕事', color: '#4A90E2' },
-  { name: '健康', color: '#48C1A8' },
-  { name: '買い物', color: '#F0934A' },
-  { name: '家事', color: '#EF6E9A' },
-  { name: '自己投資', color: '#8A5CA8' },
-  { name: '学習', color: '#E6BD4F' },
+  { name: '仕事', color: '#5E80A6' },
+  { name: '健康', color: '#6FA08C' },
+  { name: '買い物', color: '#C68A5E' },
+  { name: '家事', color: '#C481A0' },
+  { name: '自己投資', color: '#8E7CA6' },
+  { name: '学習', color: '#C2A85E' },
 ];

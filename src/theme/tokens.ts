@@ -6,9 +6,9 @@
 
 export const lightColors = {
   // Brand / accent (calm muted blue)
-  teal: '#3e9fea',
+  teal: '#000000',
   tealDark: '#3881a8',
-  tealTint: 'rgba(62,159,234,0.16)', // today pill bg, light fills
+  tealTint: 'rgba(0,0,0,0.16)', // today pill bg, light fills
 
   // Neutrals
   ink: '#2C2E33', // primary text
@@ -28,15 +28,15 @@ export const lightColors = {
   filterText: '#2A6483', // active-filter banner text
   headerBg: '#fafafa', // daily/month header background
   tabBarBg: '#fafafa', // bottom tab bar (footer) background
-  listBg: '#f5f5f5', // daily task list background
+  listBg: '#f7f7f7', // daily task list background
 
   // Tag / status palette (soft) — shared across themes
-  blue: '#4A90E2',
-  green: '#48C1A8',
-  orange: '#F0934A',
-  purple: '#8A5CA8',
-  gold: '#E6BD4F',
-  pink: '#EF6E9A',
+  blue: '#5E80A6',
+  green: '#6FA08C',
+  orange: '#C68A5E',
+  purple: '#8E7CA6',
+  gold: '#C2A85E',
+  pink: '#C481A0',
   red: '#df5a53',
   gray: '#A7ADB3',
 
@@ -73,12 +73,12 @@ export const darkColors: Colors = {
   tabBarBg: '#161A22',
   listBg: '#161A22',
 
-  blue: '#4A90E2',
-  green: '#48C1A8',
-  orange: '#F0934A',
-  purple: '#8A5CA8',
-  gold: '#E6BD4F',
-  pink: '#EF6E9A',
+  blue: '#5E80A6',
+  green: '#6FA08C',
+  orange: '#C68A5E',
+  purple: '#8E7CA6',
+  gold: '#C2A85E',
+  pink: '#C481A0',
   red: '#FF6B62',
   gray: '#A7ADB3',
 
@@ -103,15 +103,15 @@ export const tagColor: Record<string, string> = {
 
 /** Preset colors for tag creation (tag-edit swatch row). */
 export const presetColors: string[] = [
-  '#4A90E2', // blue
-  '#48C1A8', // teal
-  '#5FBF6B', // green
-  '#F0934A', // orange
-  '#E6BD4F', // gold
-  '#EF6E9A', // pink
-  '#EF5B52', // red
-  '#8A5CA8', // purple
-  '#5C7CFA', // indigo
+  '#5E80A6', // dusty blue
+  '#5E9E9A', // muted teal
+  '#6FA08C', // sage
+  '#C68A5E', // terracotta
+  '#C2A85E', // ochre
+  '#C481A0', // dusty rose
+  '#C26A60', // muted red
+  '#8E7CA6', // mauve
+  '#6E78AE', // muted indigo
   '#A7ADB3', // gray
 ];
 
