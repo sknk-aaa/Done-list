@@ -7,6 +7,7 @@ import { runOnJS } from 'react-native-reanimated';
 import { AppHeader, HeaderCaret } from '@/components/AppHeader';
 import { Fab } from '@/components/Fab';
 import { TaskRow } from '@/components/TaskRow';
+import { WeekStrip } from '@/components/WeekStrip';
 import { Pencil, Undo } from '@/icons';
 import { useDailyItems } from '@/data/useData';
 import { addDaysISO, formatLong, getTodayISO } from '@/lib/date';
@@ -99,13 +100,14 @@ export function DailyScreen() {
   const openAddSheet = useAppStore((s) => s.openAddSheet);
   const setFilterOpen = useAppStore((s) => s.setFilterOpen);
   const setDrawerOpen = useAppStore((s) => s.setDrawerOpen);
-  const openDatePop = useAppStore((s) => s.openDatePop);
   const goToday = useAppStore((s) => s.goToday);
   const resetFilter = useAppStore((s) => s.resetFilter);
   const swipeAction = useAppStore((s) => s.swipeAction);
   const setSelectedDate = useAppStore((s) => s.setSelectedDate);
+  const shiftDay = useAppStore((s) => s.shiftDay);
   const setView = useAppStore((s) => s.setView);
   const sheetOpen = useAppStore((s) => s.sheet.mode !== null);
+  const [weekOpen, setWeekOpen] = useState(false);
 
   const anchor = useRef(getTodayISO()).current;
   const dateForIndex = useCallback((i: number) => addDaysISO(anchor, i - RANGE), [anchor]);
@@ -157,9 +159,11 @@ export function DailyScreen() {
   const styles = useMemo(() => makeStyles(c), [c]);
 
   const left = (
-    <Pressable style={styles.dhead} onPress={() => openDatePop('daily')} hitSlop={6}>
+    <Pressable style={styles.dhead} onPress={() => setWeekOpen((o) => !o)} hitSlop={6}>
       <Text style={styles.dhMain}>{formatLong(selectedDate, lang)}</Text>
-      <HeaderCaret />
+      <View style={weekOpen ? styles.caretOpen : undefined}>
+        <HeaderCaret />
+      </View>
     </Pressable>
   );
 
@@ -203,6 +207,9 @@ export function DailyScreen() {
             <Text style={styles.filterClear}>{t('filter.clear')}</Text>
           </Pressable>
         </View>
+      )}
+      {weekOpen && (
+        <WeekStrip selectedDate={selectedDate} lang={lang} onSelect={setSelectedDate} onShiftWeek={shiftDay} />
       )}
     </>
   );
@@ -251,6 +258,7 @@ export function DailyScreen() {
 const makeStyles = (c: Colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: c.bg },
   dhead: { flexDirection: 'row', alignItems: 'center' },
+  caretOpen: { transform: [{ rotate: '180deg' }] },
   dhMain: { fontSize: 18, fontWeight: '700', color: c.ink },
   statusRow: { flexDirection: 'row', alignItems: 'center' },
   todayLabel: { fontSize: font.size.caption, fontWeight: '600', color: c.teal },
