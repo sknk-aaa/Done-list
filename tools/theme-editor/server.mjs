@@ -43,7 +43,7 @@ http
       res.end(fs.existsSync(draftPath) ? fs.readFileSync(draftPath) : '{}');
       return;
     }
-    res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
+    res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
     res.end(fs.readFileSync(path.join(dir, 'index.html')));
   })
   .listen(PORT, () => console.log(`theme editor → http://localhost:${PORT}`));
