@@ -11,7 +11,7 @@ export const lightColors = {
   tealTint: 'rgba(62,159,234,0.16)', // today pill bg, light fills
 
   // Neutrals
-  ink: '#000000', // primary text
+  ink: '#2C2E33', // primary text
   ink2: '#3A3F44', // strong secondary (headings, icons)
   muted: '#9CA1A7', // secondary text
   faint: '#B4B9BD', // placeholders / hints / dim
