@@ -35,8 +35,8 @@ const makeStyles = (c: Colors) => StyleSheet.create({
   track: { flexDirection: 'row', backgroundColor: c.segTrack, borderRadius: 9, padding: 3 },
   seg: { flex: 1 },
   pill: { paddingVertical: 7, borderRadius: 7, alignItems: 'center' },
-  pillActive: { backgroundColor: c.white },
+  pillActive: { backgroundColor: c.segActive },
   label: { fontSize: font.size.body, fontWeight: '600' },
-  labelActive: { color: c.teal },
+  labelActive: { color: '#2C2E33' },
   labelInactive: { color: c.muted },
 });

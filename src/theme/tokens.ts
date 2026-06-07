@@ -23,6 +23,7 @@ export const lightColors = {
   surface: '#FFFFFF', // cards, sheets, tab bar
   field: '#F3F4F5', // input field background
   segTrack: '#F0F1F2', // segmented-control track
+  segActive: '#FFFFFF', // selected segment pill (light chip)
   switchOff: '#DFE2E5', // toggle off track
   selectedCell: '#EEF4F8', // month selected cell bg
   filterBg: '#E9F1F7', // active-filter banner bg
@@ -67,6 +68,7 @@ export const darkColors: Colors = {
   surface: '#1E2430',
   field: '#232A36',
   segTrack: '#232A36',
+  segActive: '#EEF0F3',
   switchOff: '#3A434F',
   selectedCell: '#1E2E3C',
   filterBg: '#17293A',
