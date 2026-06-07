@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { ItemWithTag } from '@/db/queries';
 import { Bell, Note } from '@/icons';
-import { font } from '@/theme/tokens';
+import { font, radius } from '@/theme/tokens';
 import { useColors, type Colors } from '@/theme/theme';
 
 import { CheckRing } from './CheckRing';
@@ -52,7 +52,21 @@ export function TaskRow({ item, showTime, onToggle, onPress }: Props) {
 }
 
 const makeStyles = (c: Colors) => StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 17 },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    backgroundColor: c.surface,
+    borderRadius: radius.card,
+    paddingVertical: 15,
+    paddingHorizontal: 16,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.07,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
   pressed: { backgroundColor: c.bgSoft },
   main: { flex: 1, gap: 6 },
   title: { fontSize: font.size.title, fontWeight: '600', color: c.ink },
