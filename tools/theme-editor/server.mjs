@@ -14,13 +14,23 @@ http
     if (req.method === 'POST' && req.url === '/save') {
       let body = '';
       req.on('data', (d) => (body += d));
-      req.on('end', () => {
+      req.on('end', async () => {
         try {
-          JSON.parse(body); // validate
+          const parsed = JSON.parse(body); // validate
           fs.writeFileSync(draftPath, body);
-          console.log('[saved] theme-draft.json', new Date().toISOString());
+          let applied = 0;
+          // If an app-specific apply.mjs exists, write the values into the token file too.
+          if (fs.existsSync(path.join(dir, 'apply.mjs'))) {
+            try {
+              const mod = await import('./apply.mjs');
+              applied = mod.default(parsed.values) || 0;
+            } catch (e) {
+              console.error('[apply] failed:', e.message);
+            }
+          }
+          console.log(`[saved] theme-draft.json${applied ? ` → tokens.ts (${applied} keys)` : ''}`, new Date().toISOString());
           res.writeHead(200, { 'content-type': 'application/json' });
-          res.end('{"ok":true}');
+          res.end(JSON.stringify({ ok: true, applied }));
         } catch {
           res.writeHead(400);
           res.end('{"ok":false}');

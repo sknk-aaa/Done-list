@@ -6,18 +6,18 @@
 
 export const lightColors = {
   // Brand / accent (calm muted blue)
-  teal: '#4A8CB0',
-  tealDark: '#3E7B9C',
-  tealTint: 'rgba(74,140,176,0.16)', // today pill bg, light fills
+  teal: '#3e9fea',
+  tealDark: '#3881a8',
+  tealTint: 'rgba(62,159,234,0.16)', // today pill bg, light fills
 
   // Neutrals
-  ink: '#2C2E33', // primary text
+  ink: '#000000', // primary text
   ink2: '#3A3F44', // strong secondary (headings, icons)
   muted: '#9CA1A7', // secondary text
   faint: '#B4B9BD', // placeholders / hints / dim
   line: '#EDEEF0', // hairline dividers / cell borders
   divider: '#E2E5E8', // grab handle, dots
-  bg: '#FFFFFF', // screen background
+  bg: '#ffffff', // screen background
   bgSoft: '#F6F7F8', // pressed states, inset fields, drawer panel
   surface: '#FFFFFF', // cards, sheets, tab bar
   field: '#F3F4F5', // input field background
@@ -34,7 +34,7 @@ export const lightColors = {
   purple: '#8A5CA8',
   gold: '#E6BD4F',
   pink: '#EF6E9A',
-  red: '#EF5B52',
+  red: '#df5a53',
   gray: '#A7ADB3',
 
   white: '#FFFFFF', // on-accent text

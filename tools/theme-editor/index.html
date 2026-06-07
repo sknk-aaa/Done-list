@@ -199,7 +199,7 @@ function rescale(){const h=parseInt(getComputedStyle(document.getElementById('sc
   const avail=window.innerHeight-40;document.getElementById('device-wrap').style.setProperty('--scale',Math.min(1,avail/h).toFixed(3));}
 function reloadApp(){F().src=document.getElementById('url').value;}
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1500);}
-async function save(){try{const r=await fetch('/save',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({values:values(),raw:V},null,2)});toast(r.ok?'保存しました(theme-draft.json)':'保存失敗');}catch{toast('保存失敗(サーバ未起動?)');}}
+async function save(){try{const r=await fetch('/save',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({values:values(),raw:V},null,2)});const j=await r.json().catch(()=>({}));toast(j.applied?`保存＆tokens.tsに反映（${j.applied}項目）`:(r.ok?'保存しました(theme-draft.json)':'保存失敗'));}catch{toast('保存失敗(サーバ未起動?)');}}
 
 window.addEventListener('message',e=>{const d=e.data;if(d&&d.__todonePick)showPick(d);});
 window.addEventListener('resize',rescale);
