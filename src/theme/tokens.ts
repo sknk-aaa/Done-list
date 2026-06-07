@@ -31,12 +31,12 @@ export const lightColors = {
   listBg: '#f7f7f7', // daily task list background
 
   // Tag / status palette (soft) — shared across themes
-  blue: '#5E80A6',
-  green: '#6FA08C',
-  orange: '#C68A5E',
-  purple: '#8E7CA6',
-  gold: '#C2A85E',
-  pink: '#C481A0',
+  blue: '#4F86C6',
+  green: '#57AE93',
+  orange: '#DB9356',
+  purple: '#8E69B0',
+  gold: '#D8B454',
+  pink: '#DB7FA3',
   red: '#df5a53',
   gray: '#A7ADB3',
 
@@ -73,12 +73,12 @@ export const darkColors: Colors = {
   tabBarBg: '#161A22',
   listBg: '#161A22',
 
-  blue: '#5E80A6',
-  green: '#6FA08C',
-  orange: '#C68A5E',
-  purple: '#8E7CA6',
-  gold: '#C2A85E',
-  pink: '#C481A0',
+  blue: '#4F86C6',
+  green: '#57AE93',
+  orange: '#DB9356',
+  purple: '#8E69B0',
+  gold: '#D8B454',
+  pink: '#DB7FA3',
   red: '#FF6B62',
   gray: '#A7ADB3',
 
@@ -103,15 +103,15 @@ export const tagColor: Record<string, string> = {
 
 /** Preset colors for tag creation (tag-edit swatch row). */
 export const presetColors: string[] = [
-  '#5E80A6', // dusty blue
-  '#5E9E9A', // muted teal
-  '#6FA08C', // sage
-  '#C68A5E', // terracotta
-  '#C2A85E', // ochre
-  '#C481A0', // dusty rose
-  '#C26A60', // muted red
-  '#8E7CA6', // mauve
-  '#6E78AE', // muted indigo
+  '#4F86C6', // blue
+  '#4FB0A6', // teal
+  '#57AE93', // green
+  '#DB9356', // orange
+  '#D8B454', // gold
+  '#DB7FA3', // pink
+  '#DB6A60', // red
+  '#8E69B0', // purple
+  '#6E7FC8', // indigo
   '#A7ADB3', // gray
 ];
 
