@@ -33,9 +33,14 @@ export function WeekStrip({ selectedDate, lang, onSelect, onShiftWeek }: Props) 
   const labels = lang === 'ja' ? DOW_JA : DOW_EN;
 
   const weekItems = useMonthItems(start, days[6]);
-  const doneByDate = useMemo(() => {
-    const m: Record<string, number> = {};
-    for (const it of weekItems) if (it.isCompleted) m[it.date] = (m[it.date] ?? 0) + 1;
+  const stat = useMemo(() => {
+    const m: Record<string, { has: boolean; done: number }> = {};
+    for (const it of weekItems) {
+      const e = m[it.date] ?? { has: false, done: 0 };
+      e.has = true;
+      if (it.isCompleted) e.done += 1;
+      m[it.date] = e;
+    }
     return m;
   }, [weekItems]);
 
@@ -56,12 +61,18 @@ export function WeekStrip({ selectedDate, lang, onSelect, onShiftWeek }: Props) 
           {days.map((d, i) => {
             const sel = d === selectedDate;
             const isToday = d === today;
-            const done = doneByDate[d] ?? 0;
+            const s = stat[d];
+            const done = s?.done ?? 0;
+            const has = !!s?.has;
             return (
               <Pressable key={d} style={styles.cell} onPress={() => onSelect(d)} hitSlop={4}>
                 <Text style={[styles.dow, i === 0 && styles.sun]}>{labels[i]}</Text>
                 <View style={styles.numWrap}>
-                  {sel && <Animated.View key={d} entering={ZoomIn.duration(120)} style={styles.selCircle} />}
+                  {sel ? (
+                    <Animated.View key={d} entering={ZoomIn.duration(120)} style={styles.selCircle} />
+                  ) : has ? (
+                    <View style={styles.hasCircle} />
+                  ) : null}
                   <Text
                     style={[
                       styles.num,
@@ -103,6 +114,7 @@ const makeStyles = (c: Colors) =>
     sun: { color: c.red },
     numWrap: { width: 30, height: 30, alignItems: 'center', justifyContent: 'center' },
     selCircle: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 15, backgroundColor: c.teal },
+    hasCircle: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 15, backgroundColor: c.tealTint },
     num: { fontSize: font.size.body, fontWeight: '600', color: c.ink2 },
     numSel: { color: '#fff', fontWeight: '700' },
     numToday: { color: c.teal, fontWeight: '700' },
