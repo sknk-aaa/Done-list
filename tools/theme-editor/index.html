@@ -3,316 +3,96 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>toDone — Theme Editor</title>
+<title>toDone — Live Theme Editor</title>
 <style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; display: flex; min-height: 100vh; background: #eceef1; color: #1c1f24;
-    font: 14px/1.45 -apple-system, "Hiragino Sans", system-ui, sans-serif;
-  }
-  /* ---- left: phone preview ---- */
-  .stage { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 24px; }
-  .tabs { display: flex; gap: 8px; }
-  .tabs button {
-    border: 1px solid #cfd3d8; background: #fff; padding: 7px 16px; border-radius: 999px; cursor: pointer; font-weight: 600; color: #3a3f44;
-  }
-  .tabs button.on { background: #1c1f24; color: #fff; border-color: #1c1f24; }
-  .phone {
-    width: 390px; height: 844px; background: var(--bg); border-radius: 44px; overflow: hidden;
-    box-shadow: 0 18px 60px rgba(0,0,0,.25); border: 10px solid #111; position: relative;
-  }
-  .screen { display: none; height: 100%; flex-direction: column; }
-  .screen.on { display: flex; }
-
-  /* shared */
-  .accent { color: var(--accent); }
-  .tap { cursor: pointer; }
-  .flash { outline: 2px solid var(--accent); outline-offset: 1px; }
-
-  /* ---- daily ---- */
-  .hdr { padding: 56px 20px 12px; }
-  .hdr .row { display: flex; align-items: center; justify-content: space-between; }
-  .hdr .date { font-size: 20px; font-weight: 700; color: var(--ink); }
-  .hdr .sub { font-size: 12.5px; margin-top: 3px; color: var(--muted); }
-  .hdr .sub b { color: var(--accent); font-weight: 600; }
-  .tools { display: flex; gap: 14px; align-items: center; }
-  .list { flex: 1; background: var(--bg); overflow: hidden; }
-  .trow { display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-bottom: 1px solid var(--line); }
-  .ring { width: var(--ringSize); height: var(--ringSize); border-radius: 999px; border: var(--ringW) solid var(--rc, var(--accent));
-          display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
-  .ring.done { background: var(--rc, var(--accent)); }
-  .ring svg { display: none; } .ring.done svg { display: block; }
-  .tmain { flex: 1; min-width: 0; }
-  .ttitle { font-size: 16px; color: var(--ink); font-weight: 500; }
-  .tsub { display: flex; align-items: center; gap: 6px; margin-top: 3px; font-size: 12.5px; }
-  .dot { width: 7px; height: 7px; border-radius: 999px; }
-  .ttime { font-size: 14px; color: var(--muted); }
-  .fab {
-    position: absolute; right: 22px; bottom: 96px; width: 64px; height: 64px; border-radius: 999px;
-    background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 8px 18px rgba(74,140,176,.4);
-  }
-  .tabbar { height: 64px; display: flex; border-top: 1px solid var(--line); background: var(--bg); }
-  .tabbar .t { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; color: var(--muted); }
-  .tabbar .t.on { color: var(--accent); }
-  .tabbar .t.on::before { content: ""; position: absolute; top: 0; left: 50%; width: 40px; height: 2px; transform: translateX(-50%); background: var(--tabTopBorder); }
-
-  /* filter banner */
-  .fbanner { margin: 0 20px 4px; background: var(--filterBg); color: var(--filterText); font-size: 12.5px;
-    padding: 7px 12px; border-radius: 10px; display: inline-flex; align-self: flex-start; font-weight: 600; }
-
-  /* ---- month ---- */
-  .mhdr { padding: 56px 16px 8px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-  .mhdr .ym { font-size: 20px; font-weight: 700; color: var(--ink); }
-  .dow { display: flex; padding: 0 5px 6px; }
-  .dow span { flex: 1; text-align: center; font-size: 12px; color: var(--muted); }
-  .dow span.sun { color: var(--red); }
-  .grid { flex: 1; padding: 0 5px; display: flex; flex-direction: column; }
-  .week { flex: 1; display: flex; }
-  .cell { flex: 1; min-width: 0; border: var(--cellBorderW) solid var(--line); padding: 5px 1.5px 4px; overflow: hidden; }
-  .cell.sel { border: var(--selBorderW) solid var(--accent); border-radius: var(--selRadius); background: var(--selectedCell); }
-  .dn { font-size: 14px; font-weight: 600; color: var(--ink2); padding-left: 3px; }
-  .dn.out { color: var(--faint); } .dn.sun { color: var(--red); }
-  .pill { width: var(--todayPillSize); height: var(--todayPillSize); border-radius: 999px; background: var(--tint);
-    display: flex; align-items: center; justify-content: center; }
-  .pill .dn { color: var(--accent); font-weight: 700; padding: 0; }
-  .chip { font-size: 10px; color: #fff; border-radius: 4px; padding: 1px 4px; margin-top: 2.5px; white-space: nowrap; overflow: hidden; text-overflow: clip; }
-
-  /* ---- right: controls ---- */
-  .panel { width: 340px; background: #fff; border-left: 1px solid #dcdfe3; height: 100vh; overflow-y: auto; padding: 16px 16px 80px; }
-  .panel h1 { font-size: 16px; margin: 4px 0 2px; }
-  .panel .hint { color: #6b7280; font-size: 12px; margin: 0 0 14px; }
-  .group { border: 1px solid #e6e8eb; border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; }
-  .group.flash { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(74,140,176,.25); }
-  .group h2 { font-size: 13px; margin: 0 0 8px; color: #374151; }
-  .ctl { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 7px 0; }
-  .ctl label { font-size: 12.5px; color: #4b5563; flex: 1; }
-  .ctl input[type=color] { width: 38px; height: 26px; border: 1px solid #cfd3d8; border-radius: 6px; padding: 0; background: none; }
-  .ctl input[type=range] { width: 130px; }
-  .ctl .val { font-size: 11px; color: #6b7280; width: 42px; text-align: right; font-variant-numeric: tabular-nums; }
-  .bar { position: fixed; right: 0; bottom: 0; width: 340px; background: #fff; border-top: 1px solid #dcdfe3; padding: 12px 16px; display: flex; gap: 8px; }
-  .bar button { flex: 1; padding: 10px; border-radius: 8px; border: 0; font-weight: 700; cursor: pointer; }
-  .save { background: var(--accent); color: #fff; }
-  .reset { background: #eceef1; color: #374151; }
-  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #1c1f24; color: #fff; padding: 10px 16px; border-radius: 10px; opacity: 0; transition: opacity .2s; }
-  .toast.on { opacity: 1; }
+  *{box-sizing:border-box}
+  body{margin:0;display:flex;height:100vh;background:#eceef1;color:#1c1f24;
+    font:14px/1.45 -apple-system,"Hiragino Sans",system-ui,sans-serif}
+  /* left controls */
+  .panel{width:320px;flex:0 0 320px;background:#fff;border-right:1px solid #dcdfe3;overflow-y:auto;padding:14px 14px 90px}
+  .panel h1{font-size:15px;margin:2px 0}
+  .panel .hint{color:#6b7280;font-size:11.5px;margin:0 0 12px}
+  .urlbar{display:flex;gap:6px;margin-bottom:12px}
+  .urlbar input{flex:1;border:1px solid #cfd3d8;border-radius:7px;padding:6px 8px;font-size:12px}
+  .urlbar button{border:1px solid #cfd3d8;background:#f4f5f7;border-radius:7px;padding:0 10px;cursor:pointer;font-size:12px}
+  .group{border:1px solid #e6e8eb;border-radius:10px;padding:8px 11px;margin-bottom:9px}
+  .group h2{font-size:12.5px;margin:0 0 6px;color:#374151}
+  .ctl{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:6px 0}
+  .ctl label{font-size:12px;color:#4b5563;flex:1}
+  .ctl input[type=color]{width:36px;height:24px;border:1px solid #cfd3d8;border-radius:6px;padding:0;background:none}
+  .ctl input[type=range]{width:120px}
+  .ctl .val{font-size:10.5px;color:#6b7280;width:56px;text-align:right;font-variant-numeric:tabular-nums}
+  /* right preview */
+  .stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:18px;overflow:auto}
+  .frame{width:390px;height:844px;border:10px solid #111;border-radius:44px;overflow:hidden;background:#fff;box-shadow:0 18px 60px rgba(0,0,0,.25)}
+  iframe{width:100%;height:100%;border:0;display:block}
+  .note{color:#6b7280;font-size:12px}
+  .bar{position:fixed;left:0;bottom:0;width:320px;background:#fff;border-top:1px solid #dcdfe3;padding:11px 14px;display:flex;gap:8px}
+  .bar button{flex:1;padding:10px;border-radius:8px;border:0;font-weight:700;cursor:pointer}
+  .save{background:#4A8CB0;color:#fff}.reset{background:#eceef1;color:#374151}
+  .toast{position:fixed;left:160px;bottom:24px;transform:translateX(-50%);background:#1c1f24;color:#fff;padding:9px 14px;border-radius:9px;opacity:0;transition:.2s}
+  .toast.on{opacity:1}
 </style>
 </head>
 <body>
-  <div class="stage">
-    <div class="tabs">
-      <button id="tab-daily" class="on" onclick="showScreen('daily')">デイリー</button>
-      <button id="tab-month" onclick="showScreen('month')">月ビュー</button>
-    </div>
-    <div class="phone">
-      <!-- DAILY -->
-      <div class="screen on" id="s-daily">
-        <div class="hdr">
-          <div class="row">
-            <div class="tap" data-group="text">
-              <div class="date">6月19日（金）</div>
-              <div class="sub"><b>今日</b> · 4/7 完了</div>
-            </div>
-            <div class="tools">
-              <span class="tap" data-group="filter" title="絞り込み">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M3 5h18M6 12h12M10 19h4"/></svg>
-              </span>
-              <span class="tap" data-group="text">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-              </span>
-            </div>
-          </div>
-        </div>
-        <div class="list" id="dlist"></div>
-        <div class="fab" data-group="accent">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-        </div>
-        <div class="tabbar">
-          <div class="t on tap" data-group="nav"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9h16M8 3v4M16 3v4"/></svg></div>
-          <div class="t tap" data-group="nav"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v16M15 4v16"/></svg></div>
-        </div>
-      </div>
-      <!-- MONTH -->
-      <div class="screen" id="s-month">
-        <div class="mhdr"><span class="accent">‹</span><span class="ym">2026年6月</span><span class="accent">›</span></div>
-        <div class="dow"><span class="sun">日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span></div>
-        <div class="grid" id="mgrid"></div>
-        <div class="tabbar">
-          <div class="t tap" data-group="nav"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9h16M8 3v4M16 3v4"/></svg></div>
-          <div class="t on tap" data-group="nav"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v16M15 4v16"/></svg></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <div class="panel">
-    <h1>toDone テーマエディタ</h1>
-    <p class="hint">プレビューの要素をクリックすると該当パラメータに飛びます。変更は即反映。Save で保存（Claude が受け取って反映します）。</p>
+    <h1>Live テーマエディタ</h1>
+    <p class="hint">右は<b>本物のアプリ(Web)</b>。色を変えると即反映されます。Saveでこちら(JSON)に保存→反映します。</p>
+    <div class="urlbar">
+      <input id="url" value="http://localhost:8081" />
+      <button onclick="reloadApp()">読込</button>
+    </div>
     <div id="groups"></div>
   </div>
+  <div class="stage">
+    <div class="frame"><iframe id="app" src="http://localhost:8081"></iframe></div>
+    <div class="note">アプリが出ない場合：Metro の web ポートを上の欄に入れて「読込」（例 8081/8082/8101）。</div>
+  </div>
   <div class="bar">
-    <button class="reset" onclick="resetAll()">初期値に戻す</button>
+    <button class="reset" onclick="resetAll()">初期値</button>
     <button class="save" onclick="save()">Save</button>
   </div>
   <div class="toast" id="toast"></div>
 
 <script>
-// ---- schema: keys map back to tokens.ts / component dims ----
-const DEFAULTS = {
-  accent:'#4A8CB0', accentDark:'#3E7B9C', tintAlpha:0.16,
+// keys = tokens.ts color keys (merged into Colors at runtime). tealTint is computed from teal+alpha.
+const DEFAULTS={
+  teal:'#4A8CB0', tealDark:'#3E7B9C', tintAlpha:0.16,
   ink:'#2C2E33', ink2:'#3A3F44', muted:'#9CA1A7', faint:'#B4B9BD',
-  line:'#EDEEF0', divider:'#E2E5E8', cellBorderW:0.5,
-  bg:'#FFFFFF', bgSoft:'#F6F7F8', field:'#F3F4F5',
-  selectedCell:'#EEF4F8', selBorderW:1.5, selRadius:10,
-  filterBg:'#E9F1F7', filterText:'#2A6483',
-  todayPillSize:20, ringW:2, ringSize:31,
-  cardRadius:14, fieldRadius:12, shadowOpacity:0.05,
-  tabTopBorder:'#4A8CB0', red:'#EF5B52',
+  line:'#EDEEF0', divider:'#E2E5E8', bg:'#FFFFFF', bgSoft:'#F6F7F8', field:'#F3F4F5', chevron:'#C5CACE',
+  selectedCell:'#EEF4F8', filterBg:'#E9F1F7', filterText:'#2A6483', red:'#EF5B52',
 };
-const GROUPS = [
-  {id:'accent', name:'アクセント', items:[
-    ['accent','アクセント色','color'], ['accentDark','濃いアクセント(押下)','color'],
-    ['tintAlpha','淡い塗りの濃さ','range',0,0.4,0.01],
-    ['tabTopBorder','下部ナビ アクティブ線','color'],
-  ]},
-  {id:'text', name:'テキスト', items:[
-    ['ink','主要テキスト','color'], ['ink2','見出し/アイコン','color'],
-    ['muted','補助テキスト','color'], ['faint','プレースホルダ','color'],
-  ]},
-  {id:'lines', name:'線・区切り', items:[
-    ['line','罫線/セル枠','color'], ['divider','区切り線','color'],
-    ['cellBorderW','月セルの枠太さ','range',0,2,0.25],
-  ]},
-  {id:'surface', name:'背景・面', items:[
-    ['bg','背景','color'], ['bgSoft','淡い面/押下','color'], ['field','入力欄','color'],
-  ]},
-  {id:'selected', name:'選択日(月)', items:[
-    ['selectedCell','選択セルの塗り','color'],
-    ['selBorderW','選択枠の太さ','range',0,3,0.25],
-    ['selRadius','選択枠の角丸','range',0,16,1],
-  ]},
-  {id:'filter', name:'絞り込みバナー', items:[
-    ['filterBg','背景','color'], ['filterText','文字','color'],
-  ]},
-  {id:'today', name:'今日(月)', items:[
-    ['todayPillSize','今日ピルの大きさ','range',14,28,1],
-  ]},
-  {id:'ring', name:'チェック輪', items:[
-    ['ringW','輪の太さ','range',1,4,0.25], ['ringSize','輪の大きさ','range',24,40,1],
-  ]},
-  {id:'shape', name:'角丸・影', items:[
-    ['cardRadius','カード角丸','range',6,22,1], ['fieldRadius','入力欄角丸','range',6,22,1],
-    ['shadowOpacity','影の濃さ','range',0,0.3,0.01],
-  ]},
-  {id:'nav', name:'下部ナビ', items:[
-    ['tabTopBorder','アクティブ線の色','color'],
-  ]},
+const GROUPS=[
+  {name:'アクセント',items:[['teal','アクセント色','color'],['tealDark','濃いアクセント(押下)','color'],['tintAlpha','淡塗りの濃さ(今日ピル等)','range',0,0.4,0.01]]},
+  {name:'テキスト',items:[['ink','主要テキスト','color'],['ink2','見出し/アイコン','color'],['muted','補助テキスト','color'],['faint','プレースホルダ','color']]},
+  {name:'線・面',items:[['line','罫線/セル枠','color'],['divider','区切り線','color'],['bg','背景','color'],['bgSoft','淡い面/押下','color'],['field','入力欄','color'],['chevron','シェブロン','color']]},
+  {name:'状態色',items:[['selectedCell','選択セルの塗り(月)','color'],['filterBg','絞り込み背景','color'],['filterText','絞り込み文字','color'],['red','日曜/削除','color']]},
 ];
-const TAGS = { blue:'#4A90E2', green:'#48C1A8', orange:'#F0934A', purple:'#8A5CA8', gold:'#E6BD4F', pink:'#EF6E9A', red:'#EF5B52', gray:'#A7ADB3' };
+let V={...DEFAULTS};
 
-let V = {...DEFAULTS};
-
-function hexA(hex, a){ const h=hex.replace('#',''); const n=parseInt(h,16); return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`; }
-function applyVars(){
-  const r = document.documentElement.style;
-  for(const k in V){ if(typeof V[k]==='string' && V[k][0]==='#') r.setProperty('--'+k, V[k]); }
-  r.setProperty('--tintAlpha', V.tintAlpha);
-  r.setProperty('--tint', hexA(V.accent, V.tintAlpha));
-  r.setProperty('--cellBorderW', V.cellBorderW+'px');
-  r.setProperty('--selBorderW', V.selBorderW+'px');
-  r.setProperty('--selRadius', V.selRadius+'px');
-  r.setProperty('--todayPillSize', V.todayPillSize+'px');
-  r.setProperty('--ringW', V.ringW+'px');
-  r.setProperty('--ringSize', V.ringSize+'px');
+function hexA(hex,a){const h=hex.replace('#','');const n=parseInt(h,16);return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;}
+function values(){ // resolved Colors override sent to the app
+  const o={}; for(const k in V){ if(k==='tintAlpha')continue; o[k]=V[k]; }
+  o.tealTint=hexA(V.teal,V.tintAlpha); return o;
 }
+function push(){ const f=document.getElementById('app'); try{ f.contentWindow.postMessage({__todoneTheme:true,values:values()},'*'); }catch(e){} }
 function buildPanel(){
-  const root = document.getElementById('groups'); root.innerHTML='';
-  for(const g of GROUPS){
-    const box = document.createElement('div'); box.className='group'; box.id='g-'+g.id;
-    box.innerHTML = `<h2>${g.name}</h2>`;
-    for(const [k,label,type,min,max,step] of g.items){
-      const row = document.createElement('div'); row.className='ctl';
-      if(type==='color'){
-        row.innerHTML = `<label>${label}</label><input type="color" value="${V[k]}" oninput="set('${k}',this.value)"><span class="val">${V[k]}</span>`;
-      } else {
-        row.innerHTML = `<label>${label}</label><input type="range" min="${min}" max="${max}" step="${step}" value="${V[k]}" oninput="set('${k}',+this.value)"><span class="val" id="v-${k}">${V[k]}</span>`;
-      }
-      box.appendChild(row);
-    }
-    root.appendChild(box);
-  }
+  const root=document.getElementById('groups');root.innerHTML='';
+  for(const g of GROUPS){const box=document.createElement('div');box.className='group';box.innerHTML=`<h2>${g.name}</h2>`;
+    for(const[k,label,type,min,max,step]of g.items){const row=document.createElement('div');row.className='ctl';
+      if(type==='color')row.innerHTML=`<label>${label}</label><input type="color" value="${V[k]}" oninput="set('${k}',this.value,this)"><span class="val">${V[k]}</span>`;
+      else row.innerHTML=`<label>${label}</label><input type="range" min="${min}" max="${max}" step="${step}" value="${V[k]}" oninput="set('${k}',+this.value,this)"><span class="val" id="v-${k}">${V[k]}</span>`;
+      box.appendChild(row);}
+    root.appendChild(box);}
 }
-function set(k,val){ V[k]=val; applyVars(); const el=document.getElementById('v-'+k); if(el) el.textContent=val;
-  const c=event&&event.target; if(c&&c.nextElementSibling&&c.type==='color') c.nextElementSibling.textContent=val; }
-function showScreen(s){ document.querySelectorAll('.screen').forEach(e=>e.classList.remove('on'));
-  document.getElementById('s-'+s).classList.add('on');
-  document.getElementById('tab-daily').classList.toggle('on',s==='daily');
-  document.getElementById('tab-month').classList.toggle('on',s==='month'); }
+function set(k,val,el){V[k]=val;const v=document.getElementById('v-'+k);if(v)v.textContent=val;if(el&&el.type==='color'&&el.nextElementSibling)el.nextElementSibling.textContent=val;push();}
+function reloadApp(){const f=document.getElementById('app');f.src=document.getElementById('url').value;}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1600);}
+async function save(){try{const r=await fetch('/save',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({values:values(),raw:V},null,2)});showToast(r.ok?'保存しました(theme-draft.json)':'保存失敗');}catch{showToast('保存失敗(サーバ未起動?)');}}
+function resetAll(){V={...DEFAULTS};buildPanel();push();showToast('初期値に戻しました');}
 
-// click preview element -> jump to its group
-document.addEventListener('click',(e)=>{
-  const t = e.target.closest('[data-group]'); if(!t) return;
-  const g = document.getElementById('g-'+t.dataset.group); if(!g) return;
-  g.scrollIntoView({behavior:'smooth',block:'center'});
-  g.classList.add('flash'); t.classList.add('flash');
-  setTimeout(()=>{g.classList.remove('flash');t.classList.remove('flash');},900);
-});
-
-// ---- render mock content ----
-function renderDaily(){
-  const rows = [
-    {t:'ブログ更新',tag:'仕事',c:TAGS.blue,time:'08:00',done:true},
-    {t:'ジムで筋トレ',tag:'健康',c:TAGS.green,time:'07:00',done:true},
-    {t:'買い出し（スーパー）',tag:'買い物',c:TAGS.orange,time:'18:30',done:false},
-    {t:'資料作成（提案書）',tag:'仕事',c:TAGS.blue,time:'14:00',done:true},
-    {t:'読書（20分）',tag:'自己投資',c:TAGS.purple,time:'22:00',done:false},
-    {t:'夕食の準備',tag:'家事',c:TAGS.pink,time:'19:00',done:true},
-  ];
-  document.getElementById('dlist').innerHTML = rows.map(r=>`
-    <div class="trow">
-      <div class="ring ${r.done?'done':''} tap" data-group="ring" style="--rc:${r.c}">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>
-      </div>
-      <div class="tmain tap" data-group="text">
-        <div class="ttitle">${r.t}</div>
-        <div class="tsub"><span class="dot" style="background:${r.c}"></span><span style="color:${r.c}">${r.tag}</span></div>
-      </div>
-      <div class="ttime tap" data-group="text">${r.time}</div>
-    </div>`).join('');
-}
-function renderMonth(){
-  const chips = {1:[['仕事',TAGS.blue],['健康',TAGS.green]],7:[['読書',TAGS.purple]],12:[['通院',TAGS.red],['英語',TAGS.gold]],
-    19:[['ブログ',TAGS.blue],['ジム',TAGS.green],['買い物',TAGS.orange]],26:[['通院',TAGS.red]]};
-  let day=1-0; const first=0; // start Sun, June 2026 starts Mon(1)=index1
-  // June 2026: 1st is Monday. Build 6 weeks.
-  const startOffset=1; const dim=30; let cells=[];
-  for(let i=0;i<42;i++){ const dnum=i-startOffset+1; cells.push(dnum); }
-  let html='';
-  for(let w=0;w<6;w++){ html+='<div class="week">';
-    for(let d=0;d<7;d++){ const i=w*7+d; const n=cells[i]; const inMonth=n>=1&&n<=dim;
-      const isSel = n===19, isToday=n===19, isSun=d===0;
-      let inner='';
-      if(isToday){ inner=`<div class="pill"><div class="dn">19</div></div>`; }
-      else { inner=`<div class="dn ${inMonth?'':'out'} ${isSun?'sun':''}">${inMonth?n:(n<1?31+n:n-dim)}</div>`; }
-      const cs=(chips[n]||[]).map(([t,c])=>`<div class="chip" style="background:${c}">${t}</div>`).join('');
-      html+=`<div class="cell ${isSel?'sel':''} tap" data-group="${isSel?'selected':(isToday?'today':'lines')}">${inner}${cs}</div>`;
-    }
-    html+='</div>'; }
-  document.getElementById('mgrid').innerHTML=html;
-}
-
-function showToast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('on'); setTimeout(()=>t.classList.remove('on'),1600); }
-async function save(){
-  try{ const r=await fetch('/save',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(V,null,2)});
-    showToast(r.ok?'保存しました（theme-draft.json）':'保存失敗'); }
-  catch{ showToast('保存失敗（サーバ未起動?）'); }
-}
-function resetAll(){ V={...DEFAULTS}; applyVars(); buildPanel(); renderDaily(); renderMonth(); showToast('初期値に戻しました'); }
-
-async function init(){
-  try{ const r=await fetch('/tokens'); const saved=await r.json(); if(saved&&Object.keys(saved).length) V={...DEFAULTS,...saved}; }catch{}
-  applyVars(); buildPanel(); renderDaily(); renderMonth();
-}
+document.getElementById('app').addEventListener('load',()=>setTimeout(push,400));
+async function init(){try{const r=await fetch('/tokens');const s=await r.json();if(s&&s.raw)V={...DEFAULTS,...s.raw};}catch{}buildPanel();}
 init();
 </script>
 </body>

@@ -35,6 +35,17 @@ export default function AppShell() {
     });
   }, [setOnboardingOpen]);
 
+  // Dev-only: live theme editing from tools/theme-editor (web, via postMessage).
+  useEffect(() => {
+    if (!__DEV__ || typeof window === 'undefined') return;
+    const onMsg = (e: MessageEvent) => {
+      const d = e.data as { __todoneTheme?: boolean; values?: Record<string, string> | null };
+      if (d && d.__todoneTheme) useAppStore.getState().setThemeOverride(d.values ?? null);
+    };
+    window.addEventListener('message', onMsg);
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
   const tx = useSharedValue(0);
   useEffect(() => {
     tx.value = withTiming(view === 'daily' ? 0 : -width, {

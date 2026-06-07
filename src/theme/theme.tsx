@@ -14,4 +14,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   return <ThemeCtx.Provider value={dark ? darkColors : lightColors}>{children}</ThemeCtx.Provider>;
 }
 
-export const useColors = (): Colors => useContext(ThemeCtx);
+export const useColors = (): Colors => {
+  const base = useContext(ThemeCtx);
+  // Dev-only live theme editing (web theme-editor injects overrides via the store).
+  const override = useAppStore((s) => s.themeOverride);
+  return __DEV__ && override ? { ...base, ...override } : base;
+};
