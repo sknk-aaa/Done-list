@@ -17,7 +17,7 @@ export const lightColors = {
   faint: '#B4B9BD', // placeholders / hints / dim
   line: '#EDEEF0', // hairline dividers / cell borders
   divider: '#E2E5E8', // grab handle, dots
-  bg: '#ffffff', // screen background
+  bg: '#FAFAFA', // screen background
   bgSoft: '#F6F7F8', // pressed states, inset fields, drawer panel
   surface: '#FFFFFF', // cards, sheets, tab bar
   field: '#F3F4F5', // input field background
@@ -26,9 +26,9 @@ export const lightColors = {
   selectedCell: '#EEF4F8', // month selected cell bg
   filterBg: '#E9F1F7', // active-filter banner bg
   filterText: '#2A6483', // active-filter banner text
-  headerBg: '#fafafa', // daily/month header background
-  tabBarBg: '#fafafa', // bottom tab bar (footer) background
-  listBg: '#f7f7f7', // daily task list background
+  headerBg: '#FAFAFA', // daily/month header background
+  tabBarBg: '#FAFAFA', // bottom tab bar (footer) background
+  listBg: '#FAFAFA', // daily task list background
 
   // Tag / status palette (soft) — shared across themes
   blue: '#4D8BD6',
